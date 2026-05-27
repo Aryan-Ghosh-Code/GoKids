@@ -1,26 +1,234 @@
 @import "tailwindcss";
 
+/* ─── Brand Design System ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand Colours */
+  --color-primary: #F5C518;
+  --color-primary-dark: #D4A900;
+  --color-teal: #2BBCB0;
+  --color-coral: #F4845F;
+  --color-sky: #4FC3F7;
+  --color-black: #1A1A1A;
+  --color-white: #FFFFFF;
+  --color-offwhite: #FAFAF8;
+  --color-grey: #F3F4F6;
+  --color-grey-text: #6B7280;
+
+  /* Fonts */
+  --font-heading: var(--font-nunito), "Nunito", system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base Styles ─────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-white);
+  color: var(--color-black);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+/* ─── Tailwind Theme Extension ────────────────────────────────────── */
+@theme inline {
+  --color-primary: #F5C518;
+  --color-primary-dark: #D4A900;
+  --color-teal: #2BBCB0;
+  --color-coral: #F4845F;
+  --color-sky: #4FC3F7;
+  --color-brand-black: #1A1A1A;
+  --color-brand-white: #FFFFFF;
+  --color-brand-offwhite: #FAFAF8;
+  --color-brand-grey: #F3F4F6;
+  --color-brand-grey-text: #6B7280;
+
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-heading: var(--font-nunito), "Nunito", system-ui, sans-serif;
+}
+
+/* ─── Keyframe Animations ─────────────────────────────────────────── */
+@keyframes float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-18px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes float-delayed {
+  0%   { transform: translateY(-8px); }
+  50%  { transform: translateY(12px); }
+  100% { transform: translateY(-8px); }
+}
+
+@keyframes wobble {
+  0%   { transform: rotate(0deg); }
+  15%  { transform: rotate(-5deg); }
+  30%  { transform: rotate(4deg); }
+  45%  { transform: rotate(-3deg); }
+  60%  { transform: rotate(2deg); }
+  75%  { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes bounce-in {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 197, 24, 0.5); }
+  70%  { transform: scale(1); box-shadow: 0 0 0 10px rgba(245, 197, 24, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 197, 24, 0); }
+}
+
+@keyframes slideInUnderline {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Animation Utility Classes ───────────────────────────────────── */
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+.animate-float-delayed {
+  animation: float-delayed 6s ease-in-out infinite;
+}
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+.animate-wobble:hover {
+  animation: wobble 0.6s ease-in-out;
+}
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #F5C518 0%,
+    #FFE082 40%,
+    #F5C518 60%,
+    #D4A900 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 2.5s linear infinite;
+}
+.animate-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+}
+.animate-fadeUp {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+/* ─── Nav Link Hover Underline ────────────────────────────────────── */
+.nav-link {
+  position: relative;
+  display: inline-block;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* ─── Card Hover ──────────────────────────────────────────────────── */
+.card-hover {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ─── Primary Button ──────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary);
+  color: var(--color-black);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: scale(1.04);
+  box-shadow: 0 6px 24px rgba(245, 197, 24, 0.4);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-white);
+  color: var(--color-black);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  border: 2px solid var(--color-black);
+  transition: transform 0.18s ease, background-color 0.18s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-outline:hover {
+  background-color: var(--color-grey);
+  transform: scale(1.03);
+}
+
+/* ─── Focus Ring ──────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-grey); }
+::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 4px; }
+
+/* ─── Reduced Motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
