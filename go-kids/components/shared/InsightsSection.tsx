@@ -85,7 +85,7 @@ function EnduranceChart() {
               padding: 12,
               cornerRadius: 10,
               callbacks: {
-                label: (ctx: { dataset: { label: string }; parsed: { y: number } }) =>
+                label: (ctx: any) =>
                   ` ${ctx.dataset.label}: ${ctx.parsed.y}%`,
               },
             },
@@ -194,7 +194,7 @@ function ImpactRadarChart() {
               padding: 12,
               cornerRadius: 10,
               callbacks: {
-                label: (ctx: { parsed: { r: number } }) =>
+                label: (ctx: any) =>
                   ` Severity: ${ctx.parsed.r}%`,
               },
             },
@@ -280,7 +280,7 @@ function EngagementBarChart() {
               padding: 12,
               cornerRadius: 10,
               callbacks: {
-                label: (ctx: { parsed: { y: number } }) =>
+                label: (ctx: any) =>
                   ` ${ctx.parsed.y} minutes engaged`,
               },
             },
