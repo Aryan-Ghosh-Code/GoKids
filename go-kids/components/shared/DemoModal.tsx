@@ -53,10 +53,13 @@ export function DemoModal({ isOpen, onClose, assessmentType }: DemoModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 z-50 w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-[2rem] bg-white p-8 shadow-2xl"
+            className="fixed left-1/2 top-1/2 z-50 w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-4xl bg-white p-8 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-gray-900" style={{ fontFamily: "var(--font-nunito)" }}>
+              <h3
+                className="text-xl font-bold text-gray-900"
+                style={{ fontFamily: "var(--font-nunito)" }}
+              >
                 {title}
               </h3>
               <button
@@ -69,8 +72,11 @@ export function DemoModal({ isOpen, onClose, assessmentType }: DemoModalProps) {
 
             <div className="space-y-4">
               {questions.map((q, idx) => (
-                <div key={idx} className="flex gap-4 rounded-2xl border border-gray-100 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50">
-                  <div className="mt-0.5 text-[#2BBCB0]">
+                <div
+                  key={idx}
+                  className="flex gap-4 rounded-2xl border border-gray-100 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
+                >
+                  <div className="mt-0.5 text-teal">
                     <CheckCircle2 size={18} />
                   </div>
                   <p className="text-sm leading-relaxed text-gray-600">{q}</p>

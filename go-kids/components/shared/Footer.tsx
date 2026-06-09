@@ -49,7 +49,7 @@ const footerLinks = {
 export default function Footer() {
   return (
     <footer style={{ background: "#1A1A1A" }} className="text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-5">
         {/* Top Row */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
           {/* Brand Column */}
@@ -57,16 +57,32 @@ export default function Footer() {
             <div className="mb-4">
               <BrandLogo height={44} href="/" />
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: "#9CA3AF", maxWidth: 260 }}>
-              India's Future Readiness Platform; helping children discover their strengths and thrive in tomorrow's world.
+            <p
+              className="text-sm leading-relaxed"
+              style={{ color: "#9CA3AF", maxWidth: 260 }}
+            >
+              India&apos;s Future Readiness Platform; helping children discover
+              their strengths and thrive in tomorrow&apos;s world.
             </p>
 
             {/* Social Links */}
             <div className="flex items-center gap-4 mt-6">
               {[
-                { icon: InstagramSvg, label: "Instagram", href: "https://www.instagram.com/gokidsindia" },
-                { icon: FacebookSvg, label: "Facebook", href: "https://www.facebook.com/Gokidszkp" },
-                { icon: LinkedinSvg, label: "LinkedIn", href: "https://www.linkedin.com/in/modipallavi/" },
+                {
+                  icon: InstagramSvg,
+                  label: "Instagram",
+                  href: "https://www.instagram.com/gokidsindia",
+                },
+                {
+                  icon: FacebookSvg,
+                  label: "Facebook",
+                  href: "https://www.facebook.com/Gokidszkp",
+                },
+                {
+                  icon: LinkedinSvg,
+                  label: "LinkedIn",
+                  href: "https://www.linkedin.com/in/modipallavi/",
+                },
               ].map(({ icon: Icon, label, href }) => (
                 <a
                   key={label}
@@ -77,11 +93,13 @@ export default function Footer() {
                   className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200"
                   style={{ background: "#2A2A2A" }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = "#F5C518";
+                    (e.currentTarget as HTMLElement).style.background =
+                      "#F5C518";
                     (e.currentTarget as HTMLElement).style.color = "#1A1A1A";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = "#2A2A2A";
+                    (e.currentTarget as HTMLElement).style.background =
+                      "#2A2A2A";
                     (e.currentTarget as HTMLElement).style.color = "white";
                   }}
                 >
@@ -107,8 +125,14 @@ export default function Footer() {
                       href={link.href}
                       className="text-sm transition-colors duration-200"
                       style={{ color: "#9CA3AF" }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#F5C518"; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#9CA3AF"; }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.color =
+                          "#F5C518";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.color =
+                          "#9CA3AF";
+                      }}
                     >
                       {link.label}
                     </Link>
@@ -121,10 +145,12 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div
-          className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs"
+          className="mt-12 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs"
           style={{ borderTop: "1px solid #2A2A2A", color: "#6B7280" }}
         >
-          <p>© {new Date().getFullYear()} Go Kids India. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Go Kids India. All rights reserved.
+          </p>
           <p>Made with ❤️ in India 🇮🇳</p>
         </div>
       </div>

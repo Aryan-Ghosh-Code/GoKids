@@ -8,6 +8,7 @@ export interface IUser extends Document {
   phone?: string;
   passwordHash: string;
   role: UserRole;
+  provider: "credentials" | "google";
   isEmailVerified: boolean;
   isSuspended: boolean;
   createdAt: Date;
@@ -37,12 +38,18 @@ const UserSchema = new Schema<IUser>(
     },
     passwordHash: {
       type: String,
-      required: [true, "Password is required"],
+      required: false,
+      default: "",
     },
     role: {
       type: String,
       enum: ["parent", "instructor", "mentor", "admin", "superadmin"],
       default: "parent",
+    },
+    provider: {
+      type: String,
+      enum: ["credentials", "google"],
+      default: "credentials",
     },
     isEmailVerified: {
       type: Boolean,

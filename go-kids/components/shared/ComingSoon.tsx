@@ -28,9 +28,15 @@ export function ComingSoonPage({
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
 
-      <main className="flex-1 flex items-center justify-center px-4 py-24" style={{ background: "#FAFAF8" }}>
+      <main
+        className="flex-1 flex items-center justify-center px-4 py-24"
+        style={{ background: "#FAFAF8" }}
+      >
         {/* Background blobs */}
-        <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          aria-hidden="true"
+        >
           <div
             className="animate-float absolute top-16 right-16 w-80 h-80 rounded-full opacity-20"
             style={{ background: accentColor, filter: "blur(64px)" }}
@@ -61,7 +67,11 @@ export function ComingSoonPage({
           <div className="flex justify-center mb-4">
             <span
               className="px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wider"
-              style={{ background: lightColor, color: accentColor, fontFamily: "var(--font-nunito)" }}
+              style={{
+                background: lightColor,
+                color: accentColor,
+                fontFamily: "var(--font-nunito)",
+              }}
             >
               Coming Soon
             </span>
@@ -80,7 +90,10 @@ export function ComingSoonPage({
             {title}
           </h1>
 
-          <p className="text-base leading-relaxed mb-10" style={{ color: "#6B7280" }}>
+          <p
+            className="text-base leading-relaxed mb-10"
+            style={{ color: "#6B7280" }}
+          >
             {description}
           </p>
 
@@ -118,7 +131,7 @@ export function ComingSoonPage({
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <button
                 onClick={() => router.back()}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm border-2 transition-colors hover:bg-[#FAFAF8]"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm border-2 transition-colors hover:bg-brand-offwhite"
                 style={{
                   borderColor: "#E5E7EB",
                   color: "#1A1A1A",
