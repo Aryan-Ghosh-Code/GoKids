@@ -1,5 +1,5 @@
-import { auth } from "@/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 const PROTECTED_ROUTES: Record<string, string[]> = {
   "/parent": ["parent", "admin", "superadmin"],
@@ -20,15 +20,38 @@ const ROLE_REDIRECTS: Record<string, string> = {
 // Pages that logged-in users should be bounced away from
 const AUTH_ONLY_PATHS = ["/login", "/register"];
 
-export default auth(async function middleware(req) {
-  const { pathname } = req.nextUrl;
-  const session = req.auth;
-  const userRole = (session?.user as { role?: string })?.role;
+const SAFE_CALLBACK_PREFIXES = ["/parent", "/instructor", "/mentor", "/admin", "/superadmin"];
 
-  console.log(`Middleware path: ${pathname} | User: ${session?.user?.email || "anonymous"} | Role: ${userRole || "none"}`);
+function isSafeCallbackUrl(url: string): boolean {
+  // Only allow same-site internal paths — never external URLs
+  return (
+    url.startsWith("/") &&
+    !url.startsWith("//") &&
+    SAFE_CALLBACK_PREFIXES.some((prefix) => url.startsWith(prefix))
+  );
+}
+
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+  const secureCookie = process.env.NODE_ENV === "production";
+
+  const token = await getToken({ 
+    req, 
+    secret,
+    secureCookie
+  });
+
+  const userRole = token?.role as string;
+
+  // ── Log only in development — never leak emails to production logs ──
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[Middleware] ${pathname} | User: ${token?.email || "anonymous"} | Role: ${userRole || "none"}`);
+  }
 
   // Redirect logged-in users away from auth pages
-  if (session && AUTH_ONLY_PATHS.includes(pathname)) {
+  if (token && AUTH_ONLY_PATHS.includes(pathname)) {
     const redirect = ROLE_REDIRECTS[userRole || ""] || "/";
     return NextResponse.redirect(new URL(redirect, req.url));
   }
@@ -36,9 +59,12 @@ export default auth(async function middleware(req) {
   // Check protected routes
   for (const [route, allowedRoles] of Object.entries(PROTECTED_ROUTES)) {
     if (pathname.startsWith(route)) {
-      if (!session) {
+      if (!token) {
         const loginUrl = new URL("/login", req.url);
-        loginUrl.searchParams.set("callbackUrl", pathname);
+        // Only set callbackUrl if it is a safe internal path — prevent open redirect injection
+        if (isSafeCallbackUrl(pathname)) {
+          loginUrl.searchParams.set("callbackUrl", pathname);
+        }
         return NextResponse.redirect(loginUrl);
       }
 
@@ -50,7 +76,7 @@ export default auth(async function middleware(req) {
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
