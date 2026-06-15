@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
 
 const PROTECTED_ROUTES: Record<string, string[]> = {
   "/parent": ["parent", "admin", "superadmin"],
@@ -20,38 +20,37 @@ const ROLE_REDIRECTS: Record<string, string> = {
 // Pages that logged-in users should be bounced away from
 const AUTH_ONLY_PATHS = ["/login", "/register"];
 
-export async function middleware(req: NextRequest) {
+export default auth(async function middleware(req) {
   const { pathname } = req.nextUrl;
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const session = req.auth;
+  const userRole = (session?.user as { role?: string })?.role;
 
-  console.log(`Middleware path: ${pathname} | User: ${token?.email || "anonymous"} | Role: ${token?.role || "none"}`);
+  console.log(`Middleware path: ${pathname} | User: ${session?.user?.email || "anonymous"} | Role: ${userRole || "none"}`);
 
   // Redirect logged-in users away from auth pages
-  if (token && AUTH_ONLY_PATHS.includes(pathname)) {
-    const role = token.role as string;
-    const redirect = ROLE_REDIRECTS[role] || "/";
+  if (session && AUTH_ONLY_PATHS.includes(pathname)) {
+    const redirect = ROLE_REDIRECTS[userRole || ""] || "/";
     return NextResponse.redirect(new URL(redirect, req.url));
   }
 
   // Check protected routes
   for (const [route, allowedRoles] of Object.entries(PROTECTED_ROUTES)) {
     if (pathname.startsWith(route)) {
-      if (!token) {
+      if (!session) {
         const loginUrl = new URL("/login", req.url);
         loginUrl.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(loginUrl);
       }
 
-      const role = token.role as string;
-      if (!allowedRoles.includes(role)) {
-        const redirect = ROLE_REDIRECTS[role] || "/";
+      if (!userRole || !allowedRoles.includes(userRole)) {
+        const redirect = ROLE_REDIRECTS[userRole || ""] || "/";
         return NextResponse.redirect(new URL(redirect, req.url));
       }
     }
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [

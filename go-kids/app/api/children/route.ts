@@ -6,7 +6,7 @@ import { Child } from "@/lib/db/models/Child";
 // ─── GET /api/children — list session user's children ─────────────────────────
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
     if (!token?.id) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     }
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 // ─── POST /api/children — create a child profile ──────────────────────────────
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
     if (!token?.id) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     }

@@ -6,7 +6,7 @@ import { User } from "@/lib/db/models/User";
 // ─── GET /api/user/profile ────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
     if (!token?.id) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     }
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 // ─── PATCH /api/user/profile ──────────────────────────────────────────────────
 export async function PATCH(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
     if (!token?.id) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     }
