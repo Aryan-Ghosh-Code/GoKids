@@ -11,6 +11,7 @@ export interface IUser extends Document {
   provider: "credentials" | "google";
   isEmailVerified: boolean;
   isSuspended: boolean;
+  photoUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,6 +59,11 @@ const UserSchema = new Schema<IUser>(
     isSuspended: {
       type: Boolean,
       default: false,
+    },
+    photoUrl: {
+      type: String,
+      trim: true,
+      default: "",
     },
   },
   { timestamps: true }

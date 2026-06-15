@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 import { OtpToken } from "@/lib/db/models/OtpToken";
-import { sendOtpEmail } from "@/lib/auth/mailer";
+import { sendResetPasswordOtpEmail } from "@/lib/auth/mailer";
 
 function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { email } = body;
 
-    // Type checking against NoSQL injection
+    // Strict NoSQL injection type checking
     if (typeof email !== "string") {
       return NextResponse.json(
         { success: false, error: "Invalid data types provided." },
@@ -31,24 +31,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await connectDB();
-
-    const user = await User.findOne({ email: trimmedEmail });
-    if (!user) {
+    // Strict email format validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
       return NextResponse.json(
-        { success: false, error: "User not found." },
-        { status: 404 }
-      );
-    }
-
-    if (user.isEmailVerified) {
-      return NextResponse.json(
-        { success: false, error: "Email is already verified." },
+        { success: false, error: "Please enter a valid email address." },
         { status: 400 }
       );
     }
 
-    // Rate-limit: check if last OTP was sent within 60 seconds
+    await connectDB();
+
+    const user = await User.findOne({ email: trimmedEmail });
+    
+    // To prevent account enumeration, return success even if user is not found
+    if (!user) {
+      return NextResponse.json({
+        success: true,
+        data: { message: "If an account matches this email, a reset password OTP has been sent." },
+      });
+    }
+
+    // Google-only authenticated users shouldn't reset passwords via local flow
+    if (user.provider === "google" && !user.passwordHash) {
+      return NextResponse.json(
+        { success: false, error: "Google accounts must log in via Google OAuth." },
+        { status: 400 }
+      );
+    }
+
+    // Rate-limit check: wait 60 seconds between OTPs
     const recentToken = await OtpToken.findOne({ userId: user._id }).sort({ createdAt: -1 });
     if (recentToken) {
       const secondsSinceLastOtp = (Date.now() - recentToken.createdAt.getTime()) / 1000;
@@ -63,25 +75,28 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Generate new OTP
     const otp = generateOtp();
     const tokenHash = crypto.createHash("sha256").update(otp).digest("hex");
 
+    // Clear any previous OtpTokens for this user
     await OtpToken.deleteMany({ userId: user._id });
+
+    // Store token (expires in 15 mins)
     await OtpToken.create({
       userId: user._id,
       tokenHash,
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
 
-    await sendOtpEmail(user.email, user.name, otp);
+    // Send styled Reset Password OTP email
+    await sendResetPasswordOtpEmail(user.email, user.name, otp);
 
     return NextResponse.json({
       success: true,
-      data: { message: "A new OTP has been sent to your email." },
+      data: { message: "If an account matches this email, a reset password OTP has been sent." },
     });
   } catch (error) {
-    console.error("Resend OTP error:", error);
+    console.error("Forgot password error:", error);
     return NextResponse.json(
       { success: false, error: "Something went wrong. Please try again." },
       { status: 500 }

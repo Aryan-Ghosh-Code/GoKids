@@ -9,7 +9,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { email, otp } = body;
 
-    if (!email || !otp) {
+    // Strict NoSQL injection type checking
+    if (typeof email !== "string" || typeof otp !== "string") {
+      return NextResponse.json(
+        { success: false, error: "Invalid data types provided." },
+        { status: 400 }
+      );
+    }
+
+    const trimmedEmail = email.toLowerCase().trim();
+    const trimmedOtp = otp.trim();
+
+    if (!trimmedEmail || !trimmedOtp) {
       return NextResponse.json(
         { success: false, error: "Email and OTP are required." },
         { status: 400 }
@@ -18,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: trimmedEmail });
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found." },
@@ -51,7 +62,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const providedHash = crypto.createHash("sha256").update(otp).digest("hex");
+    const providedHash = crypto.createHash("sha256").update(trimmedOtp).digest("hex");
     if (providedHash !== tokenRecord.tokenHash) {
       return NextResponse.json(
         { success: false, error: "Invalid OTP. Please try again." },

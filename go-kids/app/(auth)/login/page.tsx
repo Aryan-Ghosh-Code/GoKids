@@ -32,7 +32,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justVerified = searchParams.get("verified") === "true";
-  const callbackUrl = searchParams.get("callbackUrl") || "/parent/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -42,7 +42,7 @@ function LoginForm() {
   // Kept for backward compatibility (GoogleButton handles the click).
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
-    await signIn("google", { callbackUrl });
+    await signIn("google", { callbackUrl: "/" });
   };
 
   const {

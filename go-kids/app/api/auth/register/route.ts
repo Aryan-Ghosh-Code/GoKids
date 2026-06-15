@@ -15,25 +15,87 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { name, email, phone, password } = body;
 
-    // Basic validation
-    if (!name || !email || !password) {
+    // Strict NoSQL injection and parameter type checks
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      typeof password !== "string" ||
+      (phone !== undefined && phone !== null && typeof phone !== "string")
+    ) {
+      return NextResponse.json(
+        { success: false, error: "Invalid data types provided." },
+        { status: 400 }
+      );
+    }
+
+    const trimmedName = name.trim();
+    const trimmedEmail = email.toLowerCase().trim();
+    const trimmedPhone = phone?.trim();
+
+    // Basic required field validations
+    if (!trimmedName || !trimmedEmail || !password) {
       return NextResponse.json(
         { success: false, error: "Name, email, and password are required." },
         { status: 400 }
       );
     }
 
-    if (password.length < 8) {
+    // Strict email format validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
       return NextResponse.json(
-        { success: false, error: "Password must be at least 8 characters." },
+        { success: false, error: "Please enter a valid email address." },
         { status: 400 }
       );
+    }
+
+    // Strong password checks
+    if (password.length < 8) {
+      return NextResponse.json(
+        { success: false, error: "Password must be at least 8 characters long." },
+        { status: 400 }
+      );
+    }
+    if (!/[A-Z]/.test(password)) {
+      return NextResponse.json(
+        { success: false, error: "Password must contain at least one uppercase letter." },
+        { status: 400 }
+      );
+    }
+    if (!/[a-z]/.test(password)) {
+      return NextResponse.json(
+        { success: false, error: "Password must contain at least one lowercase letter." },
+        { status: 400 }
+      );
+    }
+    if (!/[0-9]/.test(password)) {
+      return NextResponse.json(
+        { success: false, error: "Password must contain at least one number." },
+        { status: 400 }
+      );
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return NextResponse.json(
+        { success: false, error: "Password must contain at least one special character." },
+        { status: 400 }
+      );
+    }
+
+    // Indian phone verification if provided
+    if (trimmedPhone) {
+      const phoneRegex = /^[6-9]\d{9}$/;
+      if (!phoneRegex.test(trimmedPhone)) {
+        return NextResponse.json(
+          { success: false, error: "Please enter a valid 10-digit Indian mobile number." },
+          { status: 400 }
+        );
+      }
     }
 
     await connectDB();
 
     // Check if user already exists
-    const existing = await User.findOne({ email: email.toLowerCase() });
+    const existing = await User.findOne({ email: trimmedEmail });
     if (existing) {
       return NextResponse.json(
         { success: false, error: "An account with this email already exists." },
@@ -46,9 +108,9 @@ export async function POST(req: NextRequest) {
 
     // Create user
     const user = await User.create({
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      phone: phone?.trim(),
+      name: trimmedName,
+      email: trimmedEmail,
+      phone: trimmedPhone || undefined,
       passwordHash,
       role: "parent",
       isEmailVerified: false,

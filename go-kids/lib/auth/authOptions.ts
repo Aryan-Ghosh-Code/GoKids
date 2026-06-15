@@ -9,10 +9,8 @@ export const authOptions: NextAuthConfig = {
   providers: [
     // ── Google OAuth ─────────────────────────────────────────────
     Google({
-      // clientId: process.env.GOOGLE_CLIENT_ID,
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "dummy_google_client_id",
-      // clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "dummy_google_client_secret",
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
 
     // ── Email/Password ───────────────────────────────────────────
@@ -97,8 +95,8 @@ export const authOptions: NextAuthConfig = {
         token.role = (user as { role?: string }).role;
       }
 
-      // For Google sign-in, fetch role from DB (not on the OAuth user object)
-      if (account?.provider === "google" && token.email) {
+      // Fetch role + id from DB if not already present in the token (handles Google sign-in and older active sessions)
+      if ((!token.role || !token.id) && token.email) {
         try {
           await connectDB();
           const dbUser = await User.findOne({
@@ -108,8 +106,8 @@ export const authOptions: NextAuthConfig = {
             token.id = dbUser._id.toString();
             token.role = dbUser.role;
           }
-        } catch {
-          // Non-fatal: token will still work, just without role
+        } catch (err) {
+          console.error("Failed to fetch user role/id for token:", err);
         }
       }
 
@@ -136,6 +134,5 @@ export const authOptions: NextAuthConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
-  // secret: process.env.NEXTAUTH_SECRET,
-  secret: "dummy_nextauth_secret_for_local_and_build",
+  secret: process.env.NEXTAUTH_SECRET,
 };

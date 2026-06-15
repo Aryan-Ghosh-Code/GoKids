@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
 
-// const MONGODB_URI = process.env.MONGODB_URI!;
-const MONGODB_URI = "mongodb://localhost:27017/gokids";
+const MONGODB_URI = process.env.MONGODB_URI!;
 
-// if (!MONGODB_URI) {
-//   throw new Error("Please define the MONGODB_URI environment variable in .env.local");
-// }
+if (!MONGODB_URI) {
+  throw new Error("Please define the MONGODB_URI environment variable in .env");
+}
 
 // Cached connection for Next.js hot-reload safety
 interface MongooseCache {
@@ -14,7 +13,6 @@ interface MongooseCache {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var mongooseCache: MongooseCache | undefined;
 }
 
