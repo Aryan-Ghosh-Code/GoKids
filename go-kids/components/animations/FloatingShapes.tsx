@@ -28,7 +28,7 @@ export default function FloatingShapes() {
         }}
       />
       {/* Teal blob - bottom left */}
-      <div
+      {/* <div
         className="animate-float-delayed"
         style={{
           position: "absolute",
@@ -41,7 +41,7 @@ export default function FloatingShapes() {
           filter: "blur(36px)",
           animationDelay: "1.5s",
         }}
-      />
+      /> */}
       {/* Coral blob - top left */}
       <div
         className="animate-float-slow"

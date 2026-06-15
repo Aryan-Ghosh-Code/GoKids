@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import BrandLogo from "@/components/shared/BrandLogo";
 
@@ -81,7 +83,7 @@ export default function Footer() {
                 {
                   icon: LinkedinSvg,
                   label: "LinkedIn",
-                  href: "https://www.linkedin.com/in/modipallavi/",
+                  href: "https://www.linkedin.com/company/gokidsindia/",
                 },
               ].map(({ icon: Icon, label, href }) => (
                 <a
