@@ -1841,115 +1841,150 @@ export default function HomePage() {
             }}
           >
             <div className="p-7 sm:p-10 bg-white">
-              <h3
-                className="text-xl font-bold mb-3"
-                style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
-              >
-                Contact Details
-              </h3>
-              <p className="text-sm mb-6" style={{ color: "#6B7280" }}>
-                Prefer a direct conversation? Call or email us anytime.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div
-                  className="rounded-2xl p-5"
-                  style={{
-                    border: "1px solid #F3F4F6",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ background: "#FFF3CC", color: "#92650A" }}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Details Column */}
+                <div className="lg:col-span-5 flex flex-col justify-between gap-6">
+                  <div>
+                    <h3
+                      className="text-xl font-bold mb-3"
+                      style={{
+                        color: "#1A1A1A",
+                        fontFamily: "var(--font-nunito)",
+                      }}
                     >
-                      <Phone size={18} />
+                      Contact Details
+                    </h3>
+                    <p className="text-sm mb-6" style={{ color: "#6B7280" }}>
+                      Prefer a direct conversation? Call or email us anytime. We
+                      are happy to guide you!
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div
+                      className="rounded-2xl p-5"
+                      style={{
+                        border: "1px solid #F3F4F6",
+                        boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                          style={{ background: "#FFF3CC", color: "#92650A" }}
+                        >
+                          <Phone size={18} />
+                        </div>
+                        <div>
+                          <p
+                            className="text-sm font-bold mb-1"
+                            style={{
+                              color: "#1A1A1A",
+                              fontFamily: "var(--font-nunito)",
+                            }}
+                          >
+                            Call Us
+                          </p>
+                          <a
+                            href="tel:+919876524155"
+                            className="text-sm font-semibold hover:underline"
+                            style={{ color: "#374151" }}
+                          >
+                            +91-9876524155
+                          </a>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p
-                        className="text-sm font-bold mb-1"
-                        style={{
-                          color: "#1A1A1A",
-                          fontFamily: "var(--font-nunito)",
-                        }}
-                      >
-                        Call Us
-                      </p>
-                      <a
-                        href="tel:+919876524155"
-                        className="text-sm font-semibold hover:underline"
-                        style={{ color: "#374151" }}
-                      >
-                        +91-9876524155
-                      </a>
+
+                    <div
+                      className="rounded-2xl p-5"
+                      style={{
+                        border: "1px solid #F3F4F6",
+                        boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                          style={{ background: "#E8F8F7", color: "#2BBCB0" }}
+                        >
+                          <Mail size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <p
+                            className="text-sm font-bold mb-1"
+                            style={{
+                              color: "#1A1A1A",
+                              fontFamily: "var(--font-nunito)",
+                            }}
+                          >
+                            Email
+                          </p>
+                          <a
+                            href="mailto:pallavimodi@gmail.com"
+                            className="text-sm font-semibold hover:underline break-all"
+                            style={{ color: "#374151" }}
+                          >
+                            pallavimodi@gmail.com
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      className="rounded-2xl p-5"
+                      style={{
+                        border: "1px solid #F3F4F6",
+                        boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                          style={{ background: "#E8F6FE", color: "#4FC3F7" }}
+                        >
+                          <MapPin size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <p
+                            className="text-sm font-bold mb-1"
+                            style={{
+                              color: "#1A1A1A",
+                              fontFamily: "var(--font-nunito)",
+                            }}
+                          >
+                            Location
+                          </p>
+                          <p className="text-sm" style={{ color: "#374151" }}>
+                            SCO-2, Behind Gopals, Patiala Road, Zirakpur
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div
-                  className="rounded-2xl p-5"
-                  style={{
-                    border: "1px solid #F3F4F6",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ background: "#E8F8F7", color: "#2BBCB0" }}
+                {/* Map Column */}
+                <div className="lg:col-span-7 min-h-95 lg:min-h-full rounded-2xl overflow-hidden border-2 border-brand-grey relative group transition-all duration-300 hover:border-primary hover:shadow-xl hover:shadow-primary/5">
+                  <iframe
+                    title="Go Kids India Location Map"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3432.770587829187!2d76.80062797619098!3d30.640422390087096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390feb5784af9b3b%3A0x9b2515a0225d9ed6!2sGo%20Kids!5e0!3m2!1sen!2sin!4v1781506397447!5m2!1sen!2sin"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen={true}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                  {/* Premium overlay badge */}
+                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-2 pointer-events-none transition-all duration-300 group-hover:scale-105 z-10">
+                    <span className="w-2 h-2 rounded-full bg-teal animate-pulse" />
+                    <span
+                      className="text-[10px] font-extrabold text-brand-black tracking-wider uppercase"
+                      style={{ fontFamily: "var(--font-nunito)" }}
                     >
-                      <Mail size={18} />
-                    </div>
-                    <div className="min-w-0">
-                      <p
-                        className="text-sm font-bold mb-1"
-                        style={{
-                          color: "#1A1A1A",
-                          fontFamily: "var(--font-nunito)",
-                        }}
-                      >
-                        Email
-                      </p>
-                      <a
-                        href="mailto:pallavimodi@gmail.com"
-                        className="text-sm font-semibold hover:underline break-all"
-                        style={{ color: "#374151" }}
-                      >
-                        pallavimodi@gmail.com
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  className="rounded-2xl p-5"
-                  style={{
-                    border: "1px solid #F3F4F6",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ background: "#E8F6FE", color: "#4FC3F7" }}
-                    >
-                      <MapPin size={18} />
-                    </div>
-                    <div className="min-w-0">
-                      <p
-                        className="text-sm font-bold mb-1"
-                        style={{
-                          color: "#1A1A1A",
-                          fontFamily: "var(--font-nunito)",
-                        }}
-                      >
-                        Location
-                      </p>
-                      <p className="text-sm" style={{ color: "#374151" }}>
-                        SCO-2, Behind Gopals, Patiala Road, Zirakpur
-                      </p>
-                    </div>
+                      Go Kids Center
+                    </span>
                   </div>
                 </div>
               </div>
