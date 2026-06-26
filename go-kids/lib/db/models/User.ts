@@ -12,6 +12,7 @@ export interface IUser extends Document {
   isEmailVerified: boolean;
   isSuspended: boolean;
   photoUrl?: string;
+  passwordChangedAt?: Date; // set on every password change — used to invalidate old JWTs
   createdAt: Date;
   updatedAt: Date;
 }
@@ -64,6 +65,10 @@ const UserSchema = new Schema<IUser>(
       type: String,
       trim: true,
       default: "",
+    },
+    passwordChangedAt: {
+      type: Date,
+      required: false,
     },
   },
   { timestamps: true }

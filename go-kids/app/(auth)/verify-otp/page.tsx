@@ -374,6 +374,17 @@ function VerifyOtpForm() {
               </div>
             </>
           )}
+
+          {/* Back to Home Option */}
+          <div className="mt-5 pt-4 border-t border-brand-grey text-center">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-grey-text hover:text-brand-black transition-colors"
+              style={{ fontFamily: "var(--font-nunito)" }}
+            >
+              <span>←</span> Back to Home
+            </Link>
+          </div>
         </div>
       </motion.div>
     </div>

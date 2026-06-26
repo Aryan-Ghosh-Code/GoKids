@@ -89,22 +89,45 @@ export const authOptions: NextAuthConfig = {
     },
 
     // ── JWT: attach role + id to token ───────────────────────────
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
       if (user) {
         token.id = user.id;
         token.role = (user as { role?: string }).role;
+        // Record when this token was issued so we can invalidate it after a
+        // password reset (iat is set by the JWT library but we mirror it here
+        // as an explicit numeric second timestamp for our own checks).
+        token.issuedAt = Math.floor(Date.now() / 1000);
       }
 
-      // Fetch role + id from DB if not already present in the token (handles Google sign-in and older active sessions)
-      if ((!token.role || !token.id) && token.email) {
+      // Fetch role + id from DB if not already present in the token (handles
+      // Google sign-in and older active sessions).
+      // Also validate passwordChangedAt — if the user reset their password
+      // after this JWT was issued, kill the session.
+      if (token.email) {
         try {
           await connectDB();
-          const dbUser = await User.findOne({
-            email: (token.email as string).toLowerCase(),
-          });
+          const dbUser = await User.findOne(
+            { email: (token.email as string).toLowerCase() },
+            "role _id passwordChangedAt"
+          );
           if (dbUser) {
-            token.id = dbUser._id.toString();
-            token.role = dbUser.role;
+            // Backfill role/id if missing (first sign-in or legacy token)
+            if (!token.role || !token.id) {
+              token.id = dbUser._id.toString();
+              token.role = dbUser.role;
+            }
+
+            // Invalidate token if password was changed after it was issued
+            if (dbUser.passwordChangedAt) {
+              const changedAtSeconds = Math.floor(
+                dbUser.passwordChangedAt.getTime() / 1000
+              );
+              const issuedAt = (token.issuedAt as number) ?? (token.iat as number) ?? 0;
+              if (issuedAt < changedAtSeconds) {
+                // Return null to signal NextAuth to clear the session
+                return null as unknown as typeof token;
+              }
+            }
           }
         } catch (err) {
           console.error("Failed to fetch user role/id for token:", err);

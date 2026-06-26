@@ -2,19 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
-import { OtpToken } from "@/lib/db/models/OtpToken";
-import { sendResetPasswordOtpEmail } from "@/lib/auth/mailer";
+import { PasswordResetToken } from "@/lib/db/models/PasswordResetToken";
+import {
+  sendPasswordResetLinkEmail,
+  sendGoogleAccountEmail,
+} from "@/lib/auth/mailer";
 
-function generateOtp(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
+// Generic response — always returned to the client regardless of outcome
+// to prevent email enumeration attacks.
+const GENERIC_OK = {
+  success: true,
+  data: {
+    message:
+      "If an account with that email exists, we've sent reset instructions.",
+  },
+};
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { email } = body;
 
-    // Strict NoSQL injection type checking
+    // Strict type check — prevents NoSQL injection via object payloads
     if (typeof email !== "string") {
       return NextResponse.json(
         { success: false, error: "Invalid data types provided." },
@@ -43,58 +52,67 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const user = await User.findOne({ email: trimmedEmail });
-    
-    // To prevent account enumeration, return success even if user is not found
+
+    // ── Case 1: User not found — do nothing, return generic response ──────────
     if (!user) {
-      return NextResponse.json({
-        success: true,
-        data: { message: "If an account matches this email, a reset password OTP has been sent." },
-      });
+      return NextResponse.json(GENERIC_OK);
     }
 
-    // Google-only authenticated users shouldn't reset passwords via local flow
+    // ── Case 2: Google-only account — no password to reset ────────────────────
     if (user.provider === "google" && !user.passwordHash) {
-      return NextResponse.json(
-        { success: false, error: "Google accounts must log in via Google OAuth." },
-        { status: 400 }
+      // Fire-and-forget — we don't await so response time doesn't leak account
+      // existence, and we don't want email failure to surface an error.
+      sendGoogleAccountEmail(user.email, user.name).catch((err) =>
+        console.error("Google account email failed:", err)
       );
+      return NextResponse.json(GENERIC_OK);
     }
 
-    // Rate-limit check: wait 60 seconds between OTPs
-    const recentToken = await OtpToken.findOne({ userId: user._id }).sort({ createdAt: -1 });
+    // ── Case 3: Local account — generate cryptographic reset token ────────────
+
+    // Rate-limit: one token request per 60 seconds per user.
+    // We check silently and return the generic response regardless, so an
+    // attacker cannot infer account existence from different response codes.
+    const recentToken = await PasswordResetToken.findOne({
+      userId: user._id,
+    }).sort({ createdAt: -1 });
+
     if (recentToken) {
-      const secondsSinceLastOtp = (Date.now() - recentToken.createdAt.getTime()) / 1000;
-      if (secondsSinceLastOtp < 60) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: `Please wait ${Math.ceil(60 - secondsSinceLastOtp)} seconds before requesting a new OTP.`,
-          },
-          { status: 429 }
-        );
+      const secondsSinceLast =
+        (Date.now() - recentToken.createdAt.getTime()) / 1000;
+      if (secondsSinceLast < 60) {
+        // Silently return generic success — no 429 (prevents enumeration)
+        return NextResponse.json(GENERIC_OK);
       }
     }
 
-    const otp = generateOtp();
-    const tokenHash = crypto.createHash("sha256").update(otp).digest("hex");
+    // Generate a cryptographically random 32-byte token
+    const rawToken = crypto.randomBytes(32).toString("hex"); // 64 hex chars
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
 
-    // Clear any previous OtpTokens for this user
-    await OtpToken.deleteMany({ userId: user._id });
+    // Invalidate any existing reset tokens for this user (single active token)
+    await PasswordResetToken.deleteMany({ userId: user._id });
 
-    // Store token (expires in 15 mins)
-    await OtpToken.create({
+    // Store only the hash — never the raw token
+    await PasswordResetToken.create({
       userId: user._id,
       tokenHash,
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
     });
 
-    // Send styled Reset Password OTP email
-    await sendResetPasswordOtpEmail(user.email, user.name, otp);
+    // Build the reset link with the raw token in the query string
+    const baseUrl = process.env.NEXTAUTH_URL;
+    const resetLink = `${baseUrl}/reset-password?token=${rawToken}`;
 
-    return NextResponse.json({
-      success: true,
-      data: { message: "If an account matches this email, a reset password OTP has been sent." },
-    });
+    // Send the reset email (fire-and-forget to keep response time constant)
+    sendPasswordResetLinkEmail(user.email, user.name, resetLink).catch((err) =>
+      console.error("Reset password email failed:", err)
+    );
+
+    return NextResponse.json(GENERIC_OK);
   } catch (error) {
     console.error("Forgot password error:", error);
     return NextResponse.json(
