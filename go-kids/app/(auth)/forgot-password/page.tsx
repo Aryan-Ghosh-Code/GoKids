@@ -8,7 +8,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, ArrowRight, Loader2, ArrowLeft, KeyRound } from "lucide-react";
-import BrandLogo from "@/components/shared/BrandLogo";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -54,11 +53,14 @@ export default function ForgotPasswordPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-12"
+      className="min-h-[calc(100vh-12rem)] flex items-center justify-center px-4 py-16"
       style={{ background: "#FAFAF8" }}
     >
       {/* Floating Blobs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div
+        className="fixed inset-0 pointer-events-none overflow-hidden"
+        aria-hidden="true"
+      >
         <div
           className="animate-float absolute top-24 right-20 w-60 h-60 rounded-full opacity-20"
           style={{ background: "#F5C518", filter: "blur(48px)" }}
@@ -95,11 +97,8 @@ export default function ForgotPasswordPage() {
           </div>
 
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <BrandLogo height={48} />
-            </div>
             <div className="flex justify-center mb-2">
-              <div className="p-3 bg-[#FEF0EB] text-[#F4845F] rounded-2xl">
+              <div className="p-3 bg-[#FEF0EB] text-coral rounded-2xl">
                 <KeyRound size={24} />
               </div>
             </div>
@@ -110,7 +109,8 @@ export default function ForgotPasswordPage() {
               Forgot Password?
             </h1>
             <p className="text-sm mt-1" style={{ color: "#6B7280" }}>
-              Enter your email and we'll send you an OTP to reset your password.
+              Enter your email and we&apos;ll send you an OTP to reset your
+              password.
             </p>
           </div>
 
@@ -133,7 +133,11 @@ export default function ForgotPasswordPage() {
             )}
           </AnimatePresence>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-5"
+            noValidate
+          >
             {/* Email */}
             <div>
               <label

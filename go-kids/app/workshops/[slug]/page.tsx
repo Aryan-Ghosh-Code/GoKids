@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAllSlugs, getWorkshopBySlug } from "@/lib/data/workshops";
+import { getWorkshopBySlug } from "@/lib/data/workshops";
 import WorkshopDetailClient from "@/components/workshops/WorkshopDetailClient";
 
-// Pre-render all 5 workshop slugs at build time.
-// TODO: Replace with DB query when MongoDB is ready:
-//   const workshops = await WorkshopModel.find({}, "slug").lean();
-//   return workshops.map((w) => ({ slug: w.slug }));
-export function generateStaticParams() {
-  return getAllSlugs().map((slug) => ({ slug }));
-}
+// Dynamic rendering — page is generated on-demand, not at build time.
+// This means new workshops added to MongoDB are immediately available.
+export const dynamic = "force-dynamic";
 
 // Per-workshop SEO metadata
 export async function generateMetadata({
@@ -18,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const workshop = getWorkshopBySlug(slug);
+  const workshop = await getWorkshopBySlug(slug);
   if (!workshop) return { title: "Workshop Not Found — Go Kids India" };
 
   return {
@@ -38,7 +34,7 @@ export default async function WorkshopDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const workshop = getWorkshopBySlug(slug);
+  const workshop = await getWorkshopBySlug(slug);
   if (!workshop) notFound();
 
   return <WorkshopDetailClient workshop={workshop} />;

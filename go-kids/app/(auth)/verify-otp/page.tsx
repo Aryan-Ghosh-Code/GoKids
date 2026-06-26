@@ -20,17 +20,14 @@ function VerifyOtpForm() {
   const [success, setSuccess] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(60);
-  const [canResend, setCanResend] = useState(false);
+  const canResend = resendCountdown <= 0;
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const redirectTimeoutRef = useRef<number | null>(null);
 
   // Countdown timer
   useEffect(() => {
-    if (resendCountdown <= 0) {
-      setCanResend(true);
-      return;
-    }
+    if (resendCountdown <= 0) return;
     const timer = setTimeout(() => setResendCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [resendCountdown]);
@@ -147,7 +144,6 @@ function VerifyOtpForm() {
         setError(result.error || "Failed to resend OTP.");
         return;
       }
-      setCanResend(false);
       setResendCountdown(60);
       setOtp(Array(OTP_LENGTH).fill(""));
       focusInput(0);
@@ -160,7 +156,7 @@ function VerifyOtpForm() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-12"
+      className="min-h-[calc(100vh-12rem)] flex items-center justify-center px-4 py-16"
       style={{ background: "#FAFAF8" }}
     >
       {/* Background shapes */}
@@ -201,10 +197,6 @@ function VerifyOtpForm() {
           </Link>
 
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <BrandLogo height={48} />
-            </div>
-
             <AnimatePresence mode="wait">
               {success ? (
                 <motion.div
@@ -348,7 +340,7 @@ function VerifyOtpForm() {
               {/* Resend */}
               <div className="text-center">
                 <p className="text-sm mb-2" style={{ color: "#6B7280" }}>
-                  Didn't receive a code?
+                  Didn&apos;t receive a code?
                 </p>
                 {canResend ? (
                   <button

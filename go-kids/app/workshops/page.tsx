@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { getWorkshops } from "@/lib/data/workshops";
 import WorkshopsClient from "@/components/workshops/WorkshopsClient";
 
 export const metadata: Metadata = {
@@ -128,13 +129,15 @@ function StatsBar() {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function WorkshopsPage() {
+export default async function WorkshopsPage() {
+  const workshops = await getWorkshops();
+
   return (
     <main style={{ background: "#FAFAFA", minHeight: "100vh" }}>
       <WorkshopsHero />
       <StatsBar />
       <div id="workshops-grid" className="pt-8">
-        <WorkshopsClient />
+        <WorkshopsClient workshops={workshops} />
       </div>
     </main>
   );

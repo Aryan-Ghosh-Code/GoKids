@@ -13,7 +13,7 @@ export default function FloatingShapes() {
       }}
     >
       {/* Large yellow circle - top right */}
-      <div
+      {/* <div
         className="animate-float"
         style={{
           position: "absolute",
@@ -26,7 +26,7 @@ export default function FloatingShapes() {
           filter: "blur(40px)",
           animationDelay: "0s",
         }}
-      />
+      /> */}
       {/* Teal blob - bottom left */}
       {/* <div
         className="animate-float-delayed"
@@ -58,7 +58,7 @@ export default function FloatingShapes() {
         }}
       />
       {/* Small yellow dot - mid right */}
-      <div
+      {/* <div
         className="animate-float"
         style={{
           position: "absolute",
@@ -71,7 +71,7 @@ export default function FloatingShapes() {
           filter: "blur(20px)",
           animationDelay: "2s",
         }}
-      />
+      /> */}
     </div>
   );
 }

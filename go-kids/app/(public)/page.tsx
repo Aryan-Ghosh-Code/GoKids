@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { motion, useInView } from "framer-motion";
 import { useState, useEffect, useCallback, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
@@ -432,6 +433,8 @@ function TestimonialsCarousel() {
 
 // ─── Main Page ─────────────────────────────────────────────────────
 export default function HomePage() {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated" && !!session;
   const [journeyMode, setJourneyMode] = useState<"full" | "anywhere">("full");
   const [activeJourneyStep, setActiveJourneyStep] = useState(steps[0].id);
   const [animatedStats, setAnimatedStats] = useState(trustStats.map(() => 0));
@@ -477,23 +480,30 @@ export default function HomePage() {
 
       {/* ── 1. HERO ─────────────────────────────────────────────── */}
       <section
-        className="relative min-h-screen flex items-center pt-16"
-        style={{ background: "#FAFAF8", overflow: "hidden" }}
+        className="relative min-h-screen flex items-center pt-16 overflow-hidden"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 60% -10%, rgba(245,197,24,0.13) 0%, transparent 60%), " +
+            "radial-gradient(ellipse 60% 50% at -5% 80%, rgba(43,188,176,0.10) 0%, transparent 55%), " +
+            "radial-gradient(ellipse 50% 40% at 105% 50%, rgba(244,132,95,0.08) 0%, transparent 50%), " +
+            "#FAFAF8",
+        }}
       >
         <FloatingShapes />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Text Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* ── LEFT: Text Content ── */}
             <div>
-              {/* Badge */}
+              {/* Badge row */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+                className="flex flex-wrap items-center gap-2 mb-6"
               >
                 <span
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold mb-6"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold"
                   style={{
                     background: "#FFF3CC",
                     color: "#92650A",
@@ -503,11 +513,28 @@ export default function HomePage() {
                 >
                   🌟 India&apos;s #1 Child Development Platform
                 </span>
+                {/* Quick-scan trust pills */}
+                {["Free to Start", "Science-Backed", "India-First"].map(
+                  (pill) => (
+                    <span
+                      key={pill}
+                      className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold"
+                      style={{
+                        background: "#F3F4F6",
+                        color: "#6B7280",
+                        fontFamily: "var(--font-nunito)",
+                        border: "1px solid #E5E7EB",
+                      }}
+                    >
+                      {pill}
+                    </span>
+                  ),
+                )}
               </motion.div>
 
-              {/* Headline */}
+              {/* Headline — shorter, one punchy highlighted word */}
               <motion.h1
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   duration: 0.6,
@@ -517,136 +544,314 @@ export default function HomePage() {
                 style={{
                   fontFamily: "var(--font-nunito)",
                   fontWeight: 800,
-                  fontSize: "clamp(36px, 5vw, 58px)",
-                  lineHeight: 1.12,
+                  fontSize: "clamp(38px, 5vw, 62px)",
+                  lineHeight: 1.08,
                   color: "#1A1A1A",
                   marginBottom: 20,
+                  letterSpacing: "-0.02em",
                 }}
               >
                 Every child is{" "}
-                <span style={{ color: "#F5C518" }}>Capable of More</span>, we
-                help them find out how!
+                <span
+                  style={{
+                    color: "#F5C518",
+                    display: "inline-block",
+                    position: "relative",
+                  }}
+                >
+                  capable of more.
+                  {/* Underline squiggle */}
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 220 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{
+                      position: "absolute",
+                      bottom: -6,
+                      left: 0,
+                      width: "100%",
+                      height: 8,
+                    }}
+                  >
+                    <path
+                      d="M2 8 C 40 2, 80 11, 120 5 S 180 2, 218 8"
+                      stroke="#F5C518"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      fill="none"
+                      opacity="0.7"
+                    />
+                  </svg>
+                </span>
+                <br />
+                We help them{" "}
+                <span style={{ color: "#2BBCB0" }}>find out how!!</span>
               </motion.h1>
 
               {/* Subheadline */}
               <motion.p
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.22, ease: "easeOut" }}
-                className="text-base sm:text-lg leading-relaxed mb-8"
-                style={{ color: "#6B7280", maxWidth: 480 }}
+                transition={{ duration: 0.55, delay: 0.22, ease: "easeOut" }}
+                className="text-base sm:text-lg leading-relaxed mb-8 text-justify"
+                style={{ color: "#6B7280", maxWidth: 460 }}
               >
                 Go Kids helps Indian parents discover, develop, and track their
-                child&apos;s full potential — beyond marks, beyond grades,
-                beyond limits.
+                child&apos;s full potential, beyond marks, beyond grades, beyond
+                limits.
               </motion.p>
 
               {/* CTA Buttons */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.34, ease: "easeOut" }}
-                className="flex flex-wrap gap-4 mb-8"
+                className="flex flex-row gap-2 sm:gap-3 mb-6 w-full sm:w-auto"
               >
                 <motion.div
+                  className="flex-1 sm:flex-initial"
                   whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.97 }}
                 >
                   <Link
-                    href="/register"
-                    className="btn-primary text-base px-7 py-3.5 animate-shimmer flex items-center justify-center gap-2"
+                    href={isLoggedIn ? "/assessments" : "/register"}
+                    className="btn-primary text-xs sm:text-base px-3! sm:px-7! py-2.5! sm:py-3.5! animate-shimmer flex items-center justify-center gap-1.5 sm:gap-2 w-full"
                   >
-                    <ClipboardList size={20} />
-                    Start Free Assessment
+                    <ClipboardList size={16} />
+                    <span>
+                      <span className="hidden sm:inline">Start </span>Free Assessment
+                    </span>
                   </Link>
                 </motion.div>
+
                 <motion.div
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="flex-1 sm:flex-initial"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
                 >
                   <Link
                     href="/workshops"
-                    className="btn-outline text-base px-7 py-3.5 flex items-center justify-center gap-2"
+                    className="inline-flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-base font-bold px-3 sm:px-7 py-2.5 sm:py-3.5 rounded-full transition-all w-full text-center"
+                    style={{
+                      background: "white",
+                      color: "#1A1A1A",
+                      border:
+                        "1.5px solid #D1D5DB" /* softer than black — doesn't compete */,
+                      fontFamily: "var(--font-nunito)",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "#F5C518";
+                      (e.currentTarget as HTMLElement).style.background =
+                        "#FFFBEA";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "#D1D5DB";
+                      (e.currentTarget as HTMLElement).style.background =
+                        "white";
+                    }}
                   >
-                    Explore All Programs <ArrowRight size={20} />
+                    <span>Explore Programs</span> <ArrowRight size={16} />
                   </Link>
                 </motion.div>
               </motion.div>
 
-              {/* Trust Stats */}
+              {/* Social proof avatars + line */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex flex-wrap items-center gap-2 text-sm"
-                style={{ color: "#6B7280" }}
+                transition={{ duration: 0.5, delay: 0.44 }}
+                className="flex items-center gap-3 mb-8"
               >
-                {[
-                  "12,000+ Kids Assessed",
-                  "98% Parent Satisfaction",
-                  "50+ Workshops",
-                ].map((stat, i) => (
-                  <span key={stat} className="flex items-center gap-2">
-                    {i > 0 && (
-                      <span
-                        className="w-1 h-1 rounded-full inline-block"
-                        style={{ background: "#D1D5DB" }}
-                      />
-                    )}
-                    <span
-                      className="font-semibold"
+                {/* Stacked avatars */}
+                <div className="flex -space-x-2">
+                  {["SR", "PM", "AK", "RV"].map((initials, i) => (
+                    <div
+                      key={initials}
+                      className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white"
                       style={{
-                        color: "#1A1A1A",
+                        background: [
+                          "#2BBCB0",
+                          "#F5C518",
+                          "#F4845F",
+                          "#4FC3F7",
+                        ][i],
+                        color: i === 1 ? "#1A1A1A" : "white",
                         fontFamily: "var(--font-nunito)",
+                        zIndex: 4 - i,
                       }}
                     >
-                      {stat}
-                    </span>
-                  </span>
+                      {initials}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm" style={{ color: "#6B7280" }}>
+                  <span
+                    className="font-bold"
+                    style={{
+                      color: "#1A1A1A",
+                      fontFamily: "var(--font-nunito)",
+                    }}
+                  >
+                    500+ families
+                  </span>{" "}
+                  building future-ready kids
+                </p>
+              </motion.div>
+
+              {/* Stat mini-cards — replaces the plain text row */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.54 }}
+                className="grid grid-cols-3 gap-3 max-w-sm"
+              >
+                {[
+                  {
+                    value: "12,000+",
+                    label: "Kids Assessed",
+                    color: "#F5C518",
+                    bg: "#FFF8DC",
+                  },
+                  {
+                    value: "98%",
+                    label: "Parent Satisfaction",
+                    color: "#2BBCB0",
+                    bg: "#E8F8F7",
+                  },
+                  {
+                    value: "50+",
+                    label: "Live Workshops",
+                    color: "#F4845F",
+                    bg: "#FFF0EB",
+                  },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="rounded-2xl p-3 text-center"
+                    style={{
+                      background: s.bg,
+                      border: `1px solid ${s.color}44`,
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: "var(--font-nunito)",
+                        fontWeight: 800,
+                        fontSize: "clamp(18px, 2.5vw, 22px)",
+                        color: s.color,
+                        lineHeight: 1,
+                        marginBottom: 3,
+                      }}
+                    >
+                      {s.value}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: 10,
+                        color: "#6B7280",
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {s.label}
+                    </p>
+                  </div>
                 ))}
               </motion.div>
             </div>
 
-            {/* Hero Image */}
+            {/* ── RIGHT: Hero Image with framing ── */}
             <motion.div
-              initial={{ opacity: 0, x: 40, scale: 0.97 }}
+              initial={{ opacity: 0, x: 36, scale: 0.97 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               transition={{
                 duration: 0.7,
                 delay: 0.15,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="relative"
+              className="relative w-full max-w-lg lg:max-w-none mx-auto mt-12 lg:mt-0"
             >
+              {/* Yellow offset frame behind image */}
               <div
-                className="relative rounded-2xl overflow-hidden"
+                aria-hidden="true"
+                className="absolute rounded-3xl"
                 style={{
-                  boxShadow: "0 24px 80px rgba(0,0,0,0.14)",
+                  inset: 0,
+                  transform: "translate(12px, 12px)",
+                  background: "#F5C518",
+                  opacity: 0.25,
+                  zIndex: 0,
+                  borderRadius: 24,
+                }}
+              />
+
+              {/* SVG dotted backdrop */}
+              <div
+                aria-hidden="true"
+                className="absolute -top-6 -right-6 opacity-40"
+                style={{ zIndex: 0 }}
+              >
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  {Array.from({ length: 6 }).map((_, row) =>
+                    Array.from({ length: 6 }).map((_, col) => (
+                      <circle
+                        key={`${row}-${col}`}
+                        cx={col * 20 + 10}
+                        cy={row * 20 + 10}
+                        r="2.5"
+                        fill="#F5C518"
+                      />
+                    )),
+                  )}
+                </svg>
+              </div>
+
+              {/* Main image */}
+              <div
+                className="relative rounded-3xl overflow-hidden"
+                style={{
+                  boxShadow: "0 32px 80px rgba(0,0,0,0.16)",
                   aspectRatio: "4/3",
+                  zIndex: 1,
                 }}
               >
                 <Image
                   src="/images/hero.jpg"
-                  alt="Children learning together in a bright, joyful classroom environment"
+                  alt="Children learning together in a bright, joyful classroom"
                   fill
                   priority
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
+                {/* Subtle gradient overlay at bottom for card readability */}
+                <div
+                  className="absolute inset-x-0 bottom-0 h-28"
+                  style={{
+                    background:
+                      "linear-gradient(to top, rgba(0,0,0,0.28) 0%, transparent 100%)",
+                  }}
+                />
               </div>
-              {/* Floating accent card */}
+
+              {/* Floating card — bottom left (original, improved) */}
               <motion.div
                 animate={{ y: [-4, 4, -4] }}
                 transition={{
-                  duration: 3,
+                  duration: 3.2,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -bottom-4 left-0 sm:-bottom-6 sm:-left-6 bg-white rounded-2xl shadow-xl p-4 flex items-center gap-3"
-                style={{ border: "1px solid #F3F4F6" }}
+                className="absolute -bottom-8 -left-2 sm:-bottom-7 sm:-left-7 bg-white rounded-2xl shadow-xl p-3.5 flex items-center gap-3"
+                style={{
+                  border: "1px solid #F3F4F6",
+                  zIndex: 2,
+                  minWidth: 170,
+                }}
               >
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
                   style={{ background: "#FFF3CC" }}
                 >
                   🏆
@@ -666,6 +871,69 @@ export default function HomePage() {
                   </p>
                 </div>
               </motion.div>
+
+              {/* NEW: Floating card — top right */}
+              {/* <motion.div
+                animate={{ y: [4, -4, 4] }}
+                transition={{
+                  duration: 3.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1.2,
+                }}
+                className="absolute -top-4 -right-4 sm:-top-6 sm:-right-6 bg-white rounded-2xl shadow-xl p-3.5 flex items-center gap-2.5"
+                style={{
+                  border: "1px solid #F3F4F6",
+                  zIndex: 2,
+                  minWidth: 155,
+                }}
+              >
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
+                  style={{ background: "#E8F8F7" }}
+                >
+                  ✅
+                </div>
+                <div>
+                  <p
+                    className="text-xs font-bold"
+                    style={{
+                      color: "#1A1A1A",
+                      fontFamily: "var(--font-nunito)",
+                    }}
+                  >
+                    Free Assessment
+                  </p>
+                  <p
+                    className="text-xs"
+                    style={{ color: "#2BBCB0", fontWeight: 600 }}
+                  >
+                    No credit card needed
+                  </p>
+                </div>
+              </motion.div> */}
+
+              {/* NEW: Live indicator pill on image */}
+              {/* <div
+                className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                style={{
+                  background: "rgba(255,255,255,0.92)",
+                  backdropFilter: "blur(8px)",
+                  border: "1px solid rgba(255,255,255,0.6)",
+                  zIndex: 2,
+                }}
+              >
+                <span
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{ background: "#16a34a" }}
+                />
+                <span
+                  className="text-xs font-bold"
+                  style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                >
+                  14 parents online now
+                </span>
+              </div> */}
             </motion.div>
           </div>
         </div>

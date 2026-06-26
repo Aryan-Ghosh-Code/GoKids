@@ -1,6 +1,6 @@
 "use client";
 
-import { FILTER_AGE_GROUPS, FILTER_LEVELS, FILTER_SKILLS } from "@/lib/data/workshops";
+import { FILTER_LEVELS } from "@/lib/data/workshop-constants";
 
 export type FilterState = {
   level: string[];
@@ -12,6 +12,10 @@ interface FilterSidebarProps {
   filters: FilterState;
   onChange: (next: FilterState) => void;
   onClear: () => void;
+  /** Derived from the workshops fetched server-side */
+  ageGroups: string[];
+  /** Derived from the workshops fetched server-side */
+  skills: string[];
 }
 
 // ─── Checkbox row ─────────────────────────────────────────────────────────────
@@ -71,7 +75,13 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
 }
 
 // ─── FilterSidebar ────────────────────────────────────────────────────────────
-export default function FilterSidebar({ filters, onChange, onClear }: FilterSidebarProps) {
+export default function FilterSidebar({
+  filters,
+  onChange,
+  onClear,
+  ageGroups,
+  skills,
+}: FilterSidebarProps) {
   const toggle = (key: keyof FilterState, value: string, checked: boolean) => {
     const prev = filters[key];
     const next = checked ? [...prev, value] : prev.filter((v) => v !== value);
@@ -125,28 +135,32 @@ export default function FilterSidebar({ filters, onChange, onClear }: FilterSide
       </FilterSection>
 
       {/* Age Group */}
-      <FilterSection title="Age Group">
-        {FILTER_AGE_GROUPS.map((a) => (
-          <CheckRow
-            key={a}
-            label={`Ages ${a}`}
-            checked={filters.ageGroup.includes(a)}
-            onChange={(v) => toggle("ageGroup", a, v)}
-          />
-        ))}
-      </FilterSection>
+      {ageGroups.length > 0 && (
+        <FilterSection title="Age Group">
+          {ageGroups.map((a) => (
+            <CheckRow
+              key={a}
+              label={`Ages ${a}`}
+              checked={filters.ageGroup.includes(a)}
+              onChange={(v) => toggle("ageGroup", a, v)}
+            />
+          ))}
+        </FilterSection>
+      )}
 
       {/* Skill */}
-      <FilterSection title="Skill / Subject">
-        {FILTER_SKILLS.map((s) => (
-          <CheckRow
-            key={s}
-            label={s}
-            checked={filters.skill.includes(s)}
-            onChange={(v) => toggle("skill", s, v)}
-          />
-        ))}
-      </FilterSection>
+      {skills.length > 0 && (
+        <FilterSection title="Skill / Subject">
+          {skills.map((s) => (
+            <CheckRow
+              key={s}
+              label={s}
+              checked={filters.skill.includes(s)}
+              onChange={(v) => toggle("skill", s, v)}
+            />
+          ))}
+        </FilterSection>
+      )}
 
       {/* Apply button */}
       <button

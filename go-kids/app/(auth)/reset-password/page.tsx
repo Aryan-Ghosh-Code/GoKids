@@ -3,12 +3,11 @@
 import { useState, Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, Lock, ArrowRight, Loader2, ArrowLeft, KeyRound, Check, X, RefreshCw } from "lucide-react";
-import BrandLogo from "@/components/shared/BrandLogo";
+import { Eye, EyeOff, ArrowRight, Loader2, ArrowLeft, KeyRound, Check, X, RefreshCw } from "lucide-react";
 
 const resetPasswordSchema = z
   .object({
@@ -41,14 +40,11 @@ function ResetPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(60);
-  const [canResend, setCanResend] = useState(false);
+  const canResend = resendCountdown <= 0;
 
   // Countdown timer for resending OTP
   useEffect(() => {
-    if (resendCountdown <= 0) {
-      setCanResend(true);
-      return;
-    }
+    if (resendCountdown <= 0) return;
     const timer = setTimeout(() => setResendCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [resendCountdown]);
@@ -68,7 +64,6 @@ function ResetPasswordForm() {
         setServerError(result.error || "Failed to resend OTP.");
         return;
       }
-      setCanResend(false);
       setResendCountdown(60);
     } catch {
       setServerError("Network error. Please try again.");
@@ -80,7 +75,7 @@ function ResetPasswordForm() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -92,7 +87,11 @@ function ResetPasswordForm() {
     },
   });
 
-  const passwordValue = watch("password") || "";
+  const passwordValue = useWatch({
+    control,
+    name: "password",
+    defaultValue: "",
+  });
 
   const passwordRequirements = [
     { label: "At least 8 characters", test: passwordValue.length >= 8 },
@@ -131,11 +130,14 @@ function ResetPasswordForm() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-12"
+      className="min-h-[calc(100vh-12rem)] flex items-center justify-center px-4 py-16"
       style={{ background: "#FAFAF8" }}
     >
       {/* Floating Blobs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div
+        className="fixed inset-0 pointer-events-none overflow-hidden"
+        aria-hidden="true"
+      >
         <div
           className="animate-float absolute top-24 right-20 w-60 h-60 rounded-full opacity-20"
           style={{ background: "#F5C518", filter: "blur(48px)" }}
@@ -153,7 +155,7 @@ function ResetPasswordForm() {
         className="w-full max-w-md relative"
       >
         <div
-          className="bg-white rounded-3xl p-8 shadow-xl border border-[#F3F4F6]"
+          className="bg-white rounded-3xl p-8 shadow-xl border border-brand-grey"
           style={{
             boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
           }}
@@ -171,11 +173,8 @@ function ResetPasswordForm() {
           </div>
 
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <BrandLogo height={48} />
-            </div>
             <div className="flex justify-center mb-2">
-              <div className="p-3 bg-[#E8F8F7] text-[#2BBCB0] rounded-2xl">
+              <div className="p-3 bg-[#E8F8F7] text-teal rounded-2xl">
                 <KeyRound size={24} />
               </div>
             </div>
@@ -209,7 +208,11 @@ function ResetPasswordForm() {
             )}
           </AnimatePresence>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-4"
+            noValidate
+          >
             {/* Email (hidden/read-only) */}
             <input type="hidden" {...register("email")} />
 
@@ -229,29 +232,37 @@ function ResetPasswordForm() {
                 className="w-full px-4 py-3 rounded-xl text-sm border outline-none transition-all tracking-[0.2em] text-center font-bold"
                 style={{
                   background: "#FAFAF8",
-                  border: errors.otp ? "1.5px solid #F4845F" : "1.5px solid #E5E7EB",
+                  border: errors.otp
+                    ? "1.5px solid #F4845F"
+                    : "1.5px solid #E5E7EB",
                   color: "#1A1A1A",
                   fontFamily: "var(--font-nunito)",
                 }}
                 onFocus={(e) => {
-                  if (!errors.otp) e.target.style.border = "1.5px solid #F5C518";
+                  if (!errors.otp)
+                    e.target.style.border = "1.5px solid #F5C518";
                 }}
                 onBlur={(e) => {
-                  if (!errors.otp) e.target.style.border = "1.5px solid #E5E7EB";
+                  if (!errors.otp)
+                    e.target.style.border = "1.5px solid #E5E7EB";
                 }}
               />
               {errors.otp && (
-                <p className="text-xs mt-1 font-medium text-[#C0392B]">{errors.otp.message}</p>
+                <p className="text-xs mt-1 font-medium text-[#C0392B]">
+                  {errors.otp.message}
+                </p>
               )}
 
               <div className="flex justify-between items-center mt-2 px-1">
-                <span className="text-xs text-gray-500">Didn't receive a code?</span>
+                <span className="text-xs text-gray-500">
+                  Didn&apos;t receive a code?
+                </span>
                 {canResend ? (
                   <button
                     type="button"
                     onClick={handleResend}
                     disabled={resendLoading}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold transition-opacity hover:opacity-70 text-[#F5C518] hover:underline"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold transition-opacity hover:opacity-70 text-primary hover:underline"
                     style={{ fontFamily: "var(--font-nunito)" }}
                   >
                     {resendLoading ? (
@@ -262,8 +273,12 @@ function ResetPasswordForm() {
                     Resend OTP
                   </button>
                 ) : (
-                  <span className="text-xs font-semibold text-gray-400" style={{ fontFamily: "var(--font-nunito)" }}>
-                    Resend in <span style={{ color: "#F5C518" }}>{resendCountdown}s</span>
+                  <span
+                    className="text-xs font-semibold text-gray-400"
+                    style={{ fontFamily: "var(--font-nunito)" }}
+                  >
+                    Resend in{" "}
+                    <span style={{ color: "#F5C518" }}>{resendCountdown}s</span>
                   </span>
                 )}
               </div>
@@ -285,14 +300,18 @@ function ResetPasswordForm() {
                   className="w-full pl-4 pr-10 py-3 rounded-xl text-sm border outline-none transition-all"
                   style={{
                     background: "#FAFAF8",
-                    border: errors.password ? "1.5px solid #F4845F" : "1.5px solid #E5E7EB",
+                    border: errors.password
+                      ? "1.5px solid #F4845F"
+                      : "1.5px solid #E5E7EB",
                     color: "#1A1A1A",
                   }}
                   onFocus={(e) => {
-                    if (!errors.password) e.target.style.border = "1.5px solid #F5C518";
+                    if (!errors.password)
+                      e.target.style.border = "1.5px solid #F5C518";
                   }}
                   onBlur={(e) => {
-                    if (!errors.password) e.target.style.border = "1.5px solid #E5E7EB";
+                    if (!errors.password)
+                      e.target.style.border = "1.5px solid #E5E7EB";
                   }}
                 />
                 <button
@@ -304,7 +323,9 @@ function ResetPasswordForm() {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-xs mt-1 font-medium text-[#C0392B]">{errors.password.message}</p>
+                <p className="text-xs mt-1 font-medium text-[#C0392B]">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -324,14 +345,18 @@ function ResetPasswordForm() {
                   className="w-full pl-4 pr-10 py-3 rounded-xl text-sm border outline-none transition-all"
                   style={{
                     background: "#FAFAF8",
-                    border: errors.confirmPassword ? "1.5px solid #F4845F" : "1.5px solid #E5E7EB",
+                    border: errors.confirmPassword
+                      ? "1.5px solid #F4845F"
+                      : "1.5px solid #E5E7EB",
                     color: "#1A1A1A",
                   }}
                   onFocus={(e) => {
-                    if (!errors.confirmPassword) e.target.style.border = "1.5px solid #F5C518";
+                    if (!errors.confirmPassword)
+                      e.target.style.border = "1.5px solid #F5C518";
                   }}
                   onBlur={(e) => {
-                    if (!errors.confirmPassword) e.target.style.border = "1.5px solid #E5E7EB";
+                    if (!errors.confirmPassword)
+                      e.target.style.border = "1.5px solid #E5E7EB";
                   }}
                 />
                 <button
@@ -351,16 +376,18 @@ function ResetPasswordForm() {
 
             {/* Live Password Strength Indicator */}
             {passwordValue.length > 0 && (
-              <div className="p-3 bg-[#FAFAF8] rounded-xl space-y-1.5 text-xs font-semibold">
+              <div className="p-3 bg-brand-offwhite rounded-xl space-y-1.5 text-xs font-semibold">
                 <p style={{ color: "#4B5563" }}>Password requirements:</p>
                 {passwordRequirements.map((req, i) => (
                   <div key={i} className="flex items-center gap-1.5">
                     {req.test ? (
-                      <Check size={14} className="text-[#2BBCB0]" />
+                      <Check size={14} className="text-teal" />
                     ) : (
-                      <X size={14} className="text-[#F4845F]" />
+                      <X size={14} className="text-coral" />
                     )}
-                    <span style={{ color: req.test ? "#1A7A72" : "#9CA3AF" }}>{req.label}</span>
+                    <span style={{ color: req.test ? "#1A7A72" : "#9CA3AF" }}>
+                      {req.label}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -399,11 +426,13 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8]">
-        <Loader2 size={32} className="animate-spin text-[#F5C518]" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-brand-offwhite">
+          <Loader2 size={32} className="animate-spin text-primary" />
+        </div>
+      }
+    >
       <ResetPasswordForm />
     </Suspense>
   );

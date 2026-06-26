@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2, User, Calendar, GraduationCap, School, ImageIcon, FileText } from "lucide-react";
+import { X, Loader2, User, Calendar, GraduationCap, School, FileText } from "lucide-react";
 import type { ChildData } from "./ChildCard";
 import CloudinaryUpload from "./CloudinaryUpload";
 
@@ -88,13 +88,28 @@ function InputWrapper({ label, icon: Icon, error, children }: {
 export default function ChildFormDialog({ open, onOpenChange, onSuccess, editChild }: ChildFormDialogProps) {
   const isEdit = !!editChild;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { register, handleSubmit, reset, control, watch, setValue, formState: { errors, isSubmitting } } = useForm<ChildFormData>({
+  const { register, handleSubmit, reset, control, setValue, formState: { errors, isSubmitting } } = useForm<ChildFormData>({
     resolver: zodResolver(childSchema) as any,
     defaultValues: { name: "", dob: "", grade: "", school: "", interests: [], behaviorNotes: "", photoUrl: "" },
   });
 
-  const selectedInterests = watch("interests") || [];
+  const selectedInterests = useWatch({
+    control,
+    name: "interests",
+    defaultValue: [],
+  });
+
+  const photoUrlValue = useWatch({
+    control,
+    name: "photoUrl",
+    defaultValue: "",
+  });
+
+  const nameValue = useWatch({
+    control,
+    name: "name",
+    defaultValue: "",
+  });
 
   // Populate form when editing
   useEffect(() => {
@@ -181,52 +196,78 @@ export default function ChildFormDialog({ open, onOpenChange, onSuccess, editChi
                   style={{ border: "1px solid #F3F4F6" }}
                 >
                   {/* Header */}
-                  <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 bg-white border-b border-[#F3F4F6] rounded-t-3xl">
+                  <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 bg-white border-b border-brand-grey rounded-t-3xl">
                     <div>
                       <Dialog.Title
                         className="text-lg font-extrabold"
-                        style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                        style={{
+                          color: "#1A1A1A",
+                          fontFamily: "var(--font-nunito)",
+                        }}
                       >
                         {isEdit ? "Edit Child Profile" : "Add a Child"}
                       </Dialog.Title>
-                      <Dialog.Description className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>
-                        {isEdit ? "Update the details below." : "Fill in your child's details to get started."}
+                      <Dialog.Description
+                        className="text-xs mt-0.5"
+                        style={{ color: "#9CA3AF" }}
+                      >
+                        {isEdit
+                          ? "Update the details below."
+                          : "Fill in your child's details to get started."}
                       </Dialog.Description>
                     </div>
                     <Dialog.Close asChild>
-                      <button className="p-2 rounded-full hover:bg-[#F3F4F6] transition-colors" aria-label="Close">
+                      <button
+                        className="p-2 rounded-full hover:bg-brand-grey transition-colors"
+                        aria-label="Close"
+                      >
                         <X size={18} color="#6B7280" />
                       </button>
                     </Dialog.Close>
                   </div>
 
                   {/* Form */}
-                  <form onSubmit={handleSubmit(onSubmit)} className="px-6 py-5 space-y-5">
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="px-6 py-5 space-y-5"
+                  >
                     {/* Photo + Name Row */}
-                    <div className="flex items-center gap-5 border-b border-[#F3F4F6] pb-4">
+                    <div className="flex items-center gap-5 border-b border-brand-grey pb-4">
                       {/* Left: Smaller circular upload */}
                       <div className="shrink-0 flex flex-col items-center gap-1">
-                        <span className="text-3xs text-[#9CA3AF] uppercase font-bold tracking-wider">Photo</span>
+                        <span className="text-3xs text-[#9CA3AF] uppercase font-bold tracking-wider">
+                          Photo
+                        </span>
                         <CloudinaryUpload
                           key={editChild?._id || "new-child"}
-                          currentUrl={watch("photoUrl")}
+                          currentUrl={photoUrlValue}
                           onUpload={(url) => setValue("photoUrl", url)}
                           shape="circle"
                           size={72}
-                          initials={getInitials(watch("name"))}
+                          initials={getInitials(nameValue)}
                           accentColor="#F5C518"
                         />
                       </div>
                       {/* Right: Full Name */}
-                      <div className="flex-grow">
-                        <InputWrapper label="Full Name *" icon={User} error={errors.name?.message}>
+                      <div className="grow">
+                        <InputWrapper
+                          label="Full Name *"
+                          icon={User}
+                          error={errors.name?.message}
+                        >
                           <input
                             {...register("name")}
                             placeholder="e.g. Priya Sharma"
                             className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                             style={inputStyle(!!errors.name)}
-                            onFocus={(e) => { if (!errors.name) e.target.style.borderColor = "#F5C518"; }}
-                            onBlur={(e) => { if (!errors.name) e.target.style.borderColor = "#E5E7EB"; }}
+                            onFocus={(e) => {
+                              if (!errors.name)
+                                e.target.style.borderColor = "#F5C518";
+                            }}
+                            onBlur={(e) => {
+                              if (!errors.name)
+                                e.target.style.borderColor = "#E5E7EB";
+                            }}
                           />
                         </InputWrapper>
                       </div>
@@ -234,42 +275,70 @@ export default function ChildFormDialog({ open, onOpenChange, onSuccess, editChi
 
                     {/* Date of Birth + Grade */}
                     <div className="grid grid-cols-2 gap-4">
-                      <InputWrapper label="Date of Birth" icon={Calendar} error={errors.dob?.message}>
+                      <InputWrapper
+                        label="Date of Birth"
+                        icon={Calendar}
+                        error={errors.dob?.message}
+                      >
                         <input
                           {...register("dob")}
                           type="date"
                           className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                           style={inputStyle(!!errors.dob)}
-                          onFocus={(e) => { e.target.style.borderColor = "#F5C518"; }}
-                          onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = "#F5C518";
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = "#E5E7EB";
+                          }}
                         />
                       </InputWrapper>
 
-                      <InputWrapper label="Grade / Class" icon={GraduationCap} error={errors.grade?.message}>
+                      <InputWrapper
+                        label="Grade / Class"
+                        icon={GraduationCap}
+                        error={errors.grade?.message}
+                      >
                         <select
                           {...register("grade")}
                           className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all appearance-none"
                           style={inputStyle(!!errors.grade)}
-                          onFocus={(e) => { e.target.style.borderColor = "#F5C518"; }}
-                          onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = "#F5C518";
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = "#E5E7EB";
+                          }}
                         >
                           <option value="">Select grade</option>
                           {GRADES.map((g) => (
-                            <option key={g} value={g}>{g}</option>
+                            <option key={g} value={g}>
+                              {g}
+                            </option>
                           ))}
                         </select>
                       </InputWrapper>
                     </div>
 
                     {/* School */}
-                    <InputWrapper label="School Name" icon={School} error={errors.school?.message}>
+                    <InputWrapper
+                      label="School Name"
+                      icon={School}
+                      error={errors.school?.message}
+                    >
                       <input
                         {...register("school")}
                         placeholder="e.g. Delhi Public School"
                         className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                         style={inputStyle(!!errors.school)}
-                        onFocus={(e) => { if (!errors.school) e.target.style.borderColor = "#F5C518"; }}
-                        onBlur={(e) => { if (!errors.school) e.target.style.borderColor = "#E5E7EB"; }}
+                        onFocus={(e) => {
+                          if (!errors.school)
+                            e.target.style.borderColor = "#F5C518";
+                        }}
+                        onBlur={(e) => {
+                          if (!errors.school)
+                            e.target.style.borderColor = "#E5E7EB";
+                        }}
                       />
                     </InputWrapper>
 
@@ -279,13 +348,21 @@ export default function ChildFormDialog({ open, onOpenChange, onSuccess, editChi
                       control={control}
                       render={() => (
                         <div>
-                          <label className="block text-sm font-semibold mb-2" style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}>
+                          <label
+                            className="block text-sm font-semibold mb-2"
+                            style={{
+                              color: "#1A1A1A",
+                              fontFamily: "var(--font-nunito)",
+                            }}
+                          >
                             Interests
                           </label>
                           <div className="flex flex-wrap gap-2">
                             {ALL_INTERESTS.map((interest, i) => {
-                              const c = INTEREST_COLORS[i % INTEREST_COLORS.length];
-                              const selected = selectedInterests.includes(interest);
+                              const c =
+                                INTEREST_COLORS[i % INTEREST_COLORS.length];
+                              const selected =
+                                selectedInterests.includes(interest);
                               return (
                                 <button
                                   key={interest}
@@ -308,18 +385,26 @@ export default function ChildFormDialog({ open, onOpenChange, onSuccess, editChi
                       )}
                     />
 
-
-
                     {/* Behaviour Notes */}
-                    <InputWrapper label="Behaviour & Learning Notes" icon={FileText} error={errors.behaviorNotes?.message}>
+                    <InputWrapper
+                      label="Behaviour & Learning Notes"
+                      icon={FileText}
+                      error={errors.behaviorNotes?.message}
+                    >
                       <textarea
                         {...register("behaviorNotes")}
                         rows={3}
                         placeholder="Any notes about your child's learning style, challenges, or strengths…"
                         className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all resize-none"
                         style={inputStyle(!!errors.behaviorNotes)}
-                        onFocus={(e) => { if (!errors.behaviorNotes) e.target.style.borderColor = "#F5C518"; }}
-                        onBlur={(e) => { if (!errors.behaviorNotes) e.target.style.borderColor = "#E5E7EB"; }}
+                        onFocus={(e) => {
+                          if (!errors.behaviorNotes)
+                            e.target.style.borderColor = "#F5C518";
+                        }}
+                        onBlur={(e) => {
+                          if (!errors.behaviorNotes)
+                            e.target.style.borderColor = "#E5E7EB";
+                        }}
                       />
                     </InputWrapper>
 
@@ -329,7 +414,11 @@ export default function ChildFormDialog({ open, onOpenChange, onSuccess, editChi
                         <button
                           type="button"
                           className="flex-1 py-3 rounded-xl text-sm font-bold border transition-colors"
-                          style={{ borderColor: "#E5E7EB", color: "#6B7280", fontFamily: "var(--font-nunito)" }}
+                          style={{
+                            borderColor: "#E5E7EB",
+                            color: "#6B7280",
+                            fontFamily: "var(--font-nunito)",
+                          }}
                         >
                           Cancel
                         </button>
@@ -346,9 +435,14 @@ export default function ChildFormDialog({ open, onOpenChange, onSuccess, editChi
                         }}
                       >
                         {isSubmitting ? (
-                          <><Loader2 size={15} className="animate-spin" /> Saving…</>
+                          <>
+                            <Loader2 size={15} className="animate-spin" />{" "}
+                            Saving…
+                          </>
+                        ) : isEdit ? (
+                          "Save Changes"
                         ) : (
-                          isEdit ? "Save Changes" : "Add Child"
+                          "Add Child"
                         )}
                       </button>
                     </div>

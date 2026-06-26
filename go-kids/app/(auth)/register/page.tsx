@@ -16,9 +16,7 @@ import {
   Lock,
   ArrowRight,
   Loader2,
-  ArrowLeft,
 } from "lucide-react";
-import BrandLogo from "@/components/shared/BrandLogo";
 import GoogleButton from "@/components/shared/GoogleButton";
 import { signIn } from "next-auth/react";
 
@@ -102,7 +100,7 @@ export default function RegisterPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-12"
+      className="min-h-[calc(100vh-12rem)] flex items-center justify-center px-4 py-16"
       style={{ background: "#FAFAF8" }}
     >
       {/* Background shapes */}
@@ -134,22 +132,7 @@ export default function RegisterPage() {
             border: "1px solid #F3F4F6",
           }}
         >
-          {/* Back to Home */}
-          <div className="mb-6">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-full transition-all hover:bg-[#FFF9E6]"
-              style={{ color: "#6B7280", fontFamily: "var(--font-nunito)" }}
-            >
-              <ArrowLeft size={14} />
-              Back to Home
-            </Link>
-          </div>
-
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <BrandLogo height={48} />
-            </div>
             <h1
               className="text-2xl font-extrabold"
               style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}

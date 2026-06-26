@@ -42,9 +42,15 @@ export default function WorkshopCard({ workshop }: WorkshopCardProps) {
       whileHover={{ y: -6, boxShadow: "0 20px 48px rgba(0,0,0,0.13)" }}
       transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       className="bg-white rounded-2xl overflow-hidden flex flex-col"
-      style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.07)", border: "1px solid #F3F4F6" }}
+      style={{
+        boxShadow: "0 2px 16px rgba(0,0,0,0.07)",
+        border: "1px solid #F3F4F6",
+      }}
     >
-      <Link href={`/workshops/${workshop.slug}`} className="block flex-1 flex flex-col">
+      <Link
+        href={`/workshops/${workshop.slug}`}
+        className="flex-1 flex flex-col"
+      >
         {/* Thumbnail */}
         <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
           <Image
@@ -93,19 +99,28 @@ export default function WorkshopCard({ workshop }: WorkshopCardProps) {
           </p>
 
           {/* Footer */}
-          <div className="mt-auto pt-3 flex items-center justify-between border-t border-[#F3F4F6]">
+          <div className="mt-auto pt-3 flex items-center justify-between border-t border-brand-grey">
             {/* Instructor */}
-            <span className="text-xs font-semibold truncate" style={{ color: "#6B7280" }}>
+            <span
+              className="text-xs font-semibold truncate"
+              style={{ color: "#6B7280" }}
+            >
               {workshop.instructor.name}
             </span>
 
             {/* Rating + enrolled */}
             <div className="flex items-center gap-2 shrink-0">
-              <span className="flex items-center gap-0.5 text-xs font-bold" style={{ color: "#F5C518" }}>
+              <span
+                className="flex items-center gap-0.5 text-xs font-bold"
+                style={{ color: "#F5C518" }}
+              >
                 <Star size={12} fill="#F5C518" strokeWidth={0} />
                 {workshop.rating.toFixed(1)}
               </span>
-              <span className="flex items-center gap-0.5 text-xs" style={{ color: "#9CA3AF" }}>
+              <span
+                className="flex items-center gap-0.5 text-xs"
+                style={{ color: "#9CA3AF" }}
+              >
                 <Users size={11} />
                 {workshop.enrolledCount}
               </span>

@@ -16,9 +16,7 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle,
-  ArrowLeft,
 } from "lucide-react";
-import BrandLogo from "@/components/shared/BrandLogo";
 import GoogleButton from "@/components/shared/GoogleButton";
 
 const loginSchema = z.object({
@@ -79,7 +77,7 @@ function LoginForm() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-12"
+      className="min-h-[calc(100vh-12rem)] flex items-center justify-center px-4 py-16"
       style={{ background: "#FAFAF8" }}
     >
       {/* Background shapes */}
@@ -91,10 +89,10 @@ function LoginForm() {
           className="animate-float absolute top-24 right-20 w-60 h-60 rounded-full opacity-20"
           style={{ background: "#F5C518", filter: "blur(48px)" }}
         />
-        <div
+        {/* <div
           className="animate-float-delayed absolute bottom-16 left-16 w-48 h-48 rounded-full opacity-15"
           style={{ background: "#F4845F", filter: "blur(40px)" }}
-        />
+        /> */}
       </div>
 
       <motion.div
@@ -110,22 +108,7 @@ function LoginForm() {
             border: "1px solid #F3F4F6",
           }}
         >
-          {/* Back to Home */}
-          <div className="mb-6">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-full transition-all hover:bg-[#FFF9E6]"
-              style={{ color: "#6B7280", fontFamily: "var(--font-nunito)" }}
-            >
-              <ArrowLeft size={14} />
-              Back to Home
-            </Link>
-          </div>
-
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <BrandLogo height={48} />
-            </div>
             <h1
               className="text-2xl font-extrabold"
               style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
@@ -339,7 +322,7 @@ function LoginForm() {
 
           {/* Register Link */}
           <p className="text-center text-sm mt-6" style={{ color: "#6B7280" }}>
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/register"
               className="font-bold hover:underline"

@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, SlidersHorizontal, X, ChevronDown } from "lucide-react";
-import { getWorkshops } from "@/lib/data/workshops";
+import type { Workshop } from "@/lib/data/workshops";
 import WorkshopCard from "./WorkshopCard";
 import FilterSidebar, { type FilterState } from "./FilterSidebar";
 
@@ -23,12 +23,16 @@ function FilterDrawer({
   filters,
   onChange,
   onClear,
+  ageGroups,
+  skills,
 }: {
   open: boolean;
   onClose: () => void;
   filters: FilterState;
   onChange: (f: FilterState) => void;
   onClear: () => void;
+  ageGroups: string[];
+  skills: string[];
 }) {
   return (
     <AnimatePresence>
@@ -52,9 +56,12 @@ function FilterDrawer({
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
             className="fixed left-0 top-0 bottom-0 z-50 w-80 max-w-full overflow-y-auto"
-            style={{ background: "white", boxShadow: "4px 0 32px rgba(0,0,0,0.15)" }}
+            style={{
+              background: "white",
+              boxShadow: "4px 0 32px rgba(0,0,0,0.15)",
+            }}
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#F3F4F6]">
+            <div className="flex items-center justify-between px-5 py-4 border-b hover:bg-brand-grey">
               <span
                 className="text-base font-extrabold"
                 style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
@@ -63,13 +70,19 @@ function FilterDrawer({
               </span>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-full hover:bg-[#F3F4F6] transition-colors"
+                className="p-1.5 rounded-full hover:bg-brand-grey transition-colors"
               >
                 <X size={18} color="#6B7280" />
               </button>
             </div>
             <div className="p-5">
-              <FilterSidebar filters={filters} onChange={onChange} onClear={onClear} />
+              <FilterSidebar
+                filters={filters}
+                onChange={onChange}
+                onClear={onClear}
+                ageGroups={ageGroups}
+                skills={skills}
+              />
             </div>
           </motion.div>
         </>
@@ -79,17 +92,31 @@ function FilterDrawer({
 }
 
 // ─── WorkshopsClient ──────────────────────────────────────────────────────────
-export default function WorkshopsClient() {
-  const [query, setQuery] = useState("");
+interface WorkshopsClientProps {
+  /** All workshops fetched server-side from MongoDB */
+  workshops: Workshop[];
+}
+
+export default function WorkshopsClient({ workshops }: WorkshopsClientProps) {
+  const [query, setQuery]   = useState("");
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
-  const [sort, setSort] = useState<"newest" | "popular" | "rating">("newest");
-  const [page, setPage] = useState(1);
+  const [sort, setSort]     = useState<"newest" | "popular" | "rating">("newest");
+  const [page, setPage]     = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [sortOpen, setSortOpen] = useState(false);
-  const sortRef = useMemo(() => ({ current: null as HTMLDivElement | null }), []);
-  
-  // Custom click outside effect for the sort dropdown
-  const [activeRef, setActiveRef] = useState<HTMLDivElement | null>(null);
+  const [sortOpen, setSortOpen]     = useState(false);
+  const [activeRef, setActiveRef]   = useState<HTMLDivElement | null>(null);
+
+  // ── Derive filter options from the workshops passed in ───────────────────────
+  const ageGroups = useMemo(
+    () => [...new Set(workshops.map((w) => w.ageGroup))].sort(),
+    [workshops]
+  );
+  const skills = useMemo(
+    () => [...new Set(workshops.map((w) => w.skill))].sort(),
+    [workshops]
+  );
+
+  // ── Click-outside for sort dropdown ─────────────────────────────────────────
   useMemo(() => {
     if (typeof window === "undefined") return;
     const handleOutsideClick = (e: MouseEvent) => {
@@ -101,13 +128,32 @@ export default function WorkshopsClient() {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [activeRef]);
 
-  const workshops = useMemo(
-    () => getWorkshops({ query, ...filters, sort }),
-    [query, filters, sort],
-  );
+  // ── Client-side filter + sort (same logic that was in getWorkshops) ──────────
+  const filtered = useMemo(() => {
+    let result = [...workshops];
 
-  const totalPages = Math.ceil(workshops.length / PAGE_SIZE);
-  const paginated = workshops.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    if (query) {
+      const q = query.toLowerCase();
+      result = result.filter(
+        (w) =>
+          w.title.toLowerCase().includes(q) ||
+          w.shortDescription.toLowerCase().includes(q) ||
+          w.skill.toLowerCase().includes(q)
+      );
+    }
+    if (filters.level.length)    result = result.filter((w) => filters.level.includes(w.level));
+    if (filters.ageGroup.length) result = result.filter((w) => filters.ageGroup.includes(w.ageGroup));
+    if (filters.skill.length)    result = result.filter((w) => filters.skill.includes(w.skill));
+
+    if (sort === "rating")  result.sort((a, b) => b.rating - a.rating);
+    if (sort === "popular") result.sort((a, b) => b.enrolledCount - a.enrolledCount);
+    // "newest" = insertion order (as received from server, already sorted by createdAt desc)
+
+    return result;
+  }, [workshops, query, filters, sort]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleFilterChange = (next: FilterState) => {
     setFilters(next);
@@ -148,7 +194,7 @@ export default function WorkshopsClient() {
               boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = "#F5C518")}
-            onBlur={(e) => (e.currentTarget.style.borderColor = "#E5E7EB")}
+            onBlur={(e)  => (e.currentTarget.style.borderColor = "#E5E7EB")}
           />
         </div>
 
@@ -203,15 +249,17 @@ export default function WorkshopsClient() {
                         background: isSelected ? "#FEF9C3" : "transparent",
                       }}
                       onMouseEnter={(e) => {
-                        if (!isSelected) e.currentTarget.style.backgroundColor = "#F9FAFB";
+                        if (!isSelected)
+                          e.currentTarget.style.backgroundColor = "#F9FAFB";
                       }}
                       onMouseLeave={(e) => {
-                        if (!isSelected) e.currentTarget.style.backgroundColor = "transparent";
+                        if (!isSelected)
+                          e.currentTarget.style.backgroundColor = "transparent";
                       }}
                     >
                       <span>{o.label}</span>
                       {isSelected && (
-                        <span className="w-2 h-2 rounded-full bg-[#F5C518]" />
+                        <span className="w-2 h-2 rounded-full bg-primary" />
                       )}
                     </button>
                   );
@@ -251,6 +299,8 @@ export default function WorkshopsClient() {
               filters={filters}
               onChange={handleFilterChange}
               onClear={handleClear}
+              ageGroups={ageGroups}
+              skills={skills}
             />
           </div>
         </aside>
@@ -259,12 +309,12 @@ export default function WorkshopsClient() {
         <div className="flex-1 min-w-0">
           {/* Results count */}
           <p className="text-sm font-semibold mb-5" style={{ color: "#6B7280", fontFamily: "var(--font-nunito)" }}>
-            {workshops.length === 0
+            {filtered.length === 0
               ? "No workshops found"
-              : `${workshops.length} workshop${workshops.length !== 1 ? "s" : ""} found`}
+              : `${filtered.length} workshop${filtered.length !== 1 ? "s" : ""} found`}
           </p>
 
-          {workshops.length === 0 ? (
+          {filtered.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-4xl mb-3">🔍</p>
               <p className="font-bold text-lg" style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}>
@@ -288,7 +338,7 @@ export default function WorkshopsClient() {
                 className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
               >
                 {paginated.map((w) => (
-                  <WorkshopCard key={w.id} workshop={w} />
+                  <WorkshopCard key={w._id} workshop={w} />
                 ))}
               </motion.div>
 
@@ -325,6 +375,8 @@ export default function WorkshopsClient() {
         filters={filters}
         onChange={(f) => { handleFilterChange(f); setDrawerOpen(false); }}
         onClear={() => { handleClear(); setDrawerOpen(false); }}
+        ageGroups={ageGroups}
+        skills={skills}
       />
     </div>
   );
