@@ -3,6 +3,8 @@ import Image from "next/image";
 import { getWorkshops } from "@/lib/data/workshops";
 import WorkshopsClient from "@/components/workshops/WorkshopsClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Workshops — Go Kids India",
   description:
@@ -92,33 +94,54 @@ function WorkshopsHero() {
   );
 }
 
+interface StatsBarProps {
+  totalWorkshops: number;
+  totalEnrolled: number;
+  avgRating: number;
+  skillsCount: number;
+}
+
 // ─── Stats bar ────────────────────────────────────────────────────────────────
-function StatsBar() {
+function StatsBar({ totalWorkshops, totalEnrolled, avgRating, skillsCount }: StatsBarProps) {
   const stats = [
-    { value: "5+",     label: "Workshops" },
-    { value: "1,700+", label: "Kids Enrolled" },
-    { value: "100%",   label: "Free Forever" },
-    { value: "4.8★",   label: "Avg Rating" },
+    { value: `${totalWorkshops}+`, label: "Workshops" },
+    {
+      value: totalEnrolled >= 1000
+        ? `${(totalEnrolled / 1000).toFixed(1).replace(".0", "")}k+`
+        : `${totalEnrolled}+`,
+      label: "Kids Enrolled"
+    },
+    { value: `${skillsCount}+`, label: "Skills Taught" },
+    { value: `${avgRating}★`, label: "Avg Rating" },
   ];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 -mt-6 relative z-10">
-      <div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-2xl overflow-hidden"
-        style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.10)", background: "#E5E7EB" }}
-      >
+    <div className="max-w-5xl mx-auto px-4 sm:px-8 -mt-10 relative z-10">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-6">
         {stats.map((s) => (
           <div
             key={s.label}
-            className="bg-white flex flex-col items-center justify-center py-5 px-4 text-center"
+            className="bg-white rounded-xl sm:rounded-2xl flex flex-col items-center justify-center py-2.5 sm:py-5 px-1 sm:px-4 text-center border border-[#F3F4F6]"
+            style={{
+              boxShadow:
+                "0 10px 30px -10px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.02)",
+            }}
           >
             <span
-              className="text-2xl font-extrabold"
-              style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+              className="text-base sm:text-3xl font-extrabold"
+              style={{
+                fontFamily: "var(--font-nunito)",
+                background: "linear-gradient(135deg, #1A1A1A 0%, #4B5563 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             >
               {s.value}
             </span>
-            <span className="text-xs font-semibold mt-0.5" style={{ color: "#6B7280" }}>
+            <span
+              className="text-[9px] sm:text-xs font-bold mt-0.5 sm:mt-1 text-brand-grey-text"
+              style={{ fontFamily: "var(--font-nunito)", lineHeight: 1.1 }}
+            >
               {s.label}
             </span>
           </div>
@@ -132,10 +155,25 @@ function StatsBar() {
 export default async function WorkshopsPage() {
   const workshops = await getWorkshops();
 
+  // Calculate stats dynamically from MongoDB data
+  const totalWorkshops = workshops.length;
+  const totalEnrolled = workshops.reduce((sum, w) => sum + (w.enrolledCount || 0), 0);
+  const skillsCount = new Set(workshops.map((w) => w.skill)).size;
+  const avgRating = workshops.length
+    ? parseFloat(
+        (workshops.reduce((sum, w) => sum + (w.rating || 0), 0) / workshops.length).toFixed(1)
+      )
+    : 4.8;
+
   return (
     <main style={{ background: "#FAFAFA", minHeight: "100vh" }}>
       <WorkshopsHero />
-      <StatsBar />
+      <StatsBar
+        totalWorkshops={totalWorkshops}
+        totalEnrolled={totalEnrolled}
+        avgRating={avgRating}
+        skillsCount={skillsCount}
+      />
       <div id="workshops-grid" className="pt-8">
         <WorkshopsClient workshops={workshops} />
       </div>
