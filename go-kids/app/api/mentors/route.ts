@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/connect";
 import MentorModel from "@/lib/db/models/Mentor";
+import type { SortOrder } from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -40,10 +41,10 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    const sortOrder =
+    const sortOrder: Record<string, SortOrder> =
       sort === "popular"
-        ? { isFeatured: -1 as const, createdAt: -1 as const }
-        : { createdAt: -1 as const };
+        ? { isFeatured: -1, createdAt: -1 }
+        : { createdAt: -1 };
 
     const [mentors, total] = await Promise.all([
       MentorModel.find(filter)
