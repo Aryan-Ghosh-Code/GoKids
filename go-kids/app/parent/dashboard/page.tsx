@@ -54,7 +54,11 @@ export default async function ProfilePage() {
         </div>
       }
     >
-      <ProfilePageClient user={user} children={children} dbAssessments={dbAssessments} />
+      <ProfilePageClient
+        user={user}
+        childProfiles={children}
+        dbAssessments={dbAssessments}
+      />
     </Suspense>
   );
 }

@@ -265,7 +265,6 @@ function FeaturedMentors({ mentors }: { mentors: IMentor[] }) {
 
 // ── All mentors (paginated client) ────────────────────────────────────────────
 function AllMentors({
-  mentors,
   total,
   allCategoriesMentors,
 }: {
