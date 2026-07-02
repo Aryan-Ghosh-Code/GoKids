@@ -620,7 +620,8 @@ export default function HomePage() {
                   >
                     <ClipboardList size={16} />
                     <span>
-                      <span className="hidden sm:inline">Start </span>Free Assessment
+                      <span className="hidden sm:inline">Start </span>Free
+                      Assessment
                     </span>
                   </Link>
                 </motion.div>
@@ -1699,10 +1700,10 @@ export default function HomePage() {
                   >
                     <Link
                       href="/talk"
-                      className="btn-primary text-base px-7 py-3.5 flex items-center justify-center gap-2"
+                      className="btn-primary text-xs sm:text-base px-5 py-2.5 sm:px-7 sm:py-3.5 flex items-center justify-center gap-1.5 sm:gap-2"
                     >
-                      <Users size={20} />
-                      Join the Community <ArrowRight size={20} />
+                      <Users size={16} className="sm:w-5 sm:h-5" />
+                      Join the Community <ArrowRight size={16} className="sm:w-5 sm:h-5" />
                     </Link>
                   </motion.div>
                 </div>
@@ -1804,10 +1805,10 @@ export default function HomePage() {
                   >
                     <Link
                       href="/mentors"
-                      className="btn-primary text-base px-7 py-3.5 flex items-center justify-center gap-2"
+                      className="btn-primary text-xs sm:text-base px-5 py-2.5 sm:px-7 sm:py-3.5 flex items-center justify-center gap-1.5 sm:gap-2"
                     >
-                      <Calendar size={20} />
-                      Book a Session <ArrowRight size={20} />
+                      <Calendar size={16} className="sm:w-5 sm:h-5" />
+                      Book a Session <ArrowRight size={16} className="sm:w-5 sm:h-5" />
                     </Link>
                   </motion.div>
                 </div>
@@ -1821,7 +1822,7 @@ export default function HomePage() {
       <InsightsSection />
 
       {/* ── 7. TESTIMONIALS ──────────────────────────────────────── */}
-      <section className="py-20 bg-white">
+      <section className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInUp className="text-center mb-12">
             <p
@@ -1847,11 +1848,7 @@ export default function HomePage() {
       </section>
 
       {/* ── 7. STATS & TRUST ─────────────────────────────────────── */}
-      <section
-        ref={statsRef}
-        className="py-14"
-        style={{ background: "#FAFAF8" }}
-      >
+      <section ref={statsRef} style={{ background: "#FAFAF8" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInUp>
             <div
@@ -1923,7 +1920,7 @@ export default function HomePage() {
       <ChatWidget />
       {/* ── 7. CTA STRIP ─────────────────────────────────────────── */}
       <section
-        className="relative py-20 overflow-hidden"
+        className="mt-5 relative py-8 overflow-hidden"
         style={{ background: "#F5C518" }}
       >
         {/* SVG Pattern */}
@@ -1958,33 +1955,33 @@ export default function HomePage() {
               style={{
                 fontFamily: "var(--font-nunito)",
                 fontWeight: 800,
-                fontSize: "clamp(28px, 4.5vw, 48px)",
+                fontSize: "clamp(22px, 5vw, 42px)",
                 color: "#1A1A1A",
-                marginBottom: 12,
+                marginBottom: 10,
               }}
             >
               <span className="block">Start with a free assessment.</span>
               <span className="block">See what your child is truly</span>
               <span className="block">capable of.</span>
             </h2>
-            <p className="text-base mb-8" style={{ color: "#374151" }}>
+            <p className="text-xs sm:text-sm md:text-base max-w-md sm:max-w-xl mx-auto mb-6 sm:mb-8" style={{ color: "#374151" }}>
               No commitments. No pressure. Just honest, science-backed clarity
               about your child — in 30 minutes.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <motion.div
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-bold text-base text-white transition-all hover:opacity-90"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-bold text-xs sm:text-base text-white transition-all hover:opacity-90"
                   style={{
                     background: "#1A1A1A",
                     fontFamily: "var(--font-nunito)",
                   }}
                 >
-                  <ClipboardList size={20} />
+                  <ClipboardList size={16} className="sm:w-5 sm:h-5" />
                   Book a Free Assessment
                 </Link>
               </motion.div>
@@ -1994,14 +1991,14 @@ export default function HomePage() {
               >
                 <Link
                   href="/workshops"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-bold text-base transition-all border-2 border-brand-black hover:bg-brand-black hover:text-white"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-bold text-xs sm:text-base transition-all border-2 border-brand-black hover:bg-brand-black hover:text-white"
                   style={{
                     background: "white",
                     color: "#1A1A1A",
                     fontFamily: "var(--font-nunito)",
                   }}
                 >
-                  Browse Workshops <ArrowRight size={20} />
+                  Browse Workshops <ArrowRight size={16} className="sm:w-5 sm:h-5" />
                 </Link>
               </motion.div>
             </div>
@@ -2010,7 +2007,7 @@ export default function HomePage() {
       </section>
 
       {/* ── 8. CONTACT ───────────────────────────────────────────── */}
-      <section id="contact" className="py-20 bg-white scroll-mt-24">
+      <section id="contact" className="py-16 bg-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInUp className="text-center mb-12">
             <p
@@ -2126,11 +2123,11 @@ export default function HomePage() {
                             Email
                           </p>
                           <a
-                            href="mailto:pallavimodi@gmail.com"
+                            href="mailto:pallavi.modi@gokids.co.in"
                             className="text-sm font-semibold hover:underline break-all"
                             style={{ color: "#374151" }}
                           >
-                            pallavimodi@gmail.com
+                            pallavi.modi@gokids.co.in
                           </a>
                         </div>
                       </div>

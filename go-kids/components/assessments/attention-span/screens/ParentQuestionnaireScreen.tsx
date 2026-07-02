@@ -46,9 +46,7 @@ export function ParentQuestionnaireScreen({
       {/* Header */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span
-            className="text-xs font-bold uppercase tracking-wider text-gray-500"
-          >
+          <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
             Part B — Parent Questionnaire
           </span>
           <span className="text-xs font-bold text-gray-500">
@@ -57,9 +55,7 @@ export function ParentQuestionnaireScreen({
         </div>
 
         {/* Progress bar */}
-        <div
-          className="w-full h-2 rounded-full overflow-hidden bg-gray-100"
-        >
+        <div className="w-full h-2 rounded-full overflow-hidden bg-gray-100">
           <motion.div
             className="h-full rounded-full bg-primary"
             animate={{ width: `${progress}%` }}
@@ -78,10 +74,8 @@ export function ParentQuestionnaireScreen({
           transition={{ duration: 0.25 }}
           className="space-y-6"
         >
-          <div className="bg-brand-offwhite rounded-2xl p-5 border border-gray-150 shadow-2xs min-h-[96px] flex items-center justify-center text-center">
-            <p
-              className="text-base font-semibold leading-relaxed text-brand-black"
-            >
+          <div className="bg-brand-offwhite rounded-2xl p-5 border border-gray-150 shadow-2xs min-h-24 flex items-center justify-center text-center">
+            <p className="text-base font-semibold leading-relaxed text-brand-black">
               &ldquo;{PARENT_QUESTIONS[currentIndex]}&rdquo;
             </p>
           </div>
@@ -91,9 +85,7 @@ export function ParentQuestionnaireScreen({
             <motion.div
               className="grid grid-cols-5 gap-3"
               animate={
-                showValidationError
-                  ? { x: [0, -6, 6, -4, 4, 0] }
-                  : { x: 0 }
+                showValidationError ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }
               }
               transition={{ duration: 0.3 }}
             >
@@ -116,8 +108,8 @@ export function ParentQuestionnaireScreen({
                       showValidationError && selectedRating === 0
                         ? "2px solid #ef4444"
                         : selectedRating === rating
-                        ? "2px solid #F5C518"
-                        : "1.5px solid #E5E7EB",
+                          ? "2px solid #F5C518"
+                          : "1.5px solid #E5E7EB",
                     fontFamily: "var(--font-heading)",
                   }}
                 >
@@ -128,16 +120,14 @@ export function ParentQuestionnaireScreen({
 
             {/* Labels row */}
             <div className="flex justify-between px-2">
-              <span className="text-xs font-bold text-gray-400">
-                Never
-              </span>
+              <span className="text-xs font-bold text-gray-400">Never</span>
               <span className="text-xs font-bold text-gray-400">
                 Almost always
               </span>
             </div>
 
             {/* Selected label */}
-            <div className="min-h-[20px]">
+            <div className="min-h-5">
               <AnimatePresence mode="wait">
                 {selectedRating > 0 ? (
                   <motion.p
@@ -147,7 +137,10 @@ export function ParentQuestionnaireScreen({
                     exit={{ opacity: 0 }}
                     className="text-center text-sm font-extrabold text-brand-black"
                   >
-                    Rating: <span className="text-[#F4845F]">{RATING_LABELS[selectedRating]}</span>
+                    Rating:{" "}
+                    <span className="text-coral">
+                      {RATING_LABELS[selectedRating]}
+                    </span>
                   </motion.p>
                 ) : (
                   <p className="text-center text-xs font-semibold text-gray-400">

@@ -69,7 +69,12 @@ export function CptDoneScreen({ cptResult, onNext }: CptDoneScreenProps) {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.1 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 18,
+            delay: 0.1,
+          }}
           className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold bg-[#E8F8F7] border-[3px] border-teal"
           style={{ color: "#2BBCB0" }}
         >
@@ -100,16 +105,25 @@ export function CptDoneScreen({ cptResult, onNext }: CptDoneScreenProps) {
         }}
       >
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-widest" style={{ color: accuracyStyle.color, opacity: 0.7 }}>
+          <p
+            className="text-xs font-extrabold uppercase tracking-widest"
+            style={{ color: accuracyStyle.color, opacity: 0.7 }}
+          >
             Focus Score
           </p>
           <p
             className="text-5xl font-black mt-1"
-            style={{ color: accuracyStyle.color, fontFamily: "var(--font-heading)" }}
+            style={{
+              color: accuracyStyle.color,
+              fontFamily: "var(--font-heading)",
+            }}
           >
             {accuracyPct}%
           </p>
-          <p className="text-sm font-bold mt-1" style={{ color: accuracyStyle.color }}>
+          <p
+            className="text-sm font-bold mt-1"
+            style={{ color: accuracyStyle.color }}
+          >
             {accuracyStyle.label}
           </p>
         </div>
@@ -153,12 +167,15 @@ export function CptDoneScreen({ cptResult, onNext }: CptDoneScreenProps) {
       </div>
 
       {/* Hand-off banner */}
-      <div className="rounded-2xl p-5 flex gap-3.5 items-start bg-[#E8F8F7]/60 border border-[#2BBCB0]/30">
+      <div className="rounded-2xl p-5 flex gap-3.5 items-start bg-[#E8F8F7]/60 border border-teal/30">
         <span className="text-2xl">👨‍👩‍👧</span>
         <div>
-          <p className="text-sm font-bold text-[#0D7A73]">Hand the device back to the parent</p>
+          <p className="text-sm font-bold text-[#0D7A73]">
+            Hand the device back to the parent
+          </p>
           <p className="text-xs mt-1 text-gray-600 leading-relaxed font-semibold">
-            The child&apos;s part is complete. The next section is a short questionnaire for a parent or guardian.
+            The child&apos;s part is complete. The next section is a short
+            questionnaire for a parent or guardian.
           </p>
         </div>
       </div>

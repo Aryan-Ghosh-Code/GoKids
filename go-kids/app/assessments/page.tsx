@@ -8,7 +8,6 @@ import Footer from "@/components/shared/Footer";
 import { HelpCircle } from "lucide-react";
 import { DemoModal } from "@/components/shared/DemoModal";
 import {
-  FadeInUp,
   StaggerContainer,
   StaggerItem,
 } from "@/components/animations/MotionWrapper";
@@ -55,16 +54,19 @@ export default function AssessmentsPage() {
   const [activeAssessment, setActiveAssessment] = useState<"attention" | "writing" | null>(null);
 
   return (
-    <div 
+    <div
       className="min-h-screen flex flex-col relative"
-      style={{ background: "linear-gradient(180deg, #FFFBEA 0%, #FAFAF8 30%, #FAFAF8 100%)" }}
+      style={{
+        background:
+          "linear-gradient(180deg, #FFFBEA 0%, #FAFAF8 30%, #FAFAF8 100%)",
+      }}
     >
       <Navbar />
 
       <main className="flex-1 pt-16 relative">
         {/* ── Hero ────────────────────────────────────────────────────── */}
         <section className="relative z-10">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-center">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -79,21 +81,22 @@ export default function AssessmentsPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl sm:text-5xl font-extrabold leading-tight mb-5 text-brand-black"
+              className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-4 sm:mb-5 text-brand-black"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              Understand your child <span className="text-[#2BBCB0]">before</span> you guide them
+              Understand your child <span className="text-teal">before</span>{" "}
+              you guide them
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-8 text-gray-600 font-medium"
+              className="text-sm sm:text-base leading-relaxed max-w-2xl mx-auto mb-6 sm:mb-8 text-gray-600 font-medium"
             >
-              Psychometric tools designed for Indian children aged 6–18, developed
-              with child psychologists and education specialists. Free during our
-              launch phase.
+              Psychometric tools designed for Indian children aged 6–18,
+              developed with child psychologists and education specialists. Free
+              during our launch phase.
             </motion.p>
 
             {/* Stats row */}
@@ -101,7 +104,7 @@ export default function AssessmentsPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-wrap items-center justify-center gap-4 sm:gap-6"
+              className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 max-w-lg mx-auto"
             >
               {[
                 { icon: "🎯", label: "Evidence-based" },
@@ -110,7 +113,7 @@ export default function AssessmentsPage() {
               ].map((s) => (
                 <div
                   key={s.label}
-                  className="flex items-center gap-2 text-sm font-extrabold text-gray-700 bg-white/70 backdrop-blur-xs px-4 py-2 rounded-full border border-gray-200/50 shadow-2xs"
+                  className="flex items-center gap-1.5 text-[11px] sm:text-xs md:text-sm font-extrabold text-gray-700 bg-white/70 backdrop-blur-xs px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full border border-gray-200/50 shadow-2xs whitespace-nowrap"
                 >
                   <span>{s.icon}</span>
                   {s.label}
@@ -122,7 +125,7 @@ export default function AssessmentsPage() {
 
         {/* ── Assessment Cards ─────────────────────────────────────────── */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10">
-          <div className="text-center mb-12">
+          <div className="text-center">
             <h2
               className="text-2xl sm:text-3xl font-extrabold text-brand-black"
               style={{ fontFamily: "var(--font-heading)" }}
@@ -131,35 +134,36 @@ export default function AssessmentsPage() {
             </h2>
           </div>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 mt-6 sm:mt-8">
             {ASSESSMENTS.map((a) => (
               <StaggerItem key={a.id}>
                 <motion.div
-                  whileHover={{ y: -6, boxShadow: "0 24px 48px rgba(0,0,0,0.06)" }}
-                  className="relative rounded-[32px] overflow-hidden flex flex-col h-full bg-white border border-gray-200/60 shadow-xs transition-all duration-300"
+                  whileHover={{
+                    y: -6,
+                    boxShadow: "0 24px 48px rgba(0,0,0,0.06)",
+                  }}
+                  className="relative rounded-4xl overflow-hidden flex flex-col h-full bg-white border border-gray-200/60 shadow-xs transition-all duration-300"
                 >
                   {/* Coming soon badge */}
                   {!a.available && (
-                    <div
-                      className="absolute top-5 right-5 text-xs font-extrabold px-3.5 py-1.5 rounded-full bg-yellow-50 text-amber-700 border border-amber-200"
-                    >
+                    <div className="absolute top-5 right-5 text-xs font-extrabold px-3.5 py-1.5 rounded-full bg-yellow-50 text-amber-700 border border-amber-200">
                       Coming Soon
                     </div>
                   )}
 
-                  <div className="p-8 flex flex-col h-full justify-between space-y-6">
+                  <div className="p-5 sm:p-8 flex flex-col h-full justify-between space-y-5">
                     <div className="space-y-5">
                       {/* Header Row */}
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3 sm:gap-4">
                         <div
-                          className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl font-bold shrink-0"
+                          className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-bold shrink-0"
                           style={{ background: a.iconBg }}
                         >
                           {a.emoji}
                         </div>
                         <div>
                           <h3
-                            className="text-xl font-extrabold text-brand-black"
+                            className="text-base sm:text-xl font-extrabold text-brand-black"
                             style={{ fontFamily: "var(--font-heading)" }}
                           >
                             {a.title}
@@ -169,7 +173,10 @@ export default function AssessmentsPage() {
                               <span
                                 key={tag}
                                 className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full"
-                                style={{ background: a.tagBg, color: a.tagColor }}
+                                style={{
+                                  background: a.tagBg,
+                                  color: a.tagColor,
+                                }}
                               >
                                 {tag}
                               </span>
@@ -183,9 +190,7 @@ export default function AssessmentsPage() {
                       </p>
 
                       {/* Accent divider line */}
-                      <div
-                        className="w-full h-[1px] bg-gray-150"
-                      />
+                      <div className="w-full h-1px bg-gray-150" />
 
                       {/* Trigger to see demo questions in modal */}
                       <div className="pt-1">
@@ -195,7 +200,7 @@ export default function AssessmentsPage() {
                             setActiveAssessment(a.type);
                             setModalOpen(true);
                           }}
-                          className="inline-flex items-center gap-1.5 text-xs font-extrabold text-brand-black hover:text-[#2BBCB0] transition-colors cursor-pointer bg-transparent border-none p-0 outline-none"
+                          className="inline-flex items-center gap-1.5 text-xs font-extrabold text-brand-black hover:text-teal transition-colors cursor-pointer bg-transparent border-none p-0 outline-none"
                         >
                           <HelpCircle size={15} />
                           See Demo Questions
@@ -219,7 +224,7 @@ export default function AssessmentsPage() {
                         </Link>
                       ) : (
                         <div
-                          className="w-full text-center py-4 rounded-2xl font-extrabold text-sm border border-dashed border-gray-200 text-gray-400 font-semibold"
+                          className="w-full text-center py-4 rounded-2xl font-extrabold text-sm border border-dashed border-gray-200 text-gray-400"
                           style={{
                             fontFamily: "var(--font-heading)",
                             background: "#FAFAF9",
@@ -253,26 +258,32 @@ export default function AssessmentsPage() {
 
             <div className="relative">
               {/* Desktop Horizontal Connecting Line (Icon-centered) */}
-              <div className="absolute top-[60px] left-[15%] right-[15%] h-[3px] bg-gray-200 hidden sm:block z-0">
+              <div className="absolute top-15 left-[15%] right-[15%] h-0.75 bg-gray-200 hidden sm:block z-0">
                 <motion.div
                   initial={{ width: 0 }}
                   whileInView={{ width: "100%" }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 1, ease: "easeInOut", delay: 0.2 }}
                   className="h-full rounded-full"
-                  style={{ background: "linear-gradient(90deg, #F4845F 0%, #2BBCB0 50%, #F5C518 100%)" }}
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #F4845F 0%, #2BBCB0 50%, #F5C518 100%)",
+                  }}
                 />
               </div>
 
               {/* Mobile Vertical Connecting Line (Icon-centered) */}
-              <div className="absolute left-1/2 top-[60px] bottom-[120px] w-[3px] bg-gray-200 sm:hidden z-0 -translate-x-1/2">
+              <div className="absolute left-1/2 top-15 bottom-30 w-0.75 bg-gray-200 sm:hidden z-0 -translate-x-1/2">
                 <motion.div
                   initial={{ height: 0 }}
                   whileInView={{ height: "100%" }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 1, ease: "easeInOut", delay: 0.2 }}
                   className="w-full rounded-full"
-                  style={{ background: "linear-gradient(180deg, #F4845F 0%, #2BBCB0 50%, #F5C518 100%)" }}
+                  style={{
+                    background:
+                      "linear-gradient(180deg, #F4845F 0%, #2BBCB0 50%, #F5C518 100%)",
+                  }}
                 />
               </div>
 
@@ -305,8 +316,12 @@ export default function AssessmentsPage() {
                 ].map((item) => (
                   <StaggerItem key={item.step}>
                     <motion.div
-                      whileHover={{ y: -6, scale: 1.01, boxShadow: "0 16px 32px rgba(0,0,0,0.04)" }}
-                      className="rounded-[28px] p-8 text-center bg-white border border-gray-200/60 shadow-xs relative transition-all duration-300"
+                      whileHover={{
+                        y: -6,
+                        scale: 1.01,
+                        boxShadow: "0 16px 32px rgba(0,0,0,0.04)",
+                      }}
+                      className="rounded-[28px] p-5 sm:p-8 text-center bg-white border border-gray-200/60 shadow-xs relative transition-all duration-300"
                     >
                       <div
                         className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-5 relative z-10 bg-white"
@@ -342,20 +357,28 @@ export default function AssessmentsPage() {
 
         {/* ── Bottom CTA ───────────────────────────────────────────────── */}
         <section className="pb-20 text-center relative overflow-hidden z-10 max-w-4xl mx-auto px-4 sm:px-6">
-          <div 
-            className="rounded-[36px] p-10 sm:p-14 relative z-10"
-            style={{ background: "linear-gradient(135deg, #FFFBEA 0%, #FFF3CC 100%)", border: "1.5px solid #FDE68A" }}
+          <div
+            className="rounded-[28px] sm:rounded-[36px] p-7 sm:p-10 lg:p-14 relative z-10"
+            style={{
+              background: "linear-gradient(135deg, #FFFBEA 0%, #FFF3CC 100%)",
+              border: "1.5px solid #FDE68A",
+            }}
           >
             <h2
-              className="text-3xl font-extrabold text-brand-black mb-3"
+              className="text-2xl sm:text-3xl font-extrabold text-brand-black mb-3"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               Ready to understand your child&apos;s potential?
             </h2>
             <p className="text-base mb-8 text-gray-600 max-w-lg mx-auto font-medium">
-              Start with our Attention Span Assessment today — it is free and takes only 20 minutes.
+              Start with our Attention Span Assessment today — it is free and
+              takes only 20 minutes.
             </p>
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="inline-block">
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-block"
+            >
               <Link
                 href="/parent/assessments/attention-span"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-extrabold text-base transition-all bg-primary text-brand-black shadow-lg"

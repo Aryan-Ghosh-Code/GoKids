@@ -89,7 +89,7 @@ export const authOptions: NextAuthConfig = {
     },
 
     // ── JWT: attach role + id to token ───────────────────────────
-    async jwt({ token, user, account, trigger }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = (user as { role?: string }).role;
@@ -108,7 +108,7 @@ export const authOptions: NextAuthConfig = {
           await connectDB();
           const dbUser = await User.findOne(
             { email: (token.email as string).toLowerCase() },
-            "role _id passwordChangedAt"
+            "role _id passwordChangedAt photoUrl"
           );
           if (dbUser) {
             // Backfill role/id if missing (first sign-in or legacy token)
@@ -116,6 +116,9 @@ export const authOptions: NextAuthConfig = {
               token.id = dbUser._id.toString();
               token.role = dbUser.role;
             }
+
+            // Always sync the latest photoUrl so navbar stays current
+            token.picture = dbUser.photoUrl ?? token.picture ?? null;
 
             // Invalidate token if password was changed after it was issued
             if (dbUser.passwordChangedAt) {
@@ -137,11 +140,15 @@ export const authOptions: NextAuthConfig = {
       return token;
     },
 
-    // ── Session: expose id + role on session.user ─────────────────
+    // ── Session: expose id + role + photo on session.user ────────
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
         (session.user as { role?: string }).role = token.role as string;
+        // Expose photoUrl as session.user.image (Next-Auth standard field)
+        if (token.picture) {
+          session.user.image = token.picture as string;
+        }
       }
       return session;
     },

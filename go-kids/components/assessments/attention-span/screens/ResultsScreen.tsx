@@ -32,8 +32,6 @@ export function ResultsScreen({
   cptResult,
   parentRaw,
   childName,
-  ageBand,
-  parentAnswers,
   onSave,
 }: ResultsScreenProps) {
   const [saving, setSaving] = useState(false);
@@ -89,7 +87,7 @@ export function ResultsScreen({
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1, duration: 0.35 }}
-        className="rounded-[28px] p-6 border-[2px]"
+        className="rounded-[28px] p-6 border-2"
         style={{
           background: levelStyle.bg,
           borderColor: levelStyle.border,
@@ -97,16 +95,25 @@ export function ResultsScreen({
       >
         <div className="flex items-center justify-between gap-4">
           <div className="space-y-1">
-            <p className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: levelStyle.color, opacity: 0.8 }}>
+            <p
+              className="text-[10px] font-extrabold uppercase tracking-widest"
+              style={{ color: levelStyle.color, opacity: 0.8 }}
+            >
               Focus Classification
             </p>
             <p
               className="text-3xl font-black"
-              style={{ fontFamily: "var(--font-heading)", color: levelStyle.color }}
+              style={{
+                fontFamily: "var(--font-heading)",
+                color: levelStyle.color,
+              }}
             >
               {results.level}
             </p>
-            <p className="text-sm font-bold mt-1" style={{ color: levelStyle.color }}>
+            <p
+              className="text-sm font-bold mt-1"
+              style={{ color: levelStyle.color }}
+            >
               {results.sublabel}
             </p>
           </div>
@@ -114,10 +121,15 @@ export function ResultsScreen({
             className="w-18 h-18 rounded-[22px] flex flex-col items-center justify-center bg-white shadow-xs shrink-0"
             style={{ border: `1.5px solid ${levelStyle.border}` }}
           >
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Score</span>
-            <span 
-              className="text-2xl font-black mt-0.5" 
-              style={{ color: levelStyle.color, fontFamily: "var(--font-heading)" }}
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
+              Score
+            </span>
+            <span
+              className="text-2xl font-black mt-0.5"
+              style={{
+                color: levelStyle.color,
+                fontFamily: "var(--font-heading)",
+              }}
             >
               {results.overall}
             </span>
@@ -126,12 +138,8 @@ export function ResultsScreen({
       </motion.div>
 
       {/* Score breakdown */}
-      <div
-        className="rounded-[28px] p-6 space-y-5 bg-white border border-gray-150 shadow-xs"
-      >
-        <h3
-          className="text-xs font-bold uppercase tracking-widest text-gray-400"
-        >
+      <div className="rounded-[28px] p-6 space-y-5 bg-white border border-gray-150 shadow-xs">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">
           Score Breakdown
         </h3>
 
@@ -139,15 +147,16 @@ export function ResultsScreen({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold text-gray-700">
-              Part A — Digital Task <span className="text-xs font-semibold text-gray-400">(Weight 60%)</span>
+              Part A — Digital Task{" "}
+              <span className="text-xs font-semibold text-gray-400">
+                (Weight 60%)
+              </span>
             </span>
-            <span className="text-sm font-extrabold text-[#2BBCB0]">
+            <span className="text-sm font-extrabold text-teal">
               {results.cptScore} / 100
             </span>
           </div>
-          <div
-            className="w-full h-3 rounded-full overflow-hidden bg-gray-100 border border-gray-100"
-          >
+          <div className="w-full h-3 rounded-full overflow-hidden bg-gray-100 border border-gray-100">
             <motion.div
               className="h-full rounded-full"
               style={{ background: "#2BBCB0" }}
@@ -162,15 +171,16 @@ export function ResultsScreen({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold text-gray-700">
-              Part B — Parent Scale <span className="text-xs font-semibold text-gray-400">(Weight 40%)</span>
+              Part B — Parent Scale{" "}
+              <span className="text-xs font-semibold text-gray-400">
+                (Weight 40%)
+              </span>
             </span>
-            <span className="text-sm font-extrabold text-[#F4845F]">
+            <span className="text-sm font-extrabold text-coral">
               {results.parentScore} / 100
             </span>
           </div>
-          <div
-            className="w-full h-3 rounded-full overflow-hidden bg-gray-100 border border-gray-100"
-          >
+          <div className="w-full h-3 rounded-full overflow-hidden bg-gray-100 border border-gray-100">
             <motion.div
               className="h-full rounded-full"
               style={{ background: "#F4845F" }}
@@ -182,9 +192,7 @@ export function ResultsScreen({
         </div>
 
         {/* Overall score */}
-        <div
-          className="flex items-center justify-between pt-4 border-t border-gray-100"
-        >
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <span className="text-sm font-extrabold text-brand-black">
             Overall Score
           </span>
@@ -193,20 +201,14 @@ export function ResultsScreen({
             style={{ fontFamily: "var(--font-heading)" }}
           >
             {results.overall}{" "}
-            <span className="text-base font-bold text-gray-400">
-              / 100
-            </span>
+            <span className="text-base font-bold text-gray-400">/ 100</span>
           </span>
         </div>
       </div>
 
       {/* Key Insights */}
-      <div
-        className="rounded-[28px] p-6 space-y-4 bg-white border border-gray-150 shadow-xs"
-      >
-        <h3
-          className="text-xs font-bold uppercase tracking-widest text-gray-400"
-        >
+      <div className="rounded-[28px] p-6 space-y-4 bg-white border border-gray-150 shadow-xs">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">
           Key Insights
         </h3>
         <div className="space-y-4">
@@ -275,9 +277,25 @@ export function ResultsScreen({
           >
             {saving ? (
               <>
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="#1A1A1A" strokeWidth="3" strokeOpacity="0.25" />
-                  <path d="M12 2a10 10 0 0 1 10 10" stroke="#1A1A1A" strokeWidth="3" strokeLinecap="round" />
+                <svg
+                  className="animate-spin w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="#1A1A1A"
+                    strokeWidth="3"
+                    strokeOpacity="0.25"
+                  />
+                  <path
+                    d="M12 2a10 10 0 0 1 10 10"
+                    stroke="#1A1A1A"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
                 </svg>
                 Saving…
               </>
@@ -295,9 +313,7 @@ export function ResultsScreen({
       )}
 
       {/* PDF placeholder */}
-      <div
-        className="rounded-2xl px-5 py-4 text-xs font-semibold bg-[#FAFAF8] border border-gray-150 text-gray-500 flex gap-2.5 items-center shadow-2xs"
-      >
+      <div className="rounded-2xl px-5 py-4 text-xs font-semibold bg-brand-offwhite border border-gray-150 text-gray-500 flex gap-2.5 items-center shadow-2xs">
         <span className="text-base">📄</span>
         <p>
           <span className="font-extrabold text-gray-700">
@@ -309,8 +325,8 @@ export function ResultsScreen({
 
       {/* Disclaimer */}
       <p className="text-[10px] text-center text-gray-400 leading-relaxed font-semibold">
-        Disclaimer: This assessment is a screening tool and not a clinical diagnosis. Results should
-        be interpreted by a qualified professional.
+        Disclaimer: This assessment is a screening tool and not a clinical
+        diagnosis. Results should be interpreted by a qualified professional.
       </p>
     </motion.div>
   );

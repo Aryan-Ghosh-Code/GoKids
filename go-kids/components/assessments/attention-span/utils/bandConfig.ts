@@ -1,6 +1,6 @@
 export const BAND_CONFIG = {
   A: {
-    durSeconds: 30,
+    durSeconds: 360,
     durLabel: "6 minutes",
     target: "🔴",
     targetName: "Red circle",

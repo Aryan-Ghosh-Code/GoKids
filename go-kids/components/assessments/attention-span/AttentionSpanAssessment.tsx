@@ -58,7 +58,9 @@ const variants = {
   exit: { opacity: 0, x: -40 },
 };
 
-export default function AttentionSpanAssessment({ childrenList }: AttentionSpanAssessmentProps) {
+export default function AttentionSpanAssessment({
+  childrenList,
+}: AttentionSpanAssessmentProps) {
   const [screen, setScreen] = useState<Screen>("welcome");
   const [state, setState] = useState<AssessmentState>(initialState);
 
@@ -74,7 +76,7 @@ export default function AttentionSpanAssessment({ childrenList }: AttentionSpanA
   function handleCptComplete(
     cptResult: CPTResult,
     targetCount: number,
-    misses: number
+    misses: number,
   ) {
     setState((prev) => ({
       ...prev,
@@ -92,11 +94,11 @@ export default function AttentionSpanAssessment({ childrenList }: AttentionSpanA
   function handleQuestionnaireComplete(answers: number[], parentRaw: number) {
     if (!state.cptResult) return;
     const results = calcResults(
-      state.cptResult.accuracyPct,       // ML accuracy (TP+TN) / total
-      state.cptResult.hitRatePct,        // recall / sensitivity
-      state.cptResult.falseAlarms,       // raw FP count
+      state.cptResult.accuracyPct, // ML accuracy (TP+TN) / total
+      state.cptResult.hitRatePct, // recall / sensitivity
+      state.cptResult.falseAlarms, // raw FP count
       parentRaw,
-      state.cptResult.shapesShown        // total shapes for proportional FA thresholds
+      state.cptResult.shapesShown, // total shapes for proportional FA thresholds
     );
     setState((prev) => ({
       ...prev,
@@ -132,7 +134,7 @@ export default function AttentionSpanAssessment({ childrenList }: AttentionSpanA
   }, [state]);
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-white rounded-[32px] border-[1.5px] border-gray-200/85 shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8">
+    <div className="w-full max-w-xl mx-auto bg-white rounded-4xl border-[1.5px] border-gray-200/85 shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8">
       <AnimatePresence mode="wait">
         {screen === "welcome" && (
           <motion.div
@@ -206,30 +208,35 @@ export default function AttentionSpanAssessment({ childrenList }: AttentionSpanA
             exit="exit"
             transition={{ duration: 0.3 }}
           >
-            <ParentQuestionnaireScreen onComplete={handleQuestionnaireComplete} />
-          </motion.div>
-        )}
-
-        {screen === "results" && state.results && state.cptResult && state.band && (
-          <motion.div
-            key="results"
-            variants={variants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ duration: 0.3 }}
-          >
-            <ResultsScreen
-              results={state.results}
-              cptResult={state.cptResult}
-              parentRaw={state.parentRaw}
-              childName={state.childName}
-              ageBand={state.band}
-              parentAnswers={state.parentAnswers}
-              onSave={handleSave}
+            <ParentQuestionnaireScreen
+              onComplete={handleQuestionnaireComplete}
             />
           </motion.div>
         )}
+
+        {screen === "results" &&
+          state.results &&
+          state.cptResult &&
+          state.band && (
+            <motion.div
+              key="results"
+              variants={variants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.3 }}
+            >
+              <ResultsScreen
+                results={state.results}
+                cptResult={state.cptResult}
+                parentRaw={state.parentRaw}
+                childName={state.childName}
+                ageBand={state.band}
+                parentAnswers={state.parentAnswers}
+                onSave={handleSave}
+              />
+            </motion.div>
+          )}
       </AnimatePresence>
     </div>
   );

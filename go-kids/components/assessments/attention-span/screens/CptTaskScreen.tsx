@@ -69,8 +69,12 @@ export function CptTaskScreen({ band, childName, onComplete }: CptTaskScreenProp
 
       {/* Circular countdown ring */}
       <div className="flex flex-col items-center relative">
-        <div className="relative w-[140px] h-[140px]">
-          <svg width={140} height={140} className="-rotate-90 absolute top-0 left-0">
+        <div className="relative w-35 h-35">
+          <svg
+            width={140}
+            height={140}
+            className="-rotate-90 absolute top-0 left-0"
+          >
             <circle
               cx={70}
               cy={70}
@@ -109,9 +113,7 @@ export function CptTaskScreen({ band, childName, onComplete }: CptTaskScreenProp
 
       {/* Stats chips */}
       <div className="grid grid-cols-3 gap-3">
-        <div
-          className="rounded-2xl py-3 px-4 text-center border border-gray-150 bg-gray-50/50 shadow-xs"
-        >
+        <div className="rounded-2xl py-3 px-4 text-center border border-gray-150 bg-gray-50/50 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
             Shown
           </p>
@@ -119,9 +121,7 @@ export function CptTaskScreen({ band, childName, onComplete }: CptTaskScreenProp
             {state.shapesShown}
           </p>
         </div>
-        <div
-          className="rounded-2xl py-3 px-4 text-center border border-green-100 bg-[#E8F8F7]/50 shadow-xs"
-        >
+        <div className="rounded-2xl py-3 px-4 text-center border border-green-100 bg-[#E8F8F7]/50 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-[#0D7A73]">
             Hits
           </p>
@@ -129,13 +129,11 @@ export function CptTaskScreen({ band, childName, onComplete }: CptTaskScreenProp
             {state.hits}
           </p>
         </div>
-        <div
-          className="rounded-2xl py-3 px-4 text-center border border-red-100 bg-[#FEF0EB]/60 shadow-xs"
-        >
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#F4845F]">
+        <div className="rounded-2xl py-3 px-4 text-center border border-red-100 bg-[#FEF0EB]/60 shadow-xs">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-coral">
             Errors
           </p>
-          <p className="text-xl font-extrabold text-[#F4845F] mt-0.5">
+          <p className="text-xl font-extrabold text-coral mt-0.5">
             {state.falseAlarms}
           </p>
         </div>
@@ -180,9 +178,7 @@ export function CptTaskScreen({ band, childName, onComplete }: CptTaskScreenProp
       {/* Target reminder */}
       <p className="text-center text-sm font-semibold text-gray-500">
         Target symbol:{" "}
-        <span
-          className="font-extrabold text-brand-black"
-        >
+        <span className="font-extrabold text-brand-black">
           {config.target} {config.targetName}
         </span>
       </p>
@@ -205,12 +201,12 @@ export function CptTaskScreen({ band, childName, onComplete }: CptTaskScreenProp
         {state.tapFlash === "hit"
           ? "✓ TARGET HIT!"
           : state.tapFlash === "miss"
-          ? "✗ WRONG SYMBOL!"
-          : "TAP IT! 👋"}
+            ? "✗ WRONG SYMBOL!"
+            : "TAP IT! 👋"}
       </motion.button>
 
       {/* Feedback text */}
-      <div className="min-h-[24px] text-center">
+      <div className="min-h-6 text-center">
         <AnimatePresence mode="wait">
           {state.feedback === "correct" && (
             <motion.p

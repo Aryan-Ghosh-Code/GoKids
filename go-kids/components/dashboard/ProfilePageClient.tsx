@@ -14,7 +14,6 @@ import {
   BookOpen,
   ClipboardList,
   Plus,
-  ChevronRight,
   Shield,
   User,
   Clock,
@@ -53,12 +52,17 @@ interface DBAssessment {
 
 interface ProfilePageClientProps {
   user: UserProfile;
-  children: ChildData[];
+  childProfiles: ChildData[];
   dbAssessments?: DBAssessment[];
 }
 
 function getInitials(name: string) {
-  return name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
 function formatDate(dateStr: string) {
@@ -69,7 +73,11 @@ function formatDate(dateStr: string) {
   });
 }
 
-export default function ProfilePageClient({ user, children, dbAssessments }: ProfilePageClientProps) {
+export default function ProfilePageClient({
+  user,
+  childProfiles,
+  dbAssessments,
+}: ProfilePageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "profile";
@@ -79,7 +87,7 @@ export default function ProfilePageClient({ user, children, dbAssessments }: Pro
   const [editOpen, setEditOpen] = useState(false);
 
   // Child management state
-  const [childrenList, setChildrenList] = useState<ChildData[]>(children);
+  const [childrenList, setChildrenList] = useState<ChildData[]>(childProfiles);
   const [addOpen, setAddOpen] = useState(false);
   const [editChild, setEditChild] = useState<ChildData | null>(null);
   const [deleteChild, setDeleteChild] = useState<ChildData | null>(null);
@@ -87,7 +95,10 @@ export default function ProfilePageClient({ user, children, dbAssessments }: Pro
   // Sync tab selection from search parameter
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && ["profile", "children", "workshops", "assessments"].includes(tab)) {
+    if (
+      tab &&
+      ["profile", "children", "workshops", "assessments"].includes(tab)
+    ) {
       const t = setTimeout(() => {
         setActiveTab(tab);
       }, 0);
@@ -107,7 +118,10 @@ export default function ProfilePageClient({ user, children, dbAssessments }: Pro
 
   const allAssessments = (dbAssessments || []).map((db) => ({
     id: db._id,
-    title: db.type === "attention-span" ? "Attention Span Assessment" : "Talent Assessment",
+    title:
+      db.type === "attention-span"
+        ? "Attention Span Assessment"
+        : "Talent Assessment",
     childName: db.formData.childName,
     completedDate: new Date(db.createdAt).toLocaleDateString("en-IN", {
       year: "numeric",
@@ -120,14 +134,14 @@ export default function ProfilePageClient({ user, children, dbAssessments }: Pro
       db.results.level === "High"
         ? "#2BBCB0"
         : db.results.level === "Moderate"
-        ? "#F5C518"
-        : "#F4845F",
+          ? "#F5C518"
+          : "#F4845F",
     bg:
       db.results.level === "High"
         ? "#F0FAFA"
         : db.results.level === "Moderate"
-        ? "#FFF9E6"
-        : "#FEF0EB",
+          ? "#FFF9E6"
+          : "#FEF0EB",
   }));
 
   // Handlers for child CRUD
@@ -136,7 +150,9 @@ export default function ProfilePageClient({ user, children, dbAssessments }: Pro
   };
 
   const handleEdited = (updated: ChildData) => {
-    setChildrenList((prev) => prev.map((c) => (c._id === updated._id ? updated : c)));
+    setChildrenList((prev) =>
+      prev.map((c) => (c._id === updated._id ? updated : c)),
+    );
   };
 
   const handleDeleted = (id: string) => {
@@ -224,10 +240,10 @@ export default function ProfilePageClient({ user, children, dbAssessments }: Pro
                       "linear-gradient(135deg, #F5C518 0%, #FFE566 50%, #F5C518 100%)",
                   }}
                 >
-                  <div
+                  {/* <div
                     className="absolute top-4 right-8 w-24 h-24 rounded-full opacity-15"
                     style={{ background: "#1A1A1A" }}
-                  />
+                  /> */}
                   <div
                     className="absolute -bottom-6 left-28 w-16 h-16 rounded-full opacity-10"
                     style={{ background: "#1A1A1A" }}
@@ -473,20 +489,28 @@ export default function ProfilePageClient({ user, children, dbAssessments }: Pro
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 px-6 text-center border border-[#E5E7EB] rounded-[32px] bg-white space-y-4 shadow-sm">
+                <div className="flex flex-col items-center justify-center py-16 px-6 text-center border border-[#E5E7EB] rounded-4xl bg-white space-y-4 shadow-sm">
                   <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center text-2xl mx-auto">
                     📚
                   </div>
-                  <h3 className="text-lg font-bold text-brand-black" style={{ fontFamily: "var(--font-nunito)" }}>
+                  <h3
+                    className="text-lg font-bold text-brand-black"
+                    style={{ fontFamily: "var(--font-nunito)" }}
+                  >
                     No registered workshops yet
                   </h3>
                   <p className="text-xs text-brand-grey-text max-w-sm">
-                    You haven&apos;t enrolled your children in any workshops yet. Explore our expert-led skill building workshops to get started.
+                    You haven&apos;t enrolled your children in any workshops
+                    yet. Explore our expert-led skill building workshops to get
+                    started.
                   </p>
                   <Link
                     href="/workshops"
                     className="inline-block px-6 py-3 rounded-full text-xs font-extrabold bg-primary text-brand-black transition-all hover:scale-105 shadow-xs"
-                    style={{ fontFamily: "var(--font-nunito)", textDecoration: "none" }}
+                    style={{
+                      fontFamily: "var(--font-nunito)",
+                      textDecoration: "none",
+                    }}
                   >
                     Explore Workshops
                   </Link>
@@ -540,20 +564,27 @@ export default function ProfilePageClient({ user, children, dbAssessments }: Pro
                   </button>
                 </div>
               ) : allAssessments.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 px-6 text-center border border-[#E5E7EB] rounded-[32px] bg-white space-y-4 shadow-sm">
+                <div className="flex flex-col items-center justify-center py-16 px-6 text-center border border-[#E5E7EB] rounded-4xl bg-white space-y-4 shadow-sm">
                   <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-2xl mx-auto">
                     🧠
                   </div>
-                  <h3 className="text-lg font-bold text-brand-black" style={{ fontFamily: "var(--font-nunito)" }}>
+                  <h3
+                    className="text-lg font-bold text-brand-black"
+                    style={{ fontFamily: "var(--font-nunito)" }}
+                  >
                     No assessments completed yet
                   </h3>
                   <p className="text-xs text-brand-grey-text max-w-sm">
-                    Assess your child&apos;s cognitive, focus, and writing skills to unlock personalized learning paths and reports.
+                    Assess your child&apos;s cognitive, focus, and writing
+                    skills to unlock personalized learning paths and reports.
                   </p>
                   <Link
                     href="/assessments"
                     className="inline-block px-6 py-3 rounded-full text-xs font-extrabold bg-primary text-brand-black transition-all hover:scale-105 shadow-xs"
-                    style={{ fontFamily: "var(--font-nunito)", textDecoration: "none" }}
+                    style={{
+                      fontFamily: "var(--font-nunito)",
+                      textDecoration: "none",
+                    }}
                   >
                     Start Free Assessment
                   </Link>

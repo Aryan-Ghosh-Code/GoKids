@@ -75,7 +75,6 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
     ? BAND_OPTIONS.find((b) => b.band === effectiveBand)
     : null;
 
-  useEffect(() => { setManualBand(null); }, [selectedChildId]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -108,21 +107,30 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
           </span>
         </div>
         <p className="text-sm text-gray-500 font-semibold">
-          A science-backed tool to understand your child&apos;s focus and attention.
+          A science-backed tool to understand your child&apos;s focus and
+          attention.
         </p>
       </div>
 
       {/* Info cards */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <motion.div
           whileHover={{ scale: 1.02, y: -2 }}
           className="rounded-2xl p-5 space-y-3 border border-gray-100 bg-[#E8F8F7]/50 shadow-xs"
         >
-          <div className="w-11 h-11 rounded-full flex items-center justify-center text-2xl bg-white shadow-xs">🧠</div>
+          <div className="w-11 h-11 rounded-full flex items-center justify-center text-2xl bg-white shadow-xs">
+            🧠
+          </div>
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-wider text-[#2BBCB0]">Part A: Digital Task</p>
-            <p className="text-xs mt-1 text-gray-400 font-semibold">10 min · Child completes</p>
-            <p className="text-xs mt-1.5 text-gray-600 font-semibold leading-relaxed">Tracks response speed and accuracy</p>
+            <p className="text-xs font-extrabold uppercase tracking-wider text-teal">
+              Part A: Digital Task
+            </p>
+            <p className="text-xs mt-1 text-gray-400 font-semibold">
+              10 min · Child completes
+            </p>
+            <p className="text-xs mt-1.5 text-gray-600 font-semibold leading-relaxed">
+              Tracks response speed and accuracy
+            </p>
           </div>
         </motion.div>
 
@@ -130,11 +138,19 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
           whileHover={{ scale: 1.02, y: -2 }}
           className="rounded-2xl p-5 space-y-3 border border-gray-100 bg-[#FEF0EB]/60 shadow-xs"
         >
-          <div className="w-11 h-11 rounded-full flex items-center justify-center text-2xl bg-white shadow-xs">📋</div>
+          <div className="w-11 h-11 rounded-full flex items-center justify-center text-2xl bg-white shadow-xs">
+            📋
+          </div>
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-wider text-[#F4845F]">Part B: Parent Report</p>
-            <p className="text-xs mt-1 text-gray-400 font-semibold">10–15 min · Parent fills</p>
-            <p className="text-xs mt-1.5 text-gray-600 font-semibold leading-relaxed">Observational questionnaire</p>
+            <p className="text-xs font-extrabold uppercase tracking-wider text-coral">
+              Part B: Parent Report
+            </p>
+            <p className="text-xs mt-1 text-gray-400 font-semibold">
+              10–15 min · Parent fills
+            </p>
+            <p className="text-xs mt-1.5 text-gray-600 font-semibold leading-relaxed">
+              Observational questionnaire
+            </p>
           </div>
         </motion.div>
       </div>
@@ -146,7 +162,9 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
         </div>
       ) : (
         <div className="space-y-2" ref={dropdownRef}>
-          <label className="block text-sm font-bold text-gray-700">Select child to assess</label>
+          <label className="block text-sm font-bold text-gray-700">
+            Select child to assess
+          </label>
           <div className="relative">
             <button
               type="button"
@@ -163,14 +181,24 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
                   <div
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
                     style={{
-                      background: AVATAR_BG[eligibleChildren.indexOf(activeChild) % AVATAR_BG.length],
-                      color: AVATAR_COLOR[eligibleChildren.indexOf(activeChild) % AVATAR_COLOR.length],
+                      background:
+                        AVATAR_BG[
+                          eligibleChildren.indexOf(activeChild) %
+                            AVATAR_BG.length
+                        ],
+                      color:
+                        AVATAR_COLOR[
+                          eligibleChildren.indexOf(activeChild) %
+                            AVATAR_COLOR.length
+                        ],
                       fontFamily: "var(--font-heading)",
                     }}
                   >
                     {getInitials(activeChild.name)}
                   </div>
-                  <span className="capitalize font-bold">{activeChild.name}</span>
+                  <span className="capitalize font-bold">
+                    {activeChild.name}
+                  </span>
                 </div>
               ) : (
                 <span>Select your child</span>
@@ -178,7 +206,9 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
               <ChevronDown
                 size={18}
                 className="text-gray-400 transition-transform duration-200 shrink-0"
-                style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                style={{
+                  transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                }}
               />
             </button>
 
@@ -201,7 +231,11 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
                         <button
                           key={c._id}
                           type="button"
-                          onClick={() => { setSelectedChildId(c._id); setIsOpen(false); }}
+                          onClick={() => {
+                            setSelectedChildId(c._id);
+                            setManualBand(null);
+                            setIsOpen(false);
+                          }}
                           className="w-full px-4 py-3 text-left transition-all flex items-center gap-3 cursor-pointer group"
                           style={{
                             background: isSelected ? "#FFFBEA" : "transparent",
@@ -223,7 +257,9 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
                           <div className="flex-1 min-w-0">
                             <p
                               className="text-sm font-extrabold capitalize truncate"
-                              style={{ color: isSelected ? "#92700A" : "#1A1A1A" }}
+                              style={{
+                                color: isSelected ? "#92700A" : "#1A1A1A",
+                              }}
                             >
                               {c.name}
                             </p>
@@ -233,7 +269,10 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
                                 {band && (
                                   <span
                                     className="ml-2 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md"
-                                    style={{ background: "#FFF9E6", color: "#D4A900" }}
+                                    style={{
+                                      background: "#FFF9E6",
+                                      color: "#D4A900",
+                                    }}
                                   >
                                     Band {band}
                                   </span>
@@ -242,7 +281,12 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
                             )}
                           </div>
 
-                          {isSelected && <Check size={15} className="text-[#D4A900] shrink-0" />}
+                          {isSelected && (
+                            <Check
+                              size={15}
+                              className="text-primary-dark shrink-0"
+                            />
+                          )}
                         </button>
                       );
                     })}
@@ -273,35 +317,44 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
             {/* Decorative glow */}
             <div
               className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-30 pointer-events-none"
-              style={{ background: "radial-gradient(circle, #F5C518 0%, transparent 70%)" }}
+              style={{
+                background:
+                  "radial-gradient(circle, #F5C518 0%, transparent 70%)",
+              }}
             />
 
-            <div className="flex items-center gap-4 relative">
-              {/* Icon */}
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: "rgba(245,197,24,0.2)" }}
-              >
-                <Sparkles size={20} style={{ color: "#D4A900" }} />
-              </div>
-
-              {/* Text */}
-              <div className="flex-1 min-w-0">
-                <p
-                  className="text-sm font-extrabold"
-                  style={{ color: "#92700A", fontFamily: "var(--font-heading)" }}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 relative">
+              {/* Left group: Icon and Text */}
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                {/* Icon */}
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: "rgba(245,197,24,0.2)" }}
                 >
-                  Age group detected automatically
-                </p>
-                <p className="text-xs text-[#A07010] mt-0.5 font-semibold leading-relaxed">
-                  {activeChild.name} is <strong>{childAge} yrs old</strong> — assigned to{" "}
-                  <strong>{activeBandInfo?.label}</strong>
-                </p>
+                  <Sparkles size={18} style={{ color: "#D4A900" }} />
+                </div>
+
+                {/* Text */}
+                <div className="min-w-0">
+                  <p
+                    className="text-sm font-extrabold"
+                    style={{
+                      color: "#92700A",
+                      fontFamily: "var(--font-heading)",
+                    }}
+                  >
+                    Age group detected automatically
+                  </p>
+                  <p className="text-xs text-[#A07010] mt-0.5 font-semibold leading-relaxed">
+                    {activeChild.name} is <strong>{childAge} yrs old</strong> —
+                    assigned to <strong>{activeBandInfo?.label}</strong>
+                  </p>
+                </div>
               </div>
 
-              {/* Band pill */}
+              {/* Right group: Band pill */}
               <div
-                className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-extrabold text-center"
+                className="self-end sm:self-center px-3 py-1.5 rounded-xl text-xs font-extrabold text-center shrink-0"
                 style={{
                   background: "#F5C518",
                   color: "#1A1A1A",
@@ -328,7 +381,8 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
           >
             <p className="text-xs text-gray-500 font-semibold flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block shrink-0" />
-              No date of birth on file — please select your child&apos;s age group:
+              No date of birth on file — please select your child&apos;s age
+              group:
             </p>
             <div className="grid grid-cols-3 gap-3">
               {BAND_OPTIONS.map(({ label, sub, band }) => {
@@ -341,16 +395,24 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
                     style={{
                       background: isSelected ? "#F5C518" : "#FAFAF8",
                       borderColor: isSelected ? "#F5C518" : "#E5E7EB",
-                      boxShadow: isSelected ? "0 4px 12px rgba(245,197,24,0.25)" : "none",
+                      boxShadow: isSelected
+                        ? "0 4px 12px rgba(245,197,24,0.25)"
+                        : "none",
                     }}
                   >
                     <div
                       className="font-extrabold text-xs"
-                      style={{ color: "#1A1A1A", fontFamily: "var(--font-heading)" }}
+                      style={{
+                        color: "#1A1A1A",
+                        fontFamily: "var(--font-heading)",
+                      }}
                     >
                       {label}
                     </div>
-                    <div className="text-[10px] mt-0.5 font-bold" style={{ color: isSelected ? "#1A1A1A" : "#9CA3AF" }}>
+                    <div
+                      className="text-[10px] mt-0.5 font-bold"
+                      style={{ color: isSelected ? "#1A1A1A" : "#9CA3AF" }}
+                    >
                       {sub}
                     </div>
                   </button>
@@ -373,7 +435,9 @@ export function WelcomeScreen({ childrenList, onBegin }: WelcomeScreenProps) {
         whileTap={{ scale: canBegin ? 0.97 : 1 }}
         className="w-full py-4 rounded-2xl text-base font-extrabold transition-all border-none"
         style={{
-          background: canBegin ? "linear-gradient(135deg, #F5C518 0%, #FFD740 100%)" : "#F3F4F6",
+          background: canBegin
+            ? "linear-gradient(135deg, #F5C518 0%, #FFD740 100%)"
+            : "#F3F4F6",
           color: canBegin ? "#1A1A1A" : "#9CA3AF",
           cursor: canBegin ? "pointer" : "not-allowed",
           fontFamily: "var(--font-heading)",

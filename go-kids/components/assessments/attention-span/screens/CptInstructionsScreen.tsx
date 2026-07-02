@@ -53,9 +53,7 @@ export function CptInstructionsScreen({
         </h2>
         <p className="text-sm text-gray-500">
           Read these instructions together with{" "}
-          <span className="font-extrabold text-brand-black">
-            {childName}
-          </span>
+          <span className="font-extrabold text-brand-black">{childName}</span>
         </p>
       </div>
 
@@ -63,7 +61,7 @@ export function CptInstructionsScreen({
       <div className="flex flex-col items-center space-y-3">
         <motion.div
           whileHover={{ scale: 1.05 }}
-          className="w-36 h-36 rounded-[28px] flex items-center justify-center bg-white shadow-md border-[2px] border-[#2BBCB0] relative overflow-hidden"
+          className="w-36 h-36 rounded-[28px] flex items-center justify-center bg-white shadow-md border-2 border-teal relative overflow-hidden"
         >
           {/* Subtle bg glow */}
           <div className="absolute inset-0 bg-[#E8F8F7]/30 pointer-events-none" />
@@ -75,14 +73,10 @@ export function CptInstructionsScreen({
       </div>
 
       {/* Info rows */}
-      <div
-        className="rounded-[24px] p-5 space-y-4 bg-white border border-gray-100 shadow-sm"
-      >
+      <div className="rounded-3xl p-5 space-y-4 bg-white border border-gray-100 shadow-sm">
         <div className="flex items-center gap-4">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-[#E8F8F7]"
-          >
-            <Clock size={18} className="text-[#2BBCB0]" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[#E8F8F7]">
+            <Clock size={18} className="text-teal" />
           </div>
           <div>
             <p className="text-sm font-bold text-gray-700">
@@ -92,23 +86,21 @@ export function CptInstructionsScreen({
         </div>
 
         <div className="flex items-center gap-4">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-[#FEF0EB]"
-          >
-            <Target size={18} className="text-[#F4845F]" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[#FEF0EB]">
+            <Target size={18} className="text-coral" />
           </div>
           <div>
             <p className="text-sm font-bold text-gray-700">
               Tap ONLY when you see the{" "}
-              <span className="text-[#F4845F] font-extrabold">{config.targetName}</span>
+              <span className="text-coral font-extrabold">
+                {config.targetName}
+              </span>
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-[#FFF8E1]"
-          >
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[#FFF8E1]">
             <Info size={18} className="text-[#D97706]" />
           </div>
           <div>
@@ -120,12 +112,11 @@ export function CptInstructionsScreen({
       </div>
 
       {/* Handover notice */}
-      <div
-        className="rounded-[20px] p-4 flex items-start gap-3 bg-[#FFFBEB] border border-[#FDE68A]"
-      >
+      <div className="rounded-[20px] p-4 flex items-start gap-3 bg-[#FFFBEB] border border-[#FDE68A]">
         <span className="text-xl">📱</span>
         <p className="text-sm font-semibold text-[#92400E] leading-relaxed">
-          Hand the device to your child after reading through this page together.
+          Hand the device to your child after reading through this page
+          together.
         </p>
       </div>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
@@ -44,6 +45,7 @@ export default function Navbar() {
   const isDarkHero = pathname.startsWith("/workshops");
   const isLoggedIn = status === "authenticated" && !!session;
   const userName = session?.user?.name || "User";
+  const userImage = session?.user?.image ?? null;
   const initials = getInitials(userName);
 
   const showGetStarted = ![
@@ -143,16 +145,29 @@ export default function Navbar() {
                   }}
                   aria-label="User menu"
                 >
-                  <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold shrink-0"
-                    style={{
-                      background: "#F5C518",
-                      color: "#1A1A1A",
-                      fontFamily: "var(--font-nunito)",
-                    }}
-                  >
-                    {initials}
-                  </div>
+                  {/* Avatar — photo if uploaded, else initials */}
+                  {userImage ? (
+                    <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 border border-gray-200">
+                      <Image
+                        src={userImage}
+                        alt={userName}
+                        width={28}
+                        height={28}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold shrink-0"
+                      style={{
+                        background: "#F5C518",
+                        color: "#1A1A1A",
+                        fontFamily: "var(--font-nunito)",
+                      }}
+                    >
+                      {initials}
+                    </div>
+                  )}
                   <span
                     className="text-sm font-bold"
                     style={{
@@ -288,16 +303,29 @@ export default function Navbar() {
                   className="flex items-center gap-3 px-4 py-3 rounded-xl"
                   style={{ background: "#FFF9E6" }}
                 >
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold shrink-0"
-                    style={{
-                      background: "#F5C518",
-                      color: "#1A1A1A",
-                      fontFamily: "var(--font-nunito)",
-                    }}
-                  >
-                    {initials}
-                  </div>
+                  {/* Avatar — photo if uploaded, else initials */}
+                  {userImage ? (
+                    <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-gray-200">
+                      <Image
+                        src={userImage}
+                        alt={userName}
+                        width={36}
+                        height={36}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold shrink-0"
+                      style={{
+                        background: "#F5C518",
+                        color: "#1A1A1A",
+                        fontFamily: "var(--font-nunito)",
+                      }}
+                    >
+                      {initials}
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <p
                       className="text-sm font-bold truncate"
