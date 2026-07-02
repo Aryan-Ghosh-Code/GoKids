@@ -476,7 +476,7 @@ export default function InsightsSection() {
   return (
     <section
       id="insights"
-      className="py-20 scroll-mt-24"
+      className="py-4 scroll-mt-24"
       style={{ background: "#FAFAF8" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

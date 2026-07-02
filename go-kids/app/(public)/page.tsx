@@ -491,7 +491,7 @@ export default function HomePage() {
       >
         <FloatingShapes />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-8 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* ── LEFT: Text Content ── */}
             <div>
@@ -871,76 +871,13 @@ export default function HomePage() {
                   </p>
                 </div>
               </motion.div>
-
-              {/* NEW: Floating card — top right */}
-              {/* <motion.div
-                animate={{ y: [4, -4, 4] }}
-                transition={{
-                  duration: 3.8,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1.2,
-                }}
-                className="absolute -top-4 -right-4 sm:-top-6 sm:-right-6 bg-white rounded-2xl shadow-xl p-3.5 flex items-center gap-2.5"
-                style={{
-                  border: "1px solid #F3F4F6",
-                  zIndex: 2,
-                  minWidth: 155,
-                }}
-              >
-                <div
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
-                  style={{ background: "#E8F8F7" }}
-                >
-                  ✅
-                </div>
-                <div>
-                  <p
-                    className="text-xs font-bold"
-                    style={{
-                      color: "#1A1A1A",
-                      fontFamily: "var(--font-nunito)",
-                    }}
-                  >
-                    Free Assessment
-                  </p>
-                  <p
-                    className="text-xs"
-                    style={{ color: "#2BBCB0", fontWeight: 600 }}
-                  >
-                    No credit card needed
-                  </p>
-                </div>
-              </motion.div> */}
-
-              {/* NEW: Live indicator pill on image */}
-              {/* <div
-                className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{
-                  background: "rgba(255,255,255,0.92)",
-                  backdropFilter: "blur(8px)",
-                  border: "1px solid rgba(255,255,255,0.6)",
-                  zIndex: 2,
-                }}
-              >
-                <span
-                  className="w-2 h-2 rounded-full animate-pulse"
-                  style={{ background: "#16a34a" }}
-                />
-                <span
-                  className="text-xs font-bold"
-                  style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
-                >
-                  14 parents online now
-                </span>
-              </div> */}
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* ── 3. HOW IT WORKS ──────────────────────────────────────── */}
-      <section id="about" className="py-20" style={{ background: "#FAFAF8" }}>
+      <section id="about" className="py-8" style={{ background: "#FAFAF8" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInUp className="mb-14">
             <div className="text-center max-w-3xl mx-auto">
@@ -1121,7 +1058,7 @@ export default function HomePage() {
       </section>
 
       {/* ── 1.5. ASSESSMENTS ──────────────────────────────────────── */}
-      <section className="py-20" style={{ background: "#FAFAF8" }}>
+      <section className="py-8" style={{ background: "#FAFAF8" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInUp className="mb-14 text-center max-w-3xl mx-auto flex flex-col items-center">
             <p
@@ -1371,7 +1308,7 @@ export default function HomePage() {
       </section>
 
       {/* ── 4. PROGRAMS ──────────────────────────────────────────── */}
-      <section className="py-20 bg-white">
+      <section className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Centered Header & Subtitle */}
           <FadeInUp className="text-center mb-10 flex flex-col items-center">
