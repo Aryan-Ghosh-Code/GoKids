@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,14 +62,13 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
   const [filterOpen, setFilterOpen]   = useState(false);
   const [sortOpen, setSortOpen]       = useState(false);
   const [sortMenuPos, setSortMenuPos] = useState({ top: 0, right: 0 });
-  const [dynamicCategories, setDynamicCategories] = useState<string[]>([]);
   const sortBtnRef = useRef<HTMLButtonElement>(null);
 
   const gridRef = useRef<HTMLDivElement>(null);
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   // Extract categories dynamically from the loaded mentor list
-  useEffect(() => {
+  const dynamicCategories = useMemo(() => {
     const cats = new Set<string>();
     if (Array.isArray(initialMentors)) {
       initialMentors.forEach(m => {
@@ -78,7 +77,7 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
         }
       });
     }
-    setDynamicCategories(Array.from(cats).filter(Boolean));
+    return Array.from(cats).filter(Boolean);
   }, [initialMentors]);
 
   // Debounce search
@@ -111,10 +110,20 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
     }
   }, [page, sort, debouncedQ, activeCategory, activeLang]);
 
-  useEffect(() => { fetchMentors(); }, [fetchMentors]);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchMentors();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchMentors]);
 
   // Reset to page 1 when filters change
-  useEffect(() => { setPage(1); }, [debouncedQ, activeCategory, activeLang, sort]);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setPage(1);
+    }, 0);
+    return () => clearTimeout(t);
+  }, [debouncedQ, activeCategory, activeLang, sort]);
 
   const scrollToGrid = () => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -193,6 +202,8 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
             <button
               onClick={() => setSearch("")}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+              aria-label="Clear search"
+              title="Clear search"
             >
               <X size={14} />
             </button>
@@ -200,7 +211,7 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
         </div>
 
         {/* Sort + Filter controls */}
-        <div className="flex gap-2 items-center flex-shrink-0">
+        <div className="flex gap-2 items-center shrink-0">
           {/* Custom styled sort dropdown — portal-rendered so no parent clips it */}
           <div className="relative">
             <button
@@ -228,7 +239,7 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
               {SORT_OPTIONS.find(o => o.value === sort)?.label || "Sort"}
               <ChevronDown
                 size={13}
-                className={`transition-transform duration-200 absolute right-2.5 flex-shrink-0 ${sortOpen ? 'rotate-180 text-amber-500' : 'text-gray-400'}`}
+                className={`transition-transform duration-200 absolute right-2.5 shrink-0 ${sortOpen ? 'rotate-180 text-amber-500' : 'text-gray-400'}`}
               />
             </button>
 
@@ -258,7 +269,7 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
                   >
                     {o.label}
                     {sort === o.value && (
-                      <span className="w-4 h-4 rounded-full bg-amber-400 flex items-center justify-center flex-shrink-0">
+                      <span className="w-4 h-4 rounded-full bg-amber-400 flex items-center justify-center shrink-0">
                         <svg width="8" height="8" viewBox="0 0 10 8" fill="none">
                           <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -275,6 +286,8 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
           <button
             onClick={() => setFilterOpen(true)}
             className="flex sm:hidden items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-bold border transition-all"
+            aria-label="Open filters"
+            title="Filters"
             style={{
               background: hasFilters ? "#FFF9E6" : "#F9FAFB",
               border: hasFilters ? "1.5px solid #F5C518" : "1.5px solid #E5E7EB",
@@ -337,7 +350,7 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
       {/* ── Main Layout (Sidebar + Grid) ─────────────────────────────── */}
       <div className="flex gap-8">
         {/* Desktop Filter Sidebar */}
-        <aside className="hidden sm:block w-56 flex-shrink-0">
+        <aside className="hidden sm:block w-56 shrink-0">
           <div
             className="bg-white rounded-3xl p-5 sticky top-28 border"
             style={{ borderColor: "#E5E7EB", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}
@@ -521,7 +534,12 @@ export default function MentorsClient({ initialMentors, initialTotal }: MentorsC
                 <span className="text-lg font-extrabold" style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}>
                   Filter Options
                 </span>
-                <button onClick={() => setFilterOpen(false)} className="p-1.5 rounded-xl hover:bg-gray-100">
+                <button 
+                  onClick={() => setFilterOpen(false)} 
+                  className="p-1.5 rounded-xl hover:bg-gray-100"
+                  aria-label="Close filters"
+                  title="Close"
+                >
                   <X size={20} />
                 </button>
               </div>

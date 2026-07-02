@@ -108,7 +108,7 @@ export default function CloudinaryUpload({
       >
         {preview ? (
           <div
-            className="w-full h-full overflow-hidden border-2 border-[#F3F4F6]"
+            className="w-full h-full overflow-hidden border-2 border-brand-grey"
             style={{ borderRadius: radius }}
           >
             <Image
@@ -190,7 +190,10 @@ export default function CloudinaryUpload({
       </button>
 
       {error && (
-        <p className="text-xs text-center max-w-[160px]" style={{ color: "#F4845F" }}>
+        <p
+          className="text-xs text-center max-w-40"
+          style={{ color: "#F4845F" }}
+        >
           {error}
         </p>
       )}

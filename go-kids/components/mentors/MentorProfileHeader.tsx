@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ShieldCheck, Globe, Calendar, Award, Sparkles } from "lucide-react";
+import { ShieldCheck, Globe, Calendar, Sparkles } from "lucide-react";
 import type { IMentor } from "@/lib/db/models/Mentor";
 
 const CHIP_COLORS = [
@@ -52,7 +52,7 @@ export default function MentorProfileHeader({ mentor }: MentorProfileHeaderProps
     <div className="flex flex-col sm:flex-row gap-5 sm:gap-7 items-start text-left">
 
       {/* Avatar */}
-      <div className="relative flex-shrink-0">
+      <div className="relative shrink-0">
         <div
           className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-[3px] border-white"
           style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.18)" }}

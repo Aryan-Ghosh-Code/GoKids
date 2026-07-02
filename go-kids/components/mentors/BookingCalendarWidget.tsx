@@ -101,27 +101,44 @@ export default function BookingCalendarWidget({ mentorName }: BookingCalendarWid
 
   if (isBooked) {
     return (
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border shadow-xl text-center flex flex-col items-center sticky top-24 lg:top-28 z-20" style={{ borderColor: "#E5E7EB" }}>
+      <div
+        className="bg-white rounded-3xl p-6 sm:p-8 border shadow-xl text-center flex flex-col items-center sticky top-24 lg:top-28 z-20"
+        style={{ borderColor: "#E5E7EB" }}
+      >
         <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-emerald-50 text-emerald-500">
           <CheckCircle2 size={32} />
         </div>
-        <h3 className="text-lg font-extrabold text-gray-900 mb-1" style={{ fontFamily: "var(--font-nunito)" }}>
+        <h3
+          className="text-lg font-extrabold text-gray-900 mb-1"
+          style={{ fontFamily: "var(--font-nunito)" }}
+        >
           Request Submitted!
         </h3>
         <p className="text-xs text-gray-500 leading-relaxed mb-5">
-          Your request with <strong className="text-gray-800">{mentorName}</strong> for{" "}
+          Your request with{" "}
+          <strong className="text-gray-800">{mentorName}</strong> for{" "}
           <strong className="text-gray-800">{formatSelectedDate()}</strong> at{" "}
-          <strong className="text-gray-800">{selectedSlot}</strong> has been received.
+          <strong className="text-gray-800">{selectedSlot}</strong> has been
+          received.
         </p>
         <div className="w-full p-3 rounded-2xl mb-5 bg-amber-50/80 border border-dashed border-amber-300">
           <p className="text-[11px] font-bold text-amber-800 leading-normal">
-            🎉 Booking feature coming soon! We'll notify you once confirmed.
+            🎉 Booking feature coming soon! We&apos;ll notify you once
+            confirmed.
           </p>
         </div>
         <button
-          onClick={() => { setIsBooked(false); setSelectedDate(null); setSelectedSlot(null); }}
+          onClick={() => {
+            setIsBooked(false);
+            setSelectedDate(null);
+            setSelectedSlot(null);
+          }}
           className="w-full py-2.5 rounded-full text-xs font-bold border transition-all hover:bg-gray-50"
-          style={{ borderColor: "#E5E7EB", color: "#4B5563", fontFamily: "var(--font-nunito)" }}
+          style={{
+            borderColor: "#E5E7EB",
+            color: "#4B5563",
+            fontFamily: "var(--font-nunito)",
+          }}
         >
           Modify Selection
         </button>
@@ -148,7 +165,7 @@ export default function BookingCalendarWidget({ mentorName }: BookingCalendarWid
           </div>
         </div>
         <div className="flex items-center gap-1.5 mt-2.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700">
-          <Sparkles size={11} className="flex-shrink-0" />
+          <Sparkles size={11} className="shrink-0" />
           <p className="text-[10px] font-bold">Free during launch — no payment needed</p>
         </div>
       </div>

@@ -41,14 +41,14 @@ function MentorsHero() {
     >
       {/* Decorative blobs */}
       <div
-        className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full pointer-events-none opacity-40"
+        className="absolute top-0 right-0 w-150 h-150 rounded-full pointer-events-none opacity-40"
         style={{
           background: "radial-gradient(circle, #FFF3CC 0%, transparent 70%)",
           transform: "translate(30%, -30%)",
         }}
       />
       <div
-        className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none opacity-30"
+        className="absolute bottom-0 left-0 w-100 h-100 rounded-full pointer-events-none opacity-30"
         style={{
           background: "radial-gradient(circle, #C7F7F3 0%, transparent 70%)",
           transform: "translate(-30%, 30%)",
@@ -81,7 +81,7 @@ function MentorsHero() {
               Journey
             </h1>
 
-            <p className="text-base sm:text-lg leading-relaxed text-gray-600 mb-8 max-w-lg">
+            <p className="text-base sm:text-lg leading-relaxed text-gray-600 mb-8 max-w-lg text-justify">
               Connect with India&apos;s top child psychologists, career coaches,
               and education specialists for personalised 1-on-1 sessions
               tailored to your child&apos;s unique goals and potential.
@@ -98,26 +98,23 @@ function MentorsHero() {
                   key={point}
                   className="flex items-center gap-2.5 text-sm font-medium text-gray-700"
                 >
-                  <CheckCircle
-                    size={16}
-                    className="text-teal-500 flex-shrink-0"
-                  />
+                  <CheckCircle size={16} className="text-teal-500 shrink-0" />
                   {point}
                 </div>
               ))}
             </div>
 
             {/* CTAs — single row on all screen sizes */}
-            <div className="flex flex-nowrap gap-3">
+            <div className="flex flex-nowrap gap-2 sm:gap-3 w-full">
               <a
                 href="#mentors-grid"
-                className="btn-primary inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 text-sm whitespace-nowrap flex-shrink-0"
+                className="btn-primary inline-flex items-center justify-center gap-1.5 px-3.5! sm:px-7! py-2.5! sm:py-3.5! text-xs! sm:text-sm! whitespace-nowrap shrink-0"
               >
-                Find My Mentor <ArrowRight size={15} />
+                Find My Mentor <ArrowRight size={14} />
               </a>
               <Link
                 href="/become-a-mentor"
-                className="inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 rounded-full text-sm font-bold transition-all bg-white text-[#1A1A1A] border-[1.5px] border-[#D1D5DB] hover:border-[#F5C518] hover:bg-[#FFFBEA] whitespace-nowrap flex-shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 px-3.5! sm:px-7! py-2.5! sm:py-3.5! rounded-full text-xs! sm:text-sm! font-bold transition-all bg-white text-brand-black border-[1.5px] border-[#D1D5DB] hover:border-primary hover:bg-[#FFFBEA] whitespace-nowrap shrink-0"
                 style={{ fontFamily: "var(--font-nunito)" }}
               >
                 Become a Mentor
@@ -133,10 +130,10 @@ function MentorsHero() {
               ].map((s) => (
                 <div
                   key={s.label}
-                  className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-gray-600 whitespace-nowrap flex-shrink-0"
+                  className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-gray-600 whitespace-nowrap shrink-0"
                   style={{ fontFamily: "var(--font-nunito)" }}
                 >
-                  <span className="p-1.5 rounded-lg bg-amber-50 text-amber-600 flex-shrink-0">
+                  <span className="p-1.5 rounded-lg bg-amber-50 text-amber-600 shrink-0">
                     {s.icon}
                   </span>
                   {s.label}
@@ -147,7 +144,7 @@ function MentorsHero() {
 
           {/* Right — Mentor illustration image */}
           <div className="relative items-center justify-center lg:justify-end h-full hidden lg:flex py-8">
-            <div className="relative w-[460px] h-[480px]">
+            <div className="relative w-115 h-120">
               {/* Yellow offset frame — same style as homepage image frame */}
               <div
                 aria-hidden="true"
@@ -192,7 +189,7 @@ function MentorsHero() {
               />
               {/* Floating badge — sessions today */}
               <div
-                className="absolute top-16 left-0 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl shadow-lg"
+                className="absolute top-1 -left-7 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl shadow-lg"
                 style={{ background: "white", border: "1.5px solid #F5C518" }}
               >
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -210,7 +207,7 @@ function MentorsHero() {
               </div>
               {/* Floating badge — expert rating */}
               <div
-                className="absolute bottom-24 right-0 z-20 flex flex-col items-center px-4 py-3 rounded-2xl shadow-lg"
+                className="absolute bottom-2 right-0 z-20 flex flex-col items-center px-4 py-3 rounded-2xl shadow-lg"
                 style={{ background: "white", border: "1.5px solid #E5E7EB" }}
               >
                 <p className="text-[10px] font-bold text-gray-400 mb-1">
@@ -376,7 +373,6 @@ function BecomeMentorCTA() {
   );
 }
 
-
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 const FAQS = [
   {
@@ -435,7 +431,7 @@ function FAQSection() {
                 style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
               >
                 {faq.q}
-                <span className="text-xl text-gray-400 group-open:rotate-45 transition-transform duration-200 ml-4 flex-shrink-0">
+                <span className="text-xl text-gray-400 group-open:rotate-45 transition-transform duration-200 ml-4 shrink-0">
                   +
                 </span>
               </summary>

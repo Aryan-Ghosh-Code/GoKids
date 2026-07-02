@@ -17,12 +17,10 @@ export default async function ParentLayout({ children }: { children: React.React
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAF8]">
+    <div className="min-h-screen flex flex-col bg-brand-offwhite">
       <Navbar />
       {/* Offsetting the content for the fixed Navbar */}
-      <main className="flex-grow pt-16">
-        {children}
-      </main>
+      <main className="grow pt-16">{children}</main>
       <Footer />
     </div>
   );

@@ -86,20 +86,29 @@ export default function EditProfileDialog({
                   style={{ border: "1px solid #F3F4F6" }}
                 >
                   {/* Header */}
-                  <div className="flex items-center justify-between px-6 py-5 border-b border-[#F3F4F6]">
+                  <div className="flex items-center justify-between px-6 py-5 border-b border-brand-grey">
                     <div>
                       <Dialog.Title
                         className="text-lg font-extrabold"
-                        style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                        style={{
+                          color: "#1A1A1A",
+                          fontFamily: "var(--font-nunito)",
+                        }}
                       >
                         Edit Profile
                       </Dialog.Title>
-                      <Dialog.Description className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>
+                      <Dialog.Description
+                        className="text-xs mt-0.5"
+                        style={{ color: "#9CA3AF" }}
+                      >
                         Update your name, photo and contact info
                       </Dialog.Description>
                     </div>
                     <Dialog.Close asChild>
-                      <button className="p-2 rounded-full hover:bg-[#F3F4F6] transition-colors" aria-label="Close">
+                      <button
+                        className="p-2 rounded-full hover:bg-brand-grey transition-colors"
+                        aria-label="Close"
+                      >
                         <X size={18} color="#6B7280" />
                       </button>
                     </Dialog.Close>
@@ -121,10 +130,14 @@ export default function EditProfileDialog({
                     {/* Name */}
                     <div>
                       <label
-                        className="block text-sm font-semibold mb-1.5 flex items-center gap-1.5"
-                        style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                        className="text-sm font-semibold mb-1.5 flex items-center gap-1.5"
+                        style={{
+                          color: "#1A1A1A",
+                          fontFamily: "var(--font-nunito)",
+                        }}
                       >
-                        <User size={13} style={{ color: "#9CA3AF" }} /> Full Name
+                        <User size={13} style={{ color: "#9CA3AF" }} /> Full
+                        Name
                       </label>
                       <input
                         value={name}
@@ -137,18 +150,26 @@ export default function EditProfileDialog({
                           color: "#1A1A1A",
                           fontFamily: "var(--font-nunito)",
                         }}
-                        onFocus={(e) => { e.target.style.borderColor = "#F5C518"; }}
-                        onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = "#F5C518";
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = "#E5E7EB";
+                        }}
                       />
                     </div>
 
                     {/* Phone */}
                     <div>
                       <label
-                        className="block text-sm font-semibold mb-1.5 flex items-center gap-1.5"
-                        style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                        className="text-sm font-semibold mb-1.5 flex items-center gap-1.5"
+                        style={{
+                          color: "#1A1A1A",
+                          fontFamily: "var(--font-nunito)",
+                        }}
                       >
-                        <Phone size={13} style={{ color: "#9CA3AF" }} /> Mobile Number
+                        <Phone size={13} style={{ color: "#9CA3AF" }} /> Mobile
+                        Number
                       </label>
                       <input
                         value={phone}
@@ -162,13 +183,22 @@ export default function EditProfileDialog({
                           color: "#1A1A1A",
                           fontFamily: "var(--font-nunito)",
                         }}
-                        onFocus={(e) => { e.target.style.borderColor = "#F5C518"; }}
-                        onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = "#F5C518";
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = "#E5E7EB";
+                        }}
                       />
                     </div>
 
                     {error && (
-                      <p className="text-xs font-medium" style={{ color: "#C0392B" }}>{error}</p>
+                      <p
+                        className="text-xs font-medium"
+                        style={{ color: "#C0392B" }}
+                      >
+                        {error}
+                      </p>
                     )}
 
                     {/* Actions */}
@@ -176,7 +206,11 @@ export default function EditProfileDialog({
                       <Dialog.Close asChild>
                         <button
                           className="flex-1 py-3 rounded-xl text-sm font-bold border transition-colors"
-                          style={{ borderColor: "#E5E7EB", color: "#6B7280", fontFamily: "var(--font-nunito)" }}
+                          style={{
+                            borderColor: "#E5E7EB",
+                            color: "#6B7280",
+                            fontFamily: "var(--font-nunito)",
+                          }}
                         >
                           Cancel
                         </button>
@@ -192,7 +226,14 @@ export default function EditProfileDialog({
                           boxShadow: "0 4px 14px rgba(245,197,24,0.35)",
                         }}
                       >
-                        {saving ? <><Loader2 size={14} className="animate-spin" /> Saving…</> : "Save Changes"}
+                        {saving ? (
+                          <>
+                            <Loader2 size={14} className="animate-spin" />{" "}
+                            Saving…
+                          </>
+                        ) : (
+                          "Save Changes"
+                        )}
                       </button>
                     </div>
                   </div>

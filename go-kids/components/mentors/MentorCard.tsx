@@ -37,8 +37,16 @@ export default function MentorCard({ mentor, index = 0 }: MentorCardProps) {
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.45, delay: (index % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -8, boxShadow: "0 24px 48px -8px rgba(245,197,24,0.22), 0 8px 24px rgba(0,0,0,0.06)" }}
+      transition={{
+        duration: 0.45,
+        delay: (index % 3) * 0.08,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover={{
+        y: -8,
+        boxShadow:
+          "0 24px 48px -8px rgba(245,197,24,0.22), 0 8px 24px rgba(0,0,0,0.06)",
+      }}
       className="group bg-white rounded-3xl flex flex-col overflow-hidden relative cursor-pointer"
       style={{
         border: "1.5px solid #EFEFEF",
@@ -48,7 +56,7 @@ export default function MentorCard({ mentor, index = 0 }: MentorCardProps) {
     >
       {/* Small light solid coloured banner */}
       <div
-        className="h-10 w-full flex-shrink-0"
+        className="h-10 w-full shrink-0"
         style={{ background: bannerColor }}
       />
 
@@ -56,10 +64,8 @@ export default function MentorCard({ mentor, index = 0 }: MentorCardProps) {
         {/* Header: Avatar + Name + Title */}
         <div className="flex items-start gap-4 -mt-10 relative z-10">
           {/* Avatar — borders white to separate from banner background */}
-          <div className="relative flex-shrink-0">
-            <div
-              className="w-[72px] h-[72px] rounded-2xl overflow-hidden border-4 border-white shadow-md bg-white"
-            >
+          <div className="relative shrink-0">
+            <div className="w-18 h-18 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-white">
               {mentor?.photo ? (
                 <Image
                   src={mentor.photo}
@@ -99,7 +105,11 @@ export default function MentorCard({ mentor, index = 0 }: MentorCardProps) {
             {mentor?.experience && (
               <span
                 className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                style={{ background: "#FFF9E6", color: "#92650A", border: "1px solid #F5C518" }}
+                style={{
+                  background: "#FFF9E6",
+                  color: "#92650A",
+                  border: "1px solid #F5C518",
+                }}
               >
                 <Award size={10} /> {mentor.experience}
               </span>
@@ -116,7 +126,11 @@ export default function MentorCard({ mentor, index = 0 }: MentorCardProps) {
                 <span
                   key={tag}
                   className="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold"
-                  style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}
+                  style={{
+                    background: c.bg,
+                    color: c.text,
+                    border: `1px solid ${c.border}`,
+                  }}
                 >
                   {tag}
                 </span>

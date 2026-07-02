@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models, Document } from "mongoose";
+import { Schema, model, models, Document } from "mongoose";
 
 export type UserRole = "parent" | "instructor" | "mentor" | "admin" | "superadmin";
 

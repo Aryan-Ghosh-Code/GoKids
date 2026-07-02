@@ -745,10 +745,10 @@ export default function WorkshopDetailClient({
                     className="w-1 h-5 rounded-full inline-block"
                     style={{ background: "#2BBCB0" }}
                   />
-                  About this workshop
+                  About this Workshop
                 </h3>
                 <p
-                  className="text-sm leading-loose"
+                  className="text-sm leading-loose text-justify"
                   style={{ color: "#6B7280", fontFamily: "var(--font-inter)" }}
                 >
                   {workshop.longDescription}
@@ -944,7 +944,7 @@ export default function WorkshopDetailClient({
                 </div>
 
                 <p
-                  className="text-sm leading-relaxed text-brand-grey-text"
+                  className="text-sm leading-relaxed text-brand-grey-text text-justify"
                   style={{ fontFamily: "var(--font-inter)" }}
                 >
                   {workshop.instructor.bio}

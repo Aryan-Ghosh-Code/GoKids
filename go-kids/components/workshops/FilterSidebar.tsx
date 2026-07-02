@@ -39,7 +39,13 @@ function CheckRow({
       >
         {checked && (
           <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M1 4L3.5 6.5L9 1"
+              stroke="white"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         )}
       </span>
@@ -50,8 +56,11 @@ function CheckRow({
         onChange={(e) => onChange(e.target.checked)}
       />
       <span
-        className="text-sm font-semibold transition-colors group-hover:text-[#2BBCB0]"
-        style={{ color: checked ? "#2BBCB0" : "#374151", fontFamily: "var(--font-nunito)" }}
+        className="text-sm font-semibold transition-colors group-hover:text-teal"
+        style={{
+          color: checked ? "#2BBCB0" : "#374151",
+          fontFamily: "var(--font-nunito)",
+        }}
       >
         {label}
       </span>
@@ -93,7 +102,10 @@ export default function FilterSidebar({
   return (
     <div
       className="bg-white rounded-2xl p-6"
-      style={{ border: "1px solid #F3F4F6", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
+      style={{
+        border: "1px solid #F3F4F6",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+      }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -114,7 +126,7 @@ export default function FilterSidebar({
         {totalActive > 0 && (
           <button
             onClick={onClear}
-            className="text-xs font-semibold underline underline-offset-2 transition-colors hover:text-[#2BBCB0]"
+            className="text-xs font-semibold underline underline-offset-2 transition-colors hover:text-teal"
             style={{ color: "#9CA3AF", fontFamily: "var(--font-nunito)" }}
           >
             Clear all

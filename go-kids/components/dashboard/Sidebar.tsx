@@ -52,14 +52,16 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-6 py-5 border-b border-[#F3F4F6]">
+      <div className="px-6 py-5 border-b border-brand-grey">
         <BrandLogo height={36} />
       </div>
 
       {/* Nav Items */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
-          const isActive = pathname === href || (href !== "/parent/dashboard" && pathname.startsWith(href));
+          const isActive =
+            pathname === href ||
+            (href !== "/parent/dashboard" && pathname.startsWith(href));
           return (
             <Link
               key={href}
@@ -70,17 +72,23 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                 fontFamily: "var(--font-nunito)",
                 background: isActive ? "#FFF9E6" : "transparent",
                 color: isActive ? "#1A1A1A" : "#6B7280",
-                borderLeft: isActive ? "3px solid #F5C518" : "3px solid transparent",
+                borderLeft: isActive
+                  ? "3px solid #F5C518"
+                  : "3px solid transparent",
               }}
             >
               <Icon
                 size={18}
                 style={{ color: isActive ? "#F5C518" : "#9CA3AF" }}
-                className="shrink-0 transition-colors group-hover:text-[#F5C518]"
+                className="shrink-0 transition-colors group-hover:text-primary"
               />
               <span>{label}</span>
               {isActive && (
-                <ChevronRight size={14} className="ml-auto" style={{ color: "#F5C518" }} />
+                <ChevronRight
+                  size={14}
+                  className="ml-auto"
+                  style={{ color: "#F5C518" }}
+                />
               )}
             </Link>
           );
@@ -88,20 +96,29 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       </nav>
 
       {/* User + Logout */}
-      <div className="px-3 py-4 border-t border-[#F3F4F6]">
-        <div className="flex items-center gap-3 px-3 py-2 mb-2 rounded-xl bg-[#FAFAF8]">
+      <div className="px-3 py-4 border-t border-brand-grey">
+        <div className="flex items-center gap-3 px-3 py-2 mb-2 rounded-xl bg-brand-offwhite">
           {/* Yellow Avatar */}
           <div
             className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-sm font-extrabold"
-            style={{ background: "#F5C518", color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+            style={{
+              background: "#F5C518",
+              color: "#1A1A1A",
+              fontFamily: "var(--font-nunito)",
+            }}
           >
             {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold truncate" style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}>
+            <p
+              className="text-sm font-bold truncate"
+              style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+            >
               {name}
             </p>
-            <p className="text-xs truncate" style={{ color: "#9CA3AF" }}>{email}</p>
+            <p className="text-xs truncate" style={{ color: "#9CA3AF" }}>
+              {email}
+            </p>
           </div>
         </div>
 
@@ -126,7 +143,7 @@ export default function Sidebar() {
     <>
       {/* ── Desktop Sidebar ── */}
       <aside
-        className="hidden lg:flex flex-col fixed left-0 top-0 bottom-0 z-40 w-64 border-r border-[#F3F4F6]"
+        className="hidden lg:flex flex-col fixed left-0 top-0 bottom-0 z-40 w-64 border-r border-brand-grey"
         style={{ background: "#FFFFFF" }}
       >
         <SidebarContent />
@@ -134,13 +151,13 @@ export default function Sidebar() {
 
       {/* ── Mobile Top Bar ── */}
       <header
-        className="lg:hidden fixed top-0 left-0 right-0 z-40 h-14 flex items-center justify-between px-4 border-b border-[#F3F4F6]"
+        className="lg:hidden fixed top-0 left-0 right-0 z-40 h-14 flex items-center justify-between px-4 border-b border-brand-grey"
         style={{ background: "#FFFFFF" }}
       >
         <BrandLogo height={32} />
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 rounded-lg hover:bg-[#F3F4F6] transition-colors"
+          className="p-2 rounded-lg hover:bg-brand-grey transition-colors"
           aria-label="Open menu"
         >
           <Menu size={22} color="#1A1A1A" />
@@ -165,14 +182,14 @@ export default function Sidebar() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="fixed left-0 top-0 bottom-0 z-60 w-72 flex flex-col border-r border-[#F3F4F6]"
+              className="fixed left-0 top-0 bottom-0 z-60 w-72 flex flex-col border-r border-brand-grey"
               style={{ background: "#FFFFFF" }}
             >
-              <div className="flex items-center justify-between px-4 py-4 border-b border-[#F3F4F6]">
+              <div className="flex items-center justify-between px-4 py-4 border-b border-brand-grey">
                 <BrandLogo height={32} />
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="p-2 rounded-lg hover:bg-[#F3F4F6] transition-colors"
+                  className="p-2 rounded-lg hover:bg-brand-grey transition-colors"
                   aria-label="Close menu"
                 >
                   <X size={20} color="#1A1A1A" />

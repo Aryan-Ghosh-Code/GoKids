@@ -135,7 +135,7 @@ export default function MentorProfileSections({ mentor }: MentorProfileSectionsP
                 style={{ background: "#FAFAF8", border: "1px solid #F3F4F6" }}
               >
                 <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
                   style={{ background: "#E8F8F7", color: "#2BBCB0" }}
                 >
                   <GraduationCap size={14} />
@@ -166,7 +166,7 @@ export default function MentorProfileSections({ mentor }: MentorProfileSectionsP
                 style={{ background: "#FAFAF8", border: "1px solid #F3F4F6" }}
               >
                 <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
                   style={{ background: "#FEF0EB", color: "#F4845F" }}
                 >
                   <Briefcase size={14} />

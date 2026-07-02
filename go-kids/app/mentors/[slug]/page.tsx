@@ -43,7 +43,7 @@ export default async function MentorProfilePage(
   return (
     <main style={{ background: "#FAFAF8", minHeight: "100vh" }}>
       {/* ── Top accent bar for layout offset ────────────────────────── */}
-      <div className="pt-24 bg-[#FAFAF8]" />
+      <div className="pt-24 bg-brand-offwhite" />
 
       {/* ── Main page content ────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -87,7 +87,6 @@ export default async function MentorProfilePage(
                     backgroundSize: "20px 20px",
                   }}
                 />
-                
               </div>
               <div className="px-6 sm:px-8 pb-7 -mt-12 relative z-10">
                 <MentorProfileHeader mentor={mentor} />
@@ -151,7 +150,7 @@ export default async function MentorProfilePage(
               style={{ background: "#F0FDF4", border: "1.5px solid #BBF7D0" }}
             >
               <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
                 style={{ background: "#DCFCE7" }}
               >
                 <ShieldCheck size={16} className="text-emerald-600" />

@@ -66,7 +66,7 @@ export default function DeleteChildDialog({ open, onOpenChange, child, onSuccess
                   {/* Close */}
                   <Dialog.Close asChild>
                     <button
-                      className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-[#F3F4F6] transition-colors"
+                      className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-brand-grey transition-colors"
                       aria-label="Close"
                     >
                       <X size={16} color="#9CA3AF" />
@@ -85,11 +85,17 @@ export default function DeleteChildDialog({ open, onOpenChange, child, onSuccess
 
                   <Dialog.Title
                     className="text-lg font-extrabold text-center mb-1"
-                    style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                    style={{
+                      color: "#1A1A1A",
+                      fontFamily: "var(--font-nunito)",
+                    }}
                   >
                     Delete Child Profile?
                   </Dialog.Title>
-                  <Dialog.Description className="text-sm text-center mb-5" style={{ color: "#6B7280" }}>
+                  <Dialog.Description
+                    className="text-sm text-center mb-5"
+                    style={{ color: "#6B7280" }}
+                  >
                     This will permanently delete{" "}
                     <span className="font-bold" style={{ color: "#1A1A1A" }}>
                       {child?.name}
@@ -98,7 +104,10 @@ export default function DeleteChildDialog({ open, onOpenChange, child, onSuccess
                   </Dialog.Description>
 
                   {error && (
-                    <p className="text-xs text-center mb-4 font-medium" style={{ color: "#C0392B" }}>
+                    <p
+                      className="text-xs text-center mb-4 font-medium"
+                      style={{ color: "#C0392B" }}
+                    >
                       {error}
                     </p>
                   )}
@@ -107,7 +116,11 @@ export default function DeleteChildDialog({ open, onOpenChange, child, onSuccess
                     <Dialog.Close asChild>
                       <button
                         className="flex-1 py-3 rounded-xl text-sm font-bold border transition-colors"
-                        style={{ borderColor: "#E5E7EB", color: "#6B7280", fontFamily: "var(--font-nunito)" }}
+                        style={{
+                          borderColor: "#E5E7EB",
+                          color: "#6B7280",
+                          fontFamily: "var(--font-nunito)",
+                        }}
                       >
                         Cancel
                       </button>
@@ -124,9 +137,14 @@ export default function DeleteChildDialog({ open, onOpenChange, child, onSuccess
                       }}
                     >
                       {loading ? (
-                        <><Loader2 size={14} className="animate-spin" /> Deleting…</>
+                        <>
+                          <Loader2 size={14} className="animate-spin" />{" "}
+                          Deleting…
+                        </>
                       ) : (
-                        <><Trash2 size={14} /> Yes, Delete</>
+                        <>
+                          <Trash2 size={14} /> Yes, Delete
+                        </>
                       )}
                     </button>
                   </div>

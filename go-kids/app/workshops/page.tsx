@@ -67,8 +67,8 @@ function WorkshopsHero() {
             fontFamily: "var(--font-nunito)"
           }}
         >
-          Expert-led sessions in Coding, Maths, Science & more —
-          designed specifically for Indian children aged 7–14.
+          Expert-led sessions in Coding, Maths, Science & more:
+          designed specifically for Indian children aged 7-14.
         </p>
 
         <a
