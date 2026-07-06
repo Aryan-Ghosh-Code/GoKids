@@ -6,6 +6,10 @@ export const metadata: Metadata = {
     "Assessments, workshops, mentorship, and expert talks: everything your child needs to discover their strengths and thrive.",
 };
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export default function PublicLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return <>{children}</>;
 }

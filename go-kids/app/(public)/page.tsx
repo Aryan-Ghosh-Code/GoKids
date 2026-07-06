@@ -1703,7 +1703,8 @@ export default function HomePage() {
                       className="btn-primary text-xs sm:text-base px-5 py-2.5 sm:px-7 sm:py-3.5 flex items-center justify-center gap-1.5 sm:gap-2"
                     >
                       <Users size={16} className="sm:w-5 sm:h-5" />
-                      Join the Community <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+                      Join the Community{" "}
+                      <ArrowRight size={16} className="sm:w-5 sm:h-5" />
                     </Link>
                   </motion.div>
                 </div>
@@ -1808,7 +1809,8 @@ export default function HomePage() {
                       className="btn-primary text-xs sm:text-base px-5 py-2.5 sm:px-7 sm:py-3.5 flex items-center justify-center gap-1.5 sm:gap-2"
                     >
                       <Calendar size={16} className="sm:w-5 sm:h-5" />
-                      Book a Session <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+                      Book a Session{" "}
+                      <ArrowRight size={16} className="sm:w-5 sm:h-5" />
                     </Link>
                   </motion.div>
                 </div>
@@ -1964,7 +1966,10 @@ export default function HomePage() {
               <span className="block">See what your child is truly</span>
               <span className="block">capable of.</span>
             </h2>
-            <p className="text-xs sm:text-sm md:text-base max-w-md sm:max-w-xl mx-auto mb-6 sm:mb-8" style={{ color: "#374151" }}>
+            <p
+              className="text-xs sm:text-sm md:text-base max-w-md sm:max-w-xl mx-auto mb-6 sm:mb-8"
+              style={{ color: "#374151" }}
+            >
               No commitments. No pressure. Just honest, science-backed clarity
               about your child — in 30 minutes.
             </p>
@@ -1998,7 +2003,8 @@ export default function HomePage() {
                     fontFamily: "var(--font-nunito)",
                   }}
                 >
-                  Browse Workshops <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+                  Browse Workshops{" "}
+                  <ArrowRight size={16} className="sm:w-5 sm:h-5" />
                 </Link>
               </motion.div>
             </div>

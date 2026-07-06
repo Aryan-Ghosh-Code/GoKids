@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, CheckCircle, RefreshCw, ArrowLeft } from "lucide-react";
-import BrandLogo from "@/components/shared/BrandLogo";
 
 const OTP_LENGTH = 6;
 

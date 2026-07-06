@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 import { connectDB } from "@/lib/db/connect";
 import { Child } from "@/lib/db/models/Child";
 
 // ─── GET /api/children — list session user's children ─────────────────────────
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
-    if (!token?.id) {
+    const session = await auth();
+    if (!session?.user?.id) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     }
 
     await connectDB();
-    const children = await Child.find({ parentId: token.id }).sort({ createdAt: -1 }).lean();
+    const children = await Child.find({ parentId: session.user.id })
+      .sort({ createdAt: -1 })
+      .lean();
 
     return NextResponse.json({ success: true, data: children });
   } catch (error) {
@@ -24,8 +26,8 @@ export async function GET(req: NextRequest) {
 // ─── POST /api/children — create a child profile ──────────────────────────────
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
-    if (!token?.id) {
+    const session = await auth();
+    if (!session?.user?.id) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     }
 
@@ -46,7 +48,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const child = await Child.create({
-      parentId: token.id,
+      parentId: session.user.id,
       name: name.trim(),
       dob: dob ? new Date(dob) : undefined,
       grade: typeof grade === "string" ? grade.trim() : undefined,

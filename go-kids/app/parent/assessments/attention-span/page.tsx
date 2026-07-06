@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react";
 export const metadata: Metadata = {
   title: "Attention Span Assessment | Go Kids",
   description:
-    "Science-backed attention span assessment for children aged 8–16. Evaluate focus, impulse control, and sustained attention.",
+    "Science-backed attention span assessment for children aged 8-16. Evaluate focus, impulse control, and sustained attention.",
 };
 
 export default async function AttentionSpanAssessmentPage() {
@@ -55,7 +55,7 @@ export default async function AttentionSpanAssessmentPage() {
         </div>
         <p className="text-xs sm:text-sm text-gray-500 font-semibold leading-relaxed">
           A science-backed task measuring sustained focus, impulse control, and
-          attention in children aged 8–16.
+          attention in children aged 8-16.
         </p>
       </div>
 

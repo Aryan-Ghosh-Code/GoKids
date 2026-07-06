@@ -12,7 +12,10 @@ export default function NotFound() {
       style={{ background: "#FAFAF8" }}
     >
       {/* Background shapes */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div
+        className="fixed inset-0 pointer-events-none overflow-hidden"
+        aria-hidden="true"
+      >
         <div
           className="animate-float absolute top-16 right-20 w-72 h-72 rounded-full opacity-20"
           style={{ background: "#F5C518", filter: "blur(56px)" }}
@@ -59,8 +62,12 @@ export default function NotFound() {
           Oops! Page Not Found
         </h1>
 
-        <p className="text-base mb-8 leading-relaxed" style={{ color: "#6B7280" }}>
-          This page is still being built — we&apos;re working on it! Head back home and explore what&apos;s ready now.
+        <p
+          className="text-base mb-8 leading-relaxed"
+          style={{ color: "#6B7280" }}
+        >
+          This page is still being built — we&apos;re working on it! Head back
+          home and explore what&apos;s ready now.
         </p>
 
         {/* Coming Soon chips */}
@@ -72,7 +79,11 @@ export default function NotFound() {
               <span
                 key={item}
                 className="px-3 py-1.5 rounded-full text-xs font-semibold"
-                style={{ background: colors[i], color: text[i], fontFamily: "var(--font-nunito)" }}
+                style={{
+                  background: colors[i],
+                  color: text[i],
+                  fontFamily: "var(--font-nunito)",
+                }}
               >
                 {item} — Coming Soon ✨
               </span>

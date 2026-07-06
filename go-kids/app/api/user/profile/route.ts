@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 
 // ─── GET /api/user/profile ────────────────────────────────────────────────────
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
-    if (!token?.id) {
+    const session = await auth();
+    if (!session?.user?.id) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     }
 
     await connectDB();
-    const user = await User.findById(token.id)
+    const user = await User.findById(session.user.id)
       .select("name email phone photoUrl role provider createdAt")
       .lean();
 
@@ -30,8 +30,8 @@ export async function GET(req: NextRequest) {
 // ─── PATCH /api/user/profile ──────────────────────────────────────────────────
 export async function PATCH(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
-    if (!token?.id) {
+    const session = await auth();
+    if (!session?.user?.id) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     }
 
@@ -66,7 +66,7 @@ export async function PATCH(req: NextRequest) {
 
     await connectDB();
     const user = await User.findByIdAndUpdate(
-      token.id,
+      session.user.id,
       { $set: updates },
       { new: true }
     ).select("name email phone photoUrl role createdAt").lean();

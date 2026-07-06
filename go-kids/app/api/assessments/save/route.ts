@@ -10,32 +10,37 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     await connectDB();
 
     const body = await req.json();
-    const { type, ageBand, childName, childId, parentAnswers, cptResult } = body;
+    const { type, ageBand, childName, childId, parentAnswers, cptResult } =
+      body;
 
     // Validate required fields
     if (!type || !ageBand || !childName || !parentAnswers || !cptResult) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Calculate scores server-side to prevent tampering
-    const { calcResults } = await import("@/components/assessments/attention-span/utils/scoring");
-    const parentRaw = (parentAnswers as number[]).reduce((a: number, b: number) => a + b, 0);
+    const { calcResults } =
+      await import("@/components/assessments/attention-span/utils/scoring");
+    const parentRaw = (parentAnswers as number[]).reduce(
+      (a: number, b: number) => a + b,
+      0,
+    );
     const scored = calcResults(
-      cptResult.accuracyPct,    // ML accuracy (TP+TN) / total
-      cptResult.hitRatePct,     // recall / sensitivity
-      cptResult.falseAlarms,    // raw FP count
-      parentRaw,                // parent questionnaire total
-      cptResult.shapesShown     // total shapes for proportional FA thresholds
+      cptResult.accuracyPct, // ML accuracy (TP+TN) / total
+      cptResult.hitRatePct, // recall / sensitivity
+      cptResult.falseAlarms, // raw FP count
+      parentRaw, // parent questionnaire total
+      cptResult.shapesShown, // total shapes for proportional FA thresholds
     );
 
     const assessment = await Assessment.create({
@@ -68,7 +73,7 @@ export async function POST(req: NextRequest) {
     console.error("POST /api/assessments/save error:", err);
     return NextResponse.json(
       { success: false, error: "Failed to save assessment." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

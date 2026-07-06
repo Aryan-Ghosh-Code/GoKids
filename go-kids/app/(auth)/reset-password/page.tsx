@@ -27,7 +27,10 @@ const resetPasswordSchema = z
       .regex(/[A-Z]/, "Must contain at least one uppercase letter")
       .regex(/[a-z]/, "Must contain at least one lowercase letter")
       .regex(/[0-9]/, "Must contain at least one number")
-      .regex(/[!@#$%^&*(),.?":{}|<>]/, "Must contain at least one special character"),
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        "Must contain at least one special character",
+      ),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -65,14 +68,21 @@ function ResetPasswordForm() {
     defaultValues: { password: "", confirmPassword: "" },
   });
 
-  const passwordValue = useWatch({ control, name: "password", defaultValue: "" });
+  const passwordValue = useWatch({
+    control,
+    name: "password",
+    defaultValue: "",
+  });
 
   const passwordRequirements = [
     { label: "At least 8 characters", test: passwordValue.length >= 8 },
     { label: "One uppercase letter", test: /[A-Z]/.test(passwordValue) },
     { label: "One lowercase letter", test: /[a-z]/.test(passwordValue) },
     { label: "One number", test: /[0-9]/.test(passwordValue) },
-    { label: "One special character", test: /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) },
+    {
+      label: "One special character",
+      test: /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue),
+    },
   ];
 
   const onSubmit = async (data: ResetPasswordFormData) => {
@@ -103,7 +113,10 @@ function ResetPasswordForm() {
       style={{ background: "#FAFAF8" }}
     >
       {/* Floating Blobs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div
+        className="fixed inset-0 pointer-events-none overflow-hidden"
+        aria-hidden="true"
+      >
         <div
           className="animate-float absolute top-24 right-20 w-60 h-60 rounded-full opacity-20"
           style={{ background: "#F5C518", filter: "blur(48px)" }}
@@ -128,7 +141,6 @@ function ResetPasswordForm() {
           }}
         >
           <AnimatePresence mode="wait">
-
             {/* ── No token in URL — invalid link state ────────────────── */}
             {!token && (
               <motion.div
@@ -141,7 +153,12 @@ function ResetPasswordForm() {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                    delay: 0.1,
+                  }}
                   className="flex justify-center mb-5"
                 >
                   <div
@@ -158,7 +175,10 @@ function ResetPasswordForm() {
                 >
                   Invalid Reset Link
                 </h1>
-                <p className="text-sm leading-relaxed mb-6" style={{ color: "#6B7280" }}>
+                <p
+                  className="text-sm leading-relaxed mb-6"
+                  style={{ color: "#6B7280" }}
+                >
                   This password reset link is missing or malformed. Reset links
                   arrive via email and can only be used once.
                 </p>
@@ -199,7 +219,12 @@ function ResetPasswordForm() {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                    delay: 0.1,
+                  }}
                   className="flex justify-center mb-5"
                 >
                   <div
@@ -216,7 +241,10 @@ function ResetPasswordForm() {
                 >
                   Password Reset! 🎉
                 </h1>
-                <p className="text-sm leading-relaxed mb-2" style={{ color: "#4B5563" }}>
+                <p
+                  className="text-sm leading-relaxed mb-2"
+                  style={{ color: "#4B5563" }}
+                >
                   Your password has been updated successfully.
                 </p>
                 <p className="text-xs" style={{ color: "#9CA3AF" }}>
@@ -258,7 +286,10 @@ function ResetPasswordForm() {
                   </div>
                   <h1
                     className="text-2xl font-extrabold mt-2"
-                    style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+                    style={{
+                      fontFamily: "var(--font-nunito)",
+                      color: "#1A1A1A",
+                    }}
                   >
                     Choose a New Password
                   </h1>
@@ -300,12 +331,19 @@ function ResetPasswordForm() {
                   )}
                 </AnimatePresence>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="space-y-4"
+                  noValidate
+                >
                   {/* New Password */}
                   <div>
                     <label
                       className="block text-sm font-semibold mb-1.5"
-                      style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                      style={{
+                        color: "#1A1A1A",
+                        fontFamily: "var(--font-nunito)",
+                      }}
                     >
                       New Password
                     </label>
@@ -337,9 +375,15 @@ function ResetPasswordForm() {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
                       >
-                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        {showPassword ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
                       </button>
                     </div>
                     {errors.password && (
@@ -355,7 +399,10 @@ function ResetPasswordForm() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       className="p-3 rounded-xl space-y-1.5 text-xs font-semibold"
-                      style={{ background: "#FAFAF8", border: "1px solid #F3F4F6" }}
+                      style={{
+                        background: "#FAFAF8",
+                        border: "1px solid #F3F4F6",
+                      }}
                     >
                       <p style={{ color: "#4B5563" }}>Password requirements:</p>
                       {passwordRequirements.map((req, i) => (
@@ -365,7 +412,9 @@ function ResetPasswordForm() {
                           ) : (
                             <X size={13} style={{ color: "#F4845F" }} />
                           )}
-                          <span style={{ color: req.test ? "#1A7A72" : "#9CA3AF" }}>
+                          <span
+                            style={{ color: req.test ? "#1A7A72" : "#9CA3AF" }}
+                          >
                             {req.label}
                           </span>
                         </div>
@@ -377,7 +426,10 @@ function ResetPasswordForm() {
                   <div>
                     <label
                       className="block text-sm font-semibold mb-1.5"
-                      style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                      style={{
+                        color: "#1A1A1A",
+                        fontFamily: "var(--font-nunito)",
+                      }}
                     >
                       Confirm Password
                     </label>
@@ -409,7 +461,9 @@ function ResetPasswordForm() {
                         type="button"
                         onClick={() => setShowConfirm(!showConfirm)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        aria-label={showConfirm ? "Hide password" : "Show password"}
+                        aria-label={
+                          showConfirm ? "Hide password" : "Show password"
+                        }
                       >
                         {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
@@ -472,8 +526,15 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center" style={{ background: "#FAFAF8" }}>
-          <Loader2 size={32} className="animate-spin" style={{ color: "#F5C518" }} />
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ background: "#FAFAF8" }}
+        >
+          <Loader2
+            size={32}
+            className="animate-spin"
+            style={{ color: "#F5C518" }}
+          />
         </div>
       }
     >

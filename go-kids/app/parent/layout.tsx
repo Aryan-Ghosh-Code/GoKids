@@ -9,7 +9,11 @@ export const metadata: Metadata = {
   description: "Manage your children's learning journey on Go Kids India.",
 };
 
-export default async function ParentLayout({ children }: { children: React.ReactNode }) {
+export default async function ParentLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await auth();
 
   if (!session) {

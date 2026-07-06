@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/db/connect";
 import { Child } from "@/lib/db/models/Child";
@@ -11,15 +11,15 @@ function isValidObjectId(id: string) {
 }
 
 // ─── GET /api/children/[id] ───────────────────────────────────────────────────
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
-    if (!token?.id) return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     if (!isValidObjectId(id)) return NextResponse.json({ success: false, error: "Invalid ID." }, { status: 400 });
 
     await connectDB();
-    const child = await Child.findOne({ _id: id, parentId: token.id }).lean();
+    const child = await Child.findOne({ _id: id, parentId: session.user.id }).lean();
     if (!child) return NextResponse.json({ success: false, error: "Child not found." }, { status: 404 });
 
     return NextResponse.json({ success: true, data: child });
@@ -33,8 +33,8 @@ export async function GET(req: NextRequest, { params }: Params) {
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
-    if (!token?.id) return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     if (!isValidObjectId(id)) return NextResponse.json({ success: false, error: "Invalid ID." }, { status: 400 });
 
     const body = await req.json();
@@ -62,7 +62,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     if (photoUrl !== undefined) updates.photoUrl = typeof photoUrl === "string" ? photoUrl.trim() : "";
 
     const child = await Child.findOneAndUpdate(
-      { _id: id, parentId: token.id },
+      { _id: id, parentId: session.user.id },
       { $set: updates },
       { new: true }
     ).lean();
@@ -77,15 +77,15 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 // ─── DELETE /api/children/[id] ────────────────────────────────────────────────
-export async function DELETE(req: NextRequest, { params }: Params) {
+export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET });
-    if (!token?.id) return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
     if (!isValidObjectId(id)) return NextResponse.json({ success: false, error: "Invalid ID." }, { status: 400 });
 
     await connectDB();
-    const child = await Child.findOneAndDelete({ _id: id, parentId: token.id });
+    const child = await Child.findOneAndDelete({ _id: id, parentId: session.user.id });
     if (!child) return NextResponse.json({ success: false, error: "Child not found." }, { status: 404 });
 
     return NextResponse.json({ success: true, data: { message: "Child profile deleted." } });

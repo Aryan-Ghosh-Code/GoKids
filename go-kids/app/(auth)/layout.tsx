@@ -6,7 +6,11 @@ export const metadata: Metadata = {
   title: "Go Kids | Authentication",
 };
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
