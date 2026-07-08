@@ -1,31 +1,44 @@
+// utils/bandConfig.ts
+
+export type Band = "A" | "B" | "C";
+
 export const BAND_CONFIG = {
   A: {
-    durSeconds: 360,
-    durLabel: "6 minutes",
-    target: "🔴",
-    targetName: "Red circle",
-    shapes: ["🔴", "🔵", "🟢", "🟡", "🟠", "🟣"],
-    targetIdx: 0,
-    shapeDisplayMs: 900,
+    ageLabel: "Ages 8-10",
+    totalSeconds: 360, // 6 minutes
+    phase1Seconds: 160,
+    phase2Seconds: 40,
+    phase3Seconds: 160,
+    target: "◆",
+    targetName: "Diamond",
+    distractors: ["●", "■", "▲", "★", "⬟"],
   },
   B: {
-    durSeconds: 480,
-    durLabel: "8 minutes",
-    target: "⭐",
-    targetName: "Star icon",
-    shapes: ["⭐", "🔷", "🔶", "🔸", "🔹", "🔺", "🔻"],
-    targetIdx: 0,
-    shapeDisplayMs: 750,
+    ageLabel: "Ages 11-13",
+    totalSeconds: 480, // 8 minutes
+    phase1Seconds: 215,
+    phase2Seconds: 50,
+    phase3Seconds: 215,
+    target: "⬠",
+    targetName: "Pentagon",
+    distractors: ["◆", "▲", "●", "⬡", "◇"],
   },
   C: {
-    durSeconds: 600,
-    durLabel: "10 minutes",
-    target: "A",
-    targetName: "Letter A",
-    shapes: ["A", "B", "C", "D", "E", "F", "G", "H"],
-    targetIdx: 0,
-    shapeDisplayMs: 600,
+    ageLabel: "Ages 14-16",
+    totalSeconds: 480, // 8 minutes
+    phase1Seconds: 215,
+    phase2Seconds: 50,
+    phase3Seconds: 215,
+    target: "⬡",
+    targetName: "Hexagon",
+    distractors: ["⬠", "◆", "▲", "●", "◇", "■"],
   },
 } as const;
 
-export type AgeBand = keyof typeof BAND_CONFIG;
+export const SHAPE_VISIBLE_MS: Record<Band, number> = {
+  A: 900,
+  B: 750,
+  C: 600,
+};
+
+export const TARGET_PROBABILITY = 0.30;

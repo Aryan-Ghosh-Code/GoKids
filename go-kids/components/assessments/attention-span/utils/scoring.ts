@@ -1,221 +1,200 @@
-export type CPTResult = {
-  shapesShown: number;
-  targetCount: number;
-  nonTargetCount: number;
-  hits: number;             // TP — correctly tapped on target
-  misses: number;           // FN — target shown, not tapped
-  falseAlarms: number;      // FP — tapped on non-target
-  correctRejections: number;// TN — non-target shown, correctly ignored
-  hitRatePct: number;       // Recall  = TP / (TP + FN)   × 100
-  falseAlarmRatePct: number;// FP rate = FP / (FP + TN)   × 100
-  accuracyPct: number;      // (TP + TN) / (TP + TN + FP + FN) × 100
-};
+// utils/scoring.ts
 
-export type AssessmentResults = {
-  cptScore: number;
-  parentScore: number;
-  overall: number;
-  level: "High" | "Moderate" | "Low";
-  sublabel: string;
-};
+import { Band } from "./bandConfig";
 
-export type Insight = {
-  icon: "check" | "warn" | "alert";
-  color: "green" | "amber" | "red";
-  label: string;
-  description: string;
-};
-
-/**
- * Calculate assessment results.
- *
- * CPT scoring uses ML-style accuracy: (TP + TN) / Total
- * which accounts for both correct hits AND correct rejections,
- * not just recall/sensitivity.
- *
- * @param accuracyPct  - (TP+TN)/Total × 100   (ML classification accuracy)
- * @param hitRatePct   - TP/(TP+FN) × 100      (recall — used in insights)
- * @param cptFalseAlarms - raw false alarm count (FP)
- * @param parentRaw    - raw parent questionnaire total (12–60)
- * @param totalShapes  - total shapes shown (TP+TN+FP+FN) — for proportional FA penalty
- */
-export function calcResults(
-  accuracyPct: number,
-  hitRatePct: number,
-  cptFalseAlarms: number,
-  parentRaw: number,
-  totalShapes: number = 40
-): AssessmentResults {
-  // Primary CPT score is based on overall accuracy (TP+TN / total)
-  let cptScore = accuracyPct >= 85 ? 90 : accuracyPct >= 70 ? 70 : accuracyPct >= 55 ? 50 : 20;
-
-  // Proportional false-alarm penalty: scale thresholds by session length
-  // Baseline: 40 total shapes → thresholds 20 / 10
-  const highFaThreshold = Math.max(1, Math.round((20 / 40) * totalShapes));
-  const modFaThreshold  = Math.max(1, Math.round((10 / 40) * totalShapes));
-
-  if (cptFalseAlarms > highFaThreshold) cptScore = Math.max(0, cptScore - 20);
-  else if (cptFalseAlarms > modFaThreshold) cptScore = Math.max(0, cptScore - 8);
-
-  // Parent questionnaire score (range 12–60 → 0–100)
-  let parentScore = Math.round(((parentRaw - 12) / 48) * 100);
-  parentScore = Math.max(0, Math.min(100, parentScore));
-
-  const overall = Math.round(cptScore * 0.6 + parentScore * 0.4);
-  const level: "High" | "Moderate" | "Low" =
-    overall >= 66 ? "High" : overall >= 41 ? "Moderate" : "Low";
-  const sublabel =
-    level === "High"
-      ? "Strong sustained attention observed"
-      : level === "Moderate"
-      ? "Some areas of attention to develop"
-      : "Attention support is recommended";
-
-  return { cptScore, parentScore, overall, level, sublabel };
+// ─── Raw CPT data collected across all 3 phases ───────────────────────────────
+export interface CptRawData {
+  // Phase 1
+  phase1Targets:     number;
+  phase1Hits:        number;
+  phase1Misses:      number;
+  phase1FalseAlarms: number;
+  // Burst
+  burstStarsTotal:   number;
+  burstStarsTapped:  number;
+  // Phase 3
+  phase3Targets:     number;
+  phase3Hits:        number;
+  phase3Misses:      number;
+  phase3FalseAlarms: number;
+  // Totals (computed before scoring)
+  totalTargets:     number;
+  totalHits:        number;
+  totalFalseAlarms: number;
+  hitRatePct:       number;
+  phase1HitRatePct: number;
+  phase3HitRatePct: number;
+  fatigueIndex:     number;   // phase3HitRatePct - phase1HitRatePct
+  burstTapRatePct:  number;   // burstStarsTapped / burstStarsTotal * 100
 }
 
-/**
- * Build insight bullets for the results screen.
- *
- * @param accuracyPct    - ML accuracy (TP+TN)/Total × 100
- * @param hitRatePct     - Recall/sensitivity TP/(TP+FN) × 100
- * @param falseAlarmRatePct - FP rate FP/(FP+TN) × 100
- * @param falseAlarms    - raw FP count
- * @param parentRaw      - raw parent score
- * @param level          - final classification level
- * @param totalShapes    - total shapes in session (for proportional thresholds)
- */
-export function buildInsights(
-  accuracyPct: number,
-  hitRatePct: number,
-  falseAlarmRatePct: number,
-  falseAlarms: number,
-  parentRaw: number,
-  level: string,
-  totalShapes: number = 40
-): Insight[] {
-  const insights: Insight[] = [];
+// ─── Helpers: build CptRawData from collected phase counters ─────────────────
+export function buildCptRaw(
+  p1: { targets: number; hits: number; misses: number; falseAlarms: number },
+  burst: { total: number; tapped: number },
+  p3: { targets: number; hits: number; misses: number; falseAlarms: number },
+): CptRawData {
+  const totalTargets = p1.targets + p3.targets;
+  const totalHits = p1.hits + p3.hits;
+  const totalFalseAlarms = p1.falseAlarms + p3.falseAlarms;
 
-  const highFaThreshold = Math.max(1, Math.round((20 / 40) * totalShapes));
-  const modFaThreshold  = Math.max(1, Math.round((10 / 40) * totalShapes));
+  const hitRatePct = totalTargets > 0 ? (totalHits / totalTargets) * 100 : 0;
+  const phase1HitRatePct = p1.targets > 0 ? (p1.hits / p1.targets) * 100 : 0;
+  const phase3HitRatePct = p3.targets > 0 ? (p3.hits / p3.targets) * 100 : 0;
+  const fatigueIndex = phase3HitRatePct - phase1HitRatePct;
+  const burstTapRatePct = burst.total > 0 ? (burst.tapped / burst.total) * 100 : 0;
 
-  // 1. Overall accuracy (TP+TN / Total) — primary metric
-  if (accuracyPct >= 85) {
-    insights.push({
-      icon: "check",
-      color: "green",
-      label: `${accuracyPct}% overall accuracy`,
-      description:
-        "Excellent classification accuracy — correctly identified targets and filtered distractors.",
-    });
-  } else if (accuracyPct >= 70) {
-    insights.push({
-      icon: "warn",
-      color: "amber",
-      label: `${accuracyPct}% overall accuracy`,
-      description:
-        "Good accuracy with some lapses — a few targets missed or distractors incorrectly tapped.",
-    });
-  } else if (accuracyPct >= 55) {
-    insights.push({
-      icon: "warn",
-      color: "amber",
-      label: `${accuracyPct}% overall accuracy`,
-      description:
-        "Moderate accuracy — noticeable difficulty distinguishing targets from non-targets.",
-    });
-  } else {
-    insights.push({
-      icon: "alert",
-      color: "red",
-      label: `${accuracyPct}% overall accuracy`,
-      description:
-        "Low accuracy — significant difficulty sustaining attention and filtering distractors.",
-    });
+  return {
+    phase1Targets: p1.targets,
+    phase1Hits: p1.hits,
+    phase1Misses: p1.misses,
+    phase1FalseAlarms: p1.falseAlarms,
+    burstStarsTotal: burst.total,
+    burstStarsTapped: burst.tapped,
+    phase3Targets: p3.targets,
+    phase3Hits: p3.hits,
+    phase3Misses: p3.misses,
+    phase3FalseAlarms: p3.falseAlarms,
+    totalTargets,
+    totalHits,
+    totalFalseAlarms,
+    hitRatePct,
+    phase1HitRatePct,
+    phase3HitRatePct,
+    fatigueIndex,
+    burstTapRatePct,
+  };
+}
+
+// ─── Part A scoring ──────────────────────────────────────────────────────────
+export interface PartAScores {
+  cptBaseScore:   number;
+  recoveryScore:  number;
+  fatigueIndex:   number;
+  fatigueFlag:    boolean;
+  recoveryBonus:  boolean;
+}
+
+export function scorePartA(cpt: CptRawData): PartAScores {
+  // Step 1a: CPT base score from hit rate
+  let cptBaseScore =
+    cpt.hitRatePct >= 85 ? 90 :
+    cpt.hitRatePct >= 65 ? 60 :
+    25;
+
+  // Step 1b: False alarm deduction
+  if (cpt.totalFalseAlarms > 20)      cptBaseScore = Math.max(0, cptBaseScore - 20);
+  else if (cpt.totalFalseAlarms > 10) cptBaseScore = Math.max(0, cptBaseScore - 8);
+
+  // Step 1c: Fatigue index
+  const fatigueIndex = cpt.phase3HitRatePct - cpt.phase1HitRatePct;
+  const fatigueFlag = fatigueIndex <= -15;
+
+  // Step 1d: Recovery score from burst
+  let recoveryScore =
+    cpt.burstTapRatePct >= 70 ? 85 :
+    cpt.burstTapRatePct >= 40 ? 55 :
+    25;
+
+  // Step 1e: Post-burst recovery bonus
+  const recoveryBonus = cpt.phase3HitRatePct > cpt.phase1HitRatePct;
+  if (recoveryBonus) recoveryScore = Math.min(100, recoveryScore + 10);
+
+  return { cptBaseScore, recoveryScore, fatigueIndex, fatigueFlag, recoveryBonus };
+}
+
+// ─── Part B scoring ──────────────────────────────────────────────────────────
+export function scorePartB(rawAnswers: number[], band: Band): number {
+  // Band A skips Part B — default neutral 50%
+  if (band === "A") return 50;
+
+  const REVERSE_INDICES = [1, 4, 5]; // B2, B5, B6
+  const scored = rawAnswers.map((v, i) =>
+    REVERSE_INDICES.includes(i) ? 6 - v : v
+  );
+  const sum = scored.reduce((a, b) => a + b, 0); // max 30
+  return Math.round((sum / 30) * 100);
+}
+
+// ─── Part C scoring ──────────────────────────────────────────────────────────
+export interface PartCScores {
+  parentScore: number;
+  clusterScores: { c1: number; c2: number; c3: number; c4: number };
+}
+
+export function scorePartC(rawAnswers: number[]): PartCScores {
+  const REVERSE_INDICES = [1, 3, 7, 8, 10]; // C2, C4, C8, C9, C11
+  const scored = rawAnswers.map((v, i) =>
+    REVERSE_INDICES.includes(i) ? 6 - v : v
+  );
+
+  const parentScore = Math.round((scored.reduce((a, b) => a + b, 0) / 60) * 100);
+
+  const clusterScores = {
+    c1: Math.round(((scored[0] + scored[1] + scored[2]) / 15) * 100),
+    c2: Math.round(((scored[3] + scored[4] + scored[5]) / 15) * 100),
+    c3: Math.round(((scored[6] + scored[7] + scored[8]) / 15) * 100),
+    c4: Math.round(((scored[9] + scored[10] + scored[11]) / 15) * 100),
+  };
+
+  return { parentScore, clusterScores };
+}
+
+// ─── Part D scoring ──────────────────────────────────────────────────────────
+export function scorePartD(rawAnswers: number[]): number {
+  const sum = rawAnswers.reduce((a, b) => a + b, 0); // max 50
+  return Math.round((sum / 50) * 100);
+}
+
+// ─── Gap flag ────────────────────────────────────────────────────────────────
+export interface GapFlag {
+  hasGap:    boolean;
+  direction: "cpt_higher" | "parent_higher" | null;
+}
+
+export function detectGapFlag(cptBaseScore: number, parentScore: number): GapFlag {
+  const diff = cptBaseScore - parentScore;
+  if (Math.abs(diff) >= 25) {
+    return { hasGap: true, direction: diff > 0 ? "cpt_higher" : "parent_higher" };
   }
+  return { hasGap: false, direction: null };
+}
 
-  // 2. Hit rate (recall) — sensitivity to targets
-  if (hitRatePct >= 85) {
-    insights.push({
-      icon: "check",
-      color: "green",
-      label: `${hitRatePct}% target detection rate`,
-      description: "Excellent ability to detect and respond to target stimuli.",
-    });
-  } else if (hitRatePct >= 65) {
-    insights.push({
-      icon: "warn",
-      color: "amber",
-      label: `${hitRatePct}% target detection rate`,
-      description: "Moderate target detection — some lapses in sustained attention.",
-    });
-  } else {
-    insights.push({
-      icon: "alert",
-      color: "red",
-      label: `${hitRatePct}% target detection rate`,
-      description: "Low target detection — significant attention lapses observed.",
-    });
-  }
+// ─── Aggregated scores shape (passed to determineProfile) ────────────────────
+export interface AllScores {
+  cptBaseScore:   number;
+  recoveryScore:  number;
+  fatigueIndex:   number;
+  fatigueFlag:    boolean;
+  recoveryBonus:  boolean;
+  selfReportScore: number;
+  parentScore:    number;
+  clusterScores:  { c1: number; c2: number; c3: number; c4: number };
+  motivationScore: number;
+  gapFlag:        boolean;
+  gapDirection:   "cpt_higher" | "parent_higher" | null;
+}
 
-  // 3. False alarm rate (impulsivity / specificity)
-  if (falseAlarms <= modFaThreshold) {
-    insights.push({
-      icon: "check",
-      color: "green",
-      label: `${falseAlarmRatePct}% false alarm rate`,
-      description: "Strong impulse control — rarely responded to non-target stimuli.",
-    });
-  } else if (falseAlarms <= highFaThreshold) {
-    insights.push({
-      icon: "warn",
-      color: "amber",
-      label: `${falseAlarmRatePct}% false alarm rate`,
-      description: "Moderate impulsivity — some difficulty inhibiting responses to distractors.",
-    });
-  } else {
-    insights.push({
-      icon: "alert",
-      color: "red",
-      label: `${falseAlarmRatePct}% false alarm rate`,
-      description: "Significant impulsivity — frequent responses to non-target stimuli.",
-    });
-  }
+export function computeAllScores(
+  cptRaw: CptRawData,
+  partBRaw: number[],
+  partCRaw: number[],
+  partDRaw: number[],
+  band: Band,
+): AllScores {
+  const partA = scorePartA(cptRaw);
+  const selfReportScore = scorePartB(partBRaw, band);
+  const { parentScore, clusterScores } = scorePartC(partCRaw);
+  const motivationScore = scorePartD(partDRaw);
+  const gap = detectGapFlag(partA.cptBaseScore, parentScore);
 
-  // 4. Parent questionnaire
-  if (parentRaw >= 45) {
-    insights.push({
-      icon: "check",
-      color: "green",
-      label: `Parent score: ${parentRaw}/60`,
-      description: "Parent observations suggest strong attention skills in daily life.",
-    });
-  } else if (parentRaw >= 29) {
-    insights.push({
-      icon: "warn",
-      color: "amber",
-      label: `Parent score: ${parentRaw}/60`,
-      description: "Some attention challenges noted in daily activities.",
-    });
-  } else {
-    insights.push({
-      icon: "alert",
-      color: "red",
-      label: `Parent score: ${parentRaw}/60`,
-      description: "Notable attention difficulties observed across daily activities.",
-    });
-  }
-
-  // 5. Professional referral for Low only
-  if (level === "Low") {
-    insights.push({
-      icon: "alert",
-      color: "red",
-      label: "Professional consultation recommended",
-      description:
-        "Consult a qualified child psychologist before making educational decisions.",
-    });
-  }
-
-  return insights;
+  return {
+    ...partA,
+    selfReportScore,
+    parentScore,
+    clusterScores,
+    motivationScore,
+    gapFlag: gap.hasGap,
+    gapDirection: gap.direction,
+  };
 }
