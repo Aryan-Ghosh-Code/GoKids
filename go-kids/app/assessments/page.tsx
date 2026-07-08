@@ -249,9 +249,9 @@ export default function AssessmentsPage() {
         </section>
 
         {/* ── How it works ─────────────────────────────────────────────── */}
-        <section className="py-20 relative z-10">
+        <section className="py-8 relative z-10">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
+            <div className="text-center mb-8">
               <h2
                 className="text-2xl sm:text-3xl font-extrabold text-brand-black"
                 style={{ fontFamily: "var(--font-heading)" }}

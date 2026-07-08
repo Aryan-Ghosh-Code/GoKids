@@ -185,7 +185,15 @@ export default function ProfilePageClient({
       </div>
 
       {/* ── Tabs Navigation ── */}
-      <div className="flex border-b border-[#E5E7EB] overflow-x-auto scrollbar-none gap-2">
+      <div 
+        className="hidden md:flex border-b border-[#E5E7EB] scrollbar-none gap-2 w-full flex-row flex-nowrap"
+        style={{ 
+          overflowX: "auto", 
+          overflowY: "hidden", 
+          WebkitOverflowScrolling: "touch",
+          paddingBottom: "2px"
+        }}
+      >
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -193,7 +201,7 @@ export default function ProfilePageClient({
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className="flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-sm transition-all whitespace-nowrap outline-none cursor-pointer"
+              className="flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-sm transition-all whitespace-nowrap outline-none cursor-pointer shrink-0"
               style={{
                 borderColor: isActive ? "#F5C518" : "transparent",
                 color: isActive ? "#1A1A1A" : "#6B7280",
@@ -216,7 +224,7 @@ export default function ProfilePageClient({
       </div>
 
       {/* ── Tab Content ── */}
-      <div className="mt-4">
+      <div className="mt-4 pb-20 md:pb-0">
         <AnimatePresence mode="wait">
           {/* TAB 1: Profile */}
           {activeTab === "profile" && (
@@ -364,7 +372,7 @@ export default function ProfilePageClient({
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-grey pb-4">
                 <div>
                   <h2
                     className="text-xl font-extrabold text-brand-black"
@@ -382,7 +390,7 @@ export default function ProfilePageClient({
                     setEditChild(null);
                     setAddOpen(true);
                   }}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-md active:scale-95 cursor-pointer"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-md active:scale-95 cursor-pointer shrink-0"
                   style={{
                     background: "#F5C518",
                     color: "#1A1A1A",
@@ -677,6 +685,37 @@ export default function ProfilePageClient({
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* Mobile bottom tab bar — only on small screens */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#E5E7EB] flex md:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className="flex-1 flex flex-col items-center justify-center py-3 gap-1 relative cursor-pointer"
+              style={{ color: isActive ? "#F5C518" : "#9CA3AF" }}
+            >
+              <Icon size={20} />
+              <span style={{
+                fontSize: 9,
+                fontWeight: 700,
+                fontFamily: "var(--font-nunito)",
+                color: isActive ? "#1A1A1A" : "#9CA3AF"
+              }}>
+                {tab.label.split(" ")[1]} {/* "My", "Registered", etc — first word only */}
+              </span>
+              {tab.id === "children" && childrenList.length > 0 && (
+                <span className="absolute top-2 right-[32%] px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-[#FFF9E6] text-primary-dark border border-[#F5C518]/30">
+                  {childrenList.length}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* ── Client Dialogs ── */}
