@@ -25,13 +25,22 @@ import {
 import type { Workshop } from "@/lib/data/workshops";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function levelColor(level: string) {
-  if (level === "Beginner")
-    return { bg: "rgba(43,188,176,0.12)", text: "#1A7A72" };
-  if (level === "Intermediate")
-    return { bg: "rgba(244,132,95,0.12)", text: "#C0532A" };
-  return { bg: "rgba(56,189,248,0.12)", text: "#0369A1" };
-}
+const getInstructors = (workshop: Workshop) => {
+  return workshop.instructors && workshop.instructors.length > 0
+    ? workshop.instructors
+    : [workshop.instructor];
+};
+
+const getInstructorsNamesList = (instructors: any[]) => {
+  if (instructors.length === 0) return "";
+  if (instructors.length === 1) return instructors[0].name;
+  if (instructors.length === 2)
+    return `${instructors[0].name} & ${instructors[1].name}`;
+  return `${instructors
+    .slice(0, -1)
+    .map((i) => i.name)
+    .join(", ")}, & ${instructors[instructors.length - 1].name}`;
+};
 
 // ─── Star rating ──────────────────────────────────────────────────────────────
 function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
@@ -327,29 +336,33 @@ function EnrollSidebar({ workshop }: { workshop: Workshop }) {
         <div style={{ height: 1, background: "#F3F4F6", margin: "0 0 16px" }} />
 
         {/* Instructor mini-card */}
-        <div className="flex items-center gap-3">
-          <div
-            className="relative w-11 h-11 rounded-full overflow-hidden shrink-0"
-            style={{ border: "2px solid #F5C518" }}
-          >
-            <Image
-              src={workshop.instructor.avatar}
-              alt={workshop.instructor.name}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div>
-            <p
-              className="text-sm font-bold"
-              style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
-            >
-              {workshop.instructor.name}
-            </p>
-            <p className="text-xs" style={{ color: "#6B7280" }}>
-              {workshop.instructor.title}
-            </p>
-          </div>
+        <div className="space-y-3">
+          {getInstructors(workshop).map((ins) => (
+            <div key={ins.name} className="flex items-center gap-3">
+              <div
+                className="relative w-11 h-11 rounded-full overflow-hidden shrink-0"
+                style={{ border: "2px solid #F5C518" }}
+              >
+                <Image
+                  src={ins.avatar}
+                  alt={ins.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <p
+                  className="text-sm font-bold"
+                  style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+                >
+                  {ins.name}
+                </p>
+                <p className="text-xs" style={{ color: "#6B7280" }}>
+                  {ins.title}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -617,22 +630,33 @@ export default function WorkshopDetailClient({
               </span>
             </div>
             <span style={{ color: "rgba(255,255,255,0.25)" }}>|</span>
-            <div className="flex items-center gap-2">
-              <div
-                className="relative w-6 h-6 rounded-full overflow-hidden shrink-0"
-                style={{ border: "1.5px solid #F5C518" }}
-              >
-                <Image
-                  src={workshop.instructor.avatar}
-                  alt={workshop.instructor.name}
-                  fill
-                  className="object-cover"
-                />
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex -space-x-1.5">
+                {getInstructors(workshop).map((ins, index) => (
+                  <div
+                    key={ins.name}
+                    className="relative w-6 h-6 rounded-full overflow-hidden shrink-0"
+                    style={{
+                      border: "1.5px solid #F5C518",
+                      zIndex: getInstructors(workshop).length - index,
+                    }}
+                  >
+                    <Image
+                      src={ins.avatar}
+                      alt={ins.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
               </div>
-              <span style={{ color: "rgba(255,255,255,0.75)" }}>
+              <span
+                className="text-xs sm:text-sm"
+                style={{ color: "rgba(255,255,255,0.75)" }}
+              >
                 By{" "}
                 <strong style={{ color: "#F5C518" }}>
-                  {workshop.instructor.name}
+                  {getInstructorsNamesList(getInstructors(workshop))}
                 </strong>
               </span>
             </div>
@@ -889,64 +913,81 @@ export default function WorkshopDetailClient({
             >
               <SectionHeading
                 icon={<Award size={18} />}
-                title="Your Instructor"
+                title={
+                  getInstructors(workshop).length > 1
+                    ? "Your Instructors"
+                    : "Your Instructor"
+                }
                 accent="#F4845F"
               />
 
               <div
-                className="rounded-3xl p-6 bg-white border border-brand-grey"
-                style={{ boxShadow: "0 10px 30px rgba(0,0,0,0.04)" }}
+                className={
+                  getInstructors(workshop).length > 1
+                    ? "grid grid-cols-1 md:grid-cols-2 gap-6"
+                    : "space-y-6"
+                }
               >
-                {/* Avatar + Info Block */}
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-5">
-                  {/* Avatar */}
-                  <div className="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 border border-[#E5E7EB] bg-brand-offwhite">
-                    <Image
-                      src={workshop.instructor.avatar}
-                      alt={workshop.instructor.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  {/* Info */}
-                  <div className="grow text-center sm:text-left pt-1">
-                    <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2.5 mb-1.5">
-                      <h3
-                        className="text-xl font-bold tracking-tight"
-                        style={{
-                          fontFamily: "var(--font-heading)",
-                          color: "#1A1A1A",
-                        }}
-                      >
-                        {workshop.instructor.name}
-                      </h3>
-                      <span
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                        style={{
-                          background: "#FFF9E6",
-                          color: "#92700A",
-                          border: "1px solid rgba(245,197,24,0.3)",
-                        }}
-                      >
-                        <Award size={10} />
-                        {workshop.instructor.experience} Exp
-                      </span>
-                    </div>
-                    <p
-                      className="text-sm font-semibold"
-                      style={{ color: "#2BBCB0" }}
-                    >
-                      {workshop.instructor.title}
-                    </p>
-                  </div>
-                </div>
+                {getInstructors(workshop).map((ins) => (
+                  <div
+                    key={ins.name}
+                    className="rounded-3xl p-6 bg-white border border-brand-grey h-full flex flex-col justify-between"
+                    style={{ boxShadow: "0 10px 30px rgba(0,0,0,0.04)" }}
+                  >
+                    <div>
+                      {/* Avatar + Info Block */}
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-5">
+                        {/* Avatar */}
+                        <div className="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 border border-[#E5E7EB] bg-brand-offwhite">
+                          <Image
+                            src={ins.avatar}
+                            alt={ins.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        {/* Info */}
+                        <div className="grow text-center sm:text-left pt-1">
+                          <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2.5 mb-1.5">
+                            <h3
+                              className="text-xl font-bold tracking-tight"
+                              style={{
+                                fontFamily: "var(--font-heading)",
+                                color: "#1A1A1A",
+                              }}
+                            >
+                              {ins.name}
+                            </h3>
+                            <span
+                              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                              style={{
+                                background: "#FFF9E6",
+                                color: "#92700A",
+                                border: "1px solid rgba(245,197,24,0.3)",
+                              }}
+                            >
+                              <Award size={10} />
+                              {ins.experience} Exp
+                            </span>
+                          </div>
+                          <p
+                            className="text-sm font-semibold"
+                            style={{ color: "#2BBCB0" }}
+                          >
+                            {ins.title}
+                          </p>
+                        </div>
+                      </div>
 
-                <p
-                  className="text-sm leading-relaxed text-brand-grey-text text-justify"
-                  style={{ fontFamily: "var(--font-inter)" }}
-                >
-                  {workshop.instructor.bio}
-                </p>
+                      <p
+                        className="text-sm leading-relaxed text-brand-grey-text text-justify"
+                        style={{ fontFamily: "var(--font-inter)" }}
+                      >
+                        {ins.bio}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </motion.section>
 

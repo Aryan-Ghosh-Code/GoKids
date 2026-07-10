@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:workshops": "tsx scripts/seed-workshops.ts"
+    "seed:workshops": "tsx scripts/seed-workshops.ts",
+    "seed:mentors": "tsx scripts/seed-mentors.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

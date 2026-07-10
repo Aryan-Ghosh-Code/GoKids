@@ -15,16 +15,20 @@ function Chip({
   color: "teal" | "coral" | "sky" | "yellow";
 }) {
   const styles: Record<string, { bg: string; text: string }> = {
-    teal:   { bg: "rgba(43,188,176,0.12)",  text: "#1A7A72" },
-    coral:  { bg: "rgba(244,132,95,0.12)",  text: "#C0532A" },
-    sky:    { bg: "rgba(56,189,248,0.12)",  text: "#0369A1" },
-    yellow: { bg: "rgba(245,197,24,0.18)",  text: "#92700A" },
+    teal: { bg: "rgba(43,188,176,0.12)", text: "#1A7A72" },
+    coral: { bg: "rgba(244,132,95,0.12)", text: "#C0532A" },
+    sky: { bg: "rgba(56,189,248,0.12)", text: "#0369A1" },
+    yellow: { bg: "rgba(245,197,24,0.18)", text: "#92700A" },
   };
   const s = styles[color];
   return (
     <span
       className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold"
-      style={{ background: s.bg, color: s.text, fontFamily: "var(--font-nunito)" }}
+      style={{
+        background: s.bg,
+        color: s.text,
+        fontFamily: "var(--font-nunito)",
+      }}
     >
       {label}
     </span>
@@ -102,10 +106,17 @@ export default function WorkshopCard({ workshop }: WorkshopCardProps) {
           <div className="mt-auto pt-3 flex items-center justify-between border-t border-brand-grey">
             {/* Instructor */}
             <span
-              className="text-xs font-semibold truncate"
+              className="text-xs font-semibold truncate max-w-45"
               style={{ color: "#6B7280" }}
             >
-              {workshop.instructor.name}
+              {(() => {
+                const list = workshop.instructors || [workshop.instructor];
+                if (list.length === 0) return "";
+                if (list.length === 1) return list[0].name;
+                if (list.length === 2)
+                  return `${list[0].name} & ${list[1].name}`;
+                return `${list[0].name} +${list.length - 1} more`;
+              })()}
             </span>
 
             {/* Rating + enrolled */}

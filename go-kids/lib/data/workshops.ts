@@ -9,7 +9,6 @@ import "server-only";
 import { connectDB } from "@/lib/db/connect";
 import WorkshopModel from "@/lib/db/models/Workshop";
 
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface WorkshopLesson {
@@ -38,24 +37,25 @@ export interface WorkshopInstructor {
 }
 
 export interface Workshop {
-  _id: string;        // MongoDB ObjectId as string
+  _id: string; // MongoDB ObjectId as string
   slug: string;
   title: string;
   shortDescription: string;
   longDescription: string;
   instructor: WorkshopInstructor;
+  instructors?: WorkshopInstructor[];
   thumbnail: string;
-  ageGroup: string;       // e.g. "9–11"
+  ageGroup: string; // e.g. "9–11"
   level: "Beginner" | "Intermediate" | "Advanced";
-  skill: string;          // e.g. "Coding", "Mathematics"
-  category: string;       // used for filter grouping
-  duration: string;       // e.g. "4 Weeks"
+  skill: string; // e.g. "Coding", "Mathematics"
+  category: string; // used for filter grouping
+  duration: string; // e.g. "4 Weeks"
   sessions: number;
   isFree: boolean;
   price?: number;
   enrolledCount: number;
   rating: number;
-  highlights: string[];   // bullet points for Overview tab
+  highlights: string[]; // bullet points for Overview tab
   requirements: string[];
   tags: string[];
   curriculum: WorkshopSection[];
@@ -78,12 +78,25 @@ export type WorkshopFilters = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toWorkshop(doc: any): Workshop {
-  return {
+  const plainDoc = {
     ...doc,
     _id: doc._id.toString(),
-    createdAt: doc.createdAt instanceof Date ? doc.createdAt.toISOString() : doc.createdAt,
-    updatedAt: doc.updatedAt instanceof Date ? doc.updatedAt.toISOString() : doc.updatedAt,
+    createdAt:
+      doc.createdAt instanceof Date
+        ? doc.createdAt.toISOString()
+        : doc.createdAt,
+    updatedAt:
+      doc.updatedAt instanceof Date
+        ? doc.updatedAt.toISOString()
+        : doc.updatedAt,
   };
+
+  // Ensure instructors is always populated and is a non-empty array
+  if (!plainDoc.instructors || plainDoc.instructors.length === 0) {
+    plainDoc.instructors = plainDoc.instructor ? [plainDoc.instructor] : [];
+  }
+
+  return plainDoc;
 }
 
 // ─── Query Helpers ────────────────────────────────────────────────────────────
@@ -92,30 +105,28 @@ function toWorkshop(doc: any): Workshop {
  * Fetch all workshops, optionally filtered + sorted.
  * Used server-side; result is serialised and passed to client components.
  */
-export async function getWorkshops(filters?: WorkshopFilters): Promise<Workshop[]> {
+export async function getWorkshops(
+  filters?: WorkshopFilters,
+): Promise<Workshop[]> {
   await connectDB();
 
   // Build MongoDB query
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const query: Record<string, any> = {};
 
-  if (filters?.level?.length)    query.level    = { $in: filters.level };
+  if (filters?.level?.length) query.level = { $in: filters.level };
   if (filters?.ageGroup?.length) query.ageGroup = { $in: filters.ageGroup };
-  if (filters?.skill?.length)    query.skill    = { $in: filters.skill };
+  if (filters?.skill?.length) query.skill = { $in: filters.skill };
 
   if (filters?.query) {
     const re = new RegExp(filters.query, "i");
-    query.$or = [
-      { title: re },
-      { shortDescription: re },
-      { skill: re },
-    ];
+    query.$or = [{ title: re }, { shortDescription: re }, { skill: re }];
   }
 
   // Sort
   let sortOption: Record<string, 1 | -1> = { createdAt: -1 }; // "newest" default
   if (filters?.sort === "popular") sortOption = { enrolledCount: -1 };
-  if (filters?.sort === "rating")  sortOption = { rating: -1 };
+  if (filters?.sort === "rating") sortOption = { rating: -1 };
 
   const docs = await WorkshopModel.find(query).sort(sortOption).lean();
   return docs.map(toWorkshop);
@@ -125,7 +136,9 @@ export async function getWorkshops(filters?: WorkshopFilters): Promise<Workshop[
  * Fetch a single workshop by slug.
  * Returns null if not found (caller should call notFound() in that case).
  */
-export async function getWorkshopBySlug(slug: string): Promise<Workshop | null> {
+export async function getWorkshopBySlug(
+  slug: string,
+): Promise<Workshop | null> {
   await connectDB();
   const doc = await WorkshopModel.findOne({ slug }).lean();
   if (!doc) return null;

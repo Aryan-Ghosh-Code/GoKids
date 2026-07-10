@@ -37,7 +37,7 @@ export const authOptions: NextAuthConfig = {
 
         const isValid = await bcrypt.compare(
           credentials.password as string,
-          user.passwordHash
+          user.passwordHash,
         );
 
         if (!isValid) return null;
@@ -108,7 +108,7 @@ export const authOptions: NextAuthConfig = {
           await connectDB();
           const dbUser = await User.findOne(
             { email: (token.email as string).toLowerCase() },
-            "role _id passwordChangedAt photoUrl"
+            "role _id passwordChangedAt photoUrl",
           );
           if (dbUser) {
             // Backfill role/id if missing (first sign-in or legacy token)
@@ -123,14 +123,18 @@ export const authOptions: NextAuthConfig = {
             // Invalidate token if password was changed after it was issued
             if (dbUser.passwordChangedAt) {
               const changedAtSeconds = Math.floor(
-                dbUser.passwordChangedAt.getTime() / 1000
+                dbUser.passwordChangedAt.getTime() / 1000,
               );
-              const issuedAt = (token.issuedAt as number) ?? (token.iat as number) ?? 0;
+              const issuedAt =
+                (token.issuedAt as number) ?? (token.iat as number) ?? 0;
               if (issuedAt < changedAtSeconds) {
                 // Return null to signal NextAuth to clear the session
                 return null as unknown as typeof token;
               }
             }
+          } else {
+            // User does not exist in database (deleted) -> invalidate token by returning null
+            return null as unknown as typeof token;
           }
         } catch (err) {
           console.error("Failed to fetch user role/id for token:", err);
@@ -143,11 +147,30 @@ export const authOptions: NextAuthConfig = {
     // ── Session: expose id + role + photo on session.user ────────
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string;
-        (session.user as { role?: string }).role = token.role as string;
-        // Expose photoUrl as session.user.image (Next-Auth standard field)
-        if (token.picture) {
-          session.user.image = token.picture as string;
+        try {
+          await connectDB();
+          const userId = (token.id || token.sub) as string;
+          const dbUser = await User.findById(userId, "role").lean();
+
+          if (!dbUser) {
+            // User does not exist in database -> invalidate session by returning null
+            return null as any;
+          }
+
+          session.user.id = userId;
+          (session.user as { role?: string }).role = dbUser.role;
+
+          if (token.picture) {
+            session.user.image = token.picture as string;
+          }
+        } catch (err) {
+          console.error("Session verification database error:", err);
+          // Fallback to token information if database is temporarily unavailable
+          session.user.id = (token.id || token.sub) as string;
+          (session.user as { role?: string }).role = token.role as string;
+          if (token.picture) {
+            session.user.image = token.picture as string;
+          }
         }
       }
       return session;
