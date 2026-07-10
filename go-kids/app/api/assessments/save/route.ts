@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const {
+      assessmentId,
+      savedToDashboard = false,
       type,
       childId,
       childName,
@@ -30,18 +32,51 @@ export async function POST(req: NextRequest) {
       profile,
     } = body;
 
-    // Validate required fields
-    if (!type || !childName || !band || !cptRaw || !partCAnswers || !partDAnswers || !scores || !profile) {
+    const parentId = new mongoose.Types.ObjectId(session.user.id);
+
+    // Mark an existing assessment as saved to dashboard
+    if (assessmentId) {
+      const existing = await Assessment.findOne({
+        _id: new mongoose.Types.ObjectId(assessmentId),
+        parentId,
+      });
+
+      if (!existing) {
+        return NextResponse.json(
+          { success: false, error: "Assessment not found" },
+          { status: 404 },
+        );
+      }
+
+      existing.savedToDashboard = savedToDashboard;
+      await existing.save();
+
+      return NextResponse.json({
+        success: true,
+        data: { assessmentId: existing._id.toString() },
+      });
+    }
+
+    // Validate required fields for new assessment
+    if (
+      !type ||
+      !childName ||
+      !band ||
+      !cptRaw ||
+      !partCAnswers ||
+      !partDAnswers ||
+      !scores ||
+      !profile
+    ) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 },
       );
     }
 
-    // Save dynamic mixed document structure compatible with Assessment schema
     const assessment = await Assessment.create({
       childId: childId ? new mongoose.Types.ObjectId(childId) : undefined,
-      parentId: new mongoose.Types.ObjectId(session.user.id),
+      parentId,
       type,
       status: "completed",
       formData: {
@@ -57,6 +92,7 @@ export async function POST(req: NextRequest) {
         profile,
       },
       reportUrl: null,
+      savedToDashboard,
     });
 
     return NextResponse.json({
