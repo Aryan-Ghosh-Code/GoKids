@@ -13,7 +13,12 @@ interface DeleteChildDialogProps {
   onSuccess: (id: string) => void;
 }
 
-export default function DeleteChildDialog({ open, onOpenChange, child, onSuccess }: DeleteChildDialogProps) {
+export default function DeleteChildDialog({
+  open,
+  onOpenChange,
+  child,
+  onSuccess,
+}: DeleteChildDialogProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,7 +27,9 @@ export default function DeleteChildDialog({ open, onOpenChange, child, onSuccess
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/children/${child._id}`, { method: "DELETE" });
+      const res = await fetch(`/api/children/${child._id}`, {
+        method: "DELETE",
+      });
       const result = await res.json();
       if (result.success) {
         onSuccess(child._id);

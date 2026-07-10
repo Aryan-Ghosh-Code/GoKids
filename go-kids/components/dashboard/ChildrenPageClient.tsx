@@ -18,7 +18,13 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
     >
       {/* Illustrated SVG */}
       <div className="mb-8">
-        <svg width="180" height="160" viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="180"
+          height="160"
+          viewBox="0 0 180 160"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           {/* Ground */}
           <ellipse cx="90" cy="148" rx="60" ry="8" fill="#F3F4F6" />
           {/* Body */}
@@ -33,14 +39,36 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
           <circle cx="83.2" cy="67" r="1.2" fill="#FFFFFF" />
           <circle cx="99.2" cy="67" r="1.2" fill="#FFFFFF" />
           {/* Smile */}
-          <path d="M83 77 Q90 84 97 77" stroke="#C07A35" strokeWidth="2" strokeLinecap="round" fill="none" />
+          <path
+            d="M83 77 Q90 84 97 77"
+            stroke="#C07A35"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+          />
           {/* Hair */}
           <path d="M64 62 Q68 44 90 44 Q112 44 116 62" fill="#4A2C17" />
           <ellipse cx="90" cy="46" rx="22" ry="10" fill="#4A2C17" />
           {/* Left arm */}
-          <rect x="40" y="90" width="24" height="12" rx="6" fill="#F5C518" transform="rotate(-20 40 90)" />
+          <rect
+            x="40"
+            y="90"
+            width="24"
+            height="12"
+            rx="6"
+            fill="#F5C518"
+            transform="rotate(-20 40 90)"
+          />
           {/* Right arm */}
-          <rect x="116" y="90" width="24" height="12" rx="6" fill="#F5C518" transform="rotate(20 116 90)" />
+          <rect
+            x="116"
+            y="90"
+            width="24"
+            height="12"
+            rx="6"
+            fill="#F5C518"
+            transform="rotate(20 116 90)"
+          />
           {/* Legs */}
           <rect x="68" y="138" width="16" height="12" rx="6" fill="#2BBCB0" />
           <rect x="96" y="138" width="16" height="12" rx="6" fill="#2BBCB0" />
@@ -50,9 +78,32 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
           <circle cx="160" cy="70" r="2.5" fill="#2BBCB0" opacity="0.6" />
           <circle cx="20" cy="80" r="2" fill="#4FC3F7" opacity="0.7" />
           {/* Plus badge */}
-          <circle cx="148" cy="50" r="14" fill="#FFF9E6" stroke="#F5C518" strokeWidth="2" />
-          <line x1="148" y1="44" x2="148" y2="56" stroke="#F5C518" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="142" y1="50" x2="154" y2="50" stroke="#F5C518" strokeWidth="2.5" strokeLinecap="round" />
+          <circle
+            cx="148"
+            cy="50"
+            r="14"
+            fill="#FFF9E6"
+            stroke="#F5C518"
+            strokeWidth="2"
+          />
+          <line
+            x1="148"
+            y1="44"
+            x2="148"
+            y2="56"
+            stroke="#F5C518"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+          <line
+            x1="142"
+            y1="50"
+            x2="154"
+            y2="50"
+            stroke="#F5C518"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
         </svg>
       </div>
 
@@ -63,7 +114,8 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         No children yet!
       </h2>
       <p className="text-sm max-w-xs mb-8" style={{ color: "#6B7280" }}>
-        Add your child&apos;s profile to get personalised workshop recommendations, assessments, and mentors.
+        Add your child&apos;s profile to get personalised workshop
+        recommendations, assessments, and mentors.
       </p>
 
       <button
@@ -112,7 +164,9 @@ export default function ChildrenPageClient() {
   };
 
   const handleEdited = (updated: ChildData) => {
-    setChildren((prev) => prev.map((c) => (c._id === updated._id ? updated : c)));
+    setChildren((prev) =>
+      prev.map((c) => (c._id === updated._id ? updated : c)),
+    );
   };
 
   const handleDeleted = (id: string) => {
@@ -139,7 +193,10 @@ export default function ChildrenPageClient() {
 
         {children.length > 0 && (
           <button
-            onClick={() => { setEditChild(null); setAddOpen(true); }}
+            onClick={() => {
+              setEditChild(null);
+              setAddOpen(true);
+            }}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-md active:scale-95"
             style={{
               background: "#F5C518",
@@ -157,13 +214,22 @@ export default function ChildrenPageClient() {
       {/* ── Loading ── */}
       {loading && (
         <div className="flex items-center justify-center py-32">
-          <Loader2 size={32} className="animate-spin" style={{ color: "#F5C518" }} />
+          <Loader2
+            size={32}
+            className="animate-spin"
+            style={{ color: "#F5C518" }}
+          />
         </div>
       )}
 
       {/* ── Empty State ── */}
       {!loading && children.length === 0 && (
-        <EmptyState onAdd={() => { setEditChild(null); setAddOpen(true); }} />
+        <EmptyState
+          onAdd={() => {
+            setEditChild(null);
+            setAddOpen(true);
+          }}
+        />
       )}
 
       {/* ── Children Grid ── */}
@@ -178,7 +244,10 @@ export default function ChildrenPageClient() {
                 key={child._id}
                 child={child}
                 index={i}
-                onEdit={(c) => { setEditChild(c); setAddOpen(true); }}
+                onEdit={(c) => {
+                  setEditChild(c);
+                  setAddOpen(true);
+                }}
                 onDelete={(c) => setDeleteChild(c)}
               />
             ))}
@@ -195,21 +264,28 @@ export default function ChildrenPageClient() {
           style={{ color: "#9CA3AF" }}
         >
           <Users size={14} />
-          <span>{children.length} profile{children.length !== 1 ? "s" : ""} added</span>
+          <span>
+            {children.length} profile{children.length !== 1 ? "s" : ""} added
+          </span>
         </motion.div>
       )}
 
       {/* ── Dialogs ── */}
       <ChildFormDialog
         open={addOpen}
-        onOpenChange={(o) => { setAddOpen(o); if (!o) setEditChild(null); }}
+        onOpenChange={(o) => {
+          setAddOpen(o);
+          if (!o) setEditChild(null);
+        }}
         editChild={editChild}
         onSuccess={editChild ? handleEdited : handleAdded}
       />
 
       <DeleteChildDialog
         open={!!deleteChild}
-        onOpenChange={(o) => { if (!o) setDeleteChild(null); }}
+        onOpenChange={(o) => {
+          if (!o) setDeleteChild(null);
+        }}
         child={deleteChild}
         onSuccess={handleDeleted}
       />

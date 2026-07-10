@@ -2,7 +2,14 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Edit3, Trash2, Calendar, GraduationCap, School, Sparkles } from "lucide-react";
+import {
+  Edit3,
+  Trash2,
+  Calendar,
+  GraduationCap,
+  School,
+  Sparkles,
+} from "lucide-react";
 
 export interface ChildData {
   _id: string;
@@ -16,10 +23,26 @@ export interface ChildData {
 }
 
 const AVATAR_THEMES = [
-  { gradient: "linear-gradient(135deg, #FFF9E6 0%, #FEF3C7 100%)", color: "#D4A900", ring: "rgba(245,197,24,0.25)" },
-  { gradient: "linear-gradient(135deg, #E8F8F7 0%, #CCFBF1 100%)", color: "#1A8C84", ring: "rgba(43,188,176,0.25)" },
-  { gradient: "linear-gradient(135deg, #FEF0EB 0%, #FDE8DF 100%)", color: "#C0563A", ring: "rgba(244,132,95,0.25)" },
-  { gradient: "linear-gradient(135deg, #EDF7FF 0%, #DBEAFE 100%)", color: "#1A75C8", ring: "rgba(79,195,247,0.25)" },
+  {
+    gradient: "linear-gradient(135deg, #FFF9E6 0%, #FEF3C7 100%)",
+    color: "#D4A900",
+    ring: "rgba(245,197,24,0.25)",
+  },
+  {
+    gradient: "linear-gradient(135deg, #E8F8F7 0%, #CCFBF1 100%)",
+    color: "#1A8C84",
+    ring: "rgba(43,188,176,0.25)",
+  },
+  {
+    gradient: "linear-gradient(135deg, #FEF0EB 0%, #FDE8DF 100%)",
+    color: "#C0563A",
+    ring: "rgba(244,132,95,0.25)",
+  },
+  {
+    gradient: "linear-gradient(135deg, #EDF7FF 0%, #DBEAFE 100%)",
+    color: "#1A75C8",
+    ring: "rgba(79,195,247,0.25)",
+  },
 ];
 
 const INTEREST_COLORS = [
@@ -55,7 +78,12 @@ interface ChildCardProps {
   onDelete: (child: ChildData) => void;
 }
 
-export default function ChildCard({ child, index, onEdit, onDelete }: ChildCardProps) {
+export default function ChildCard({
+  child,
+  index,
+  onEdit,
+  onDelete,
+}: ChildCardProps) {
   const theme = AVATAR_THEMES[index % AVATAR_THEMES.length];
   const age = getAge(child.dob);
   const initials = getInitials(child.name);
@@ -80,7 +108,7 @@ export default function ChildCard({ child, index, onEdit, onDelete }: ChildCardP
         style={{ background: theme.gradient }}
       >
         {/* Sparkle badge */}
-        <div 
+        <div
           className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center"
           style={{ background: "rgba(255,255,255,0.7)" }}
         >
@@ -94,7 +122,13 @@ export default function ChildCard({ child, index, onEdit, onDelete }: ChildCardP
               className="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0"
               style={{ boxShadow: `0 0 0 3px white, 0 0 0 5px ${theme.ring}` }}
             >
-              <Image src={child.photoUrl} alt={child.name} fill className="object-cover" sizes="64px" />
+              <Image
+                src={child.photoUrl}
+                alt={child.name}
+                fill
+                className="object-cover"
+                sizes="64px"
+              />
             </div>
           ) : (
             <div
@@ -120,12 +154,18 @@ export default function ChildCard({ child, index, onEdit, onDelete }: ChildCardP
             </h3>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1.5">
               {age && (
-                <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: theme.color }}>
+                <span
+                  className="inline-flex items-center gap-1 text-xs font-semibold"
+                  style={{ color: theme.color }}
+                >
                   <Calendar size={11} /> {age}
                 </span>
               )}
               {child.grade && (
-                <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: theme.color }}>
+                <span
+                  className="inline-flex items-center gap-1 text-xs font-semibold"
+                  style={{ color: theme.color }}
+                >
                   <GraduationCap size={11} /> {child.grade}
                 </span>
               )}

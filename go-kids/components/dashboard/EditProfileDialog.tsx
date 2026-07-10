@@ -21,7 +21,12 @@ interface EditProfileDialogProps {
 }
 
 function getInitials(name: string) {
-  return name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
 export default function EditProfileDialog({
@@ -37,18 +42,30 @@ export default function EditProfileDialog({
   const [error, setError] = useState("");
 
   const handleSave = async () => {
-    if (!name.trim()) { setError("Name is required."); return; }
+    if (!name.trim()) {
+      setError("Name is required.");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), phone: phone.trim(), photoUrl }),
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: phone.trim(),
+          photoUrl,
+        }),
       });
       const result = await res.json();
       if (result.success) {
-        onSuccess({ name: name.trim(), email: profile.email, phone: phone.trim(), photoUrl });
+        onSuccess({
+          name: name.trim(),
+          email: profile.email,
+          phone: phone.trim(),
+          photoUrl,
+        });
         onOpenChange(false);
       } else {
         setError(result.error || "Failed to save. Try again.");

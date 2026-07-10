@@ -19,7 +19,9 @@ async function uploadToCloudinary(file: File): Promise<string> {
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
   if (!cloudName || !uploadPreset) {
-    throw new Error("Cloudinary is not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in your .env.local file.");
+    throw new Error(
+      "Cloudinary is not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in your .env.local file.",
+    );
   }
 
   const formData = new FormData();
@@ -29,7 +31,7 @@ async function uploadToCloudinary(file: File): Promise<string> {
 
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-    { method: "POST", body: formData }
+    { method: "POST", body: formData },
   );
 
   const data = await res.json();
@@ -72,7 +74,9 @@ export default function CloudinaryUpload({
       setPreview(cloudUrl);
       onUpload(cloudUrl);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed. Try again.");
+      setError(
+        err instanceof Error ? err.message : "Upload failed. Try again.",
+      );
       setPreview(currentUrl || "");
     } finally {
       setUploading(false);
