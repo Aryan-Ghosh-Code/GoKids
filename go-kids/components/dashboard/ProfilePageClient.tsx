@@ -18,12 +18,14 @@ import {
   User,
   Clock,
   Download,
+  Eye,
   AlertCircle,
 } from "lucide-react";
 import EditProfileDialog from "@/components/dashboard/EditProfileDialog";
 import ChildCard, { type ChildData } from "@/components/dashboard/ChildCard";
 import ChildFormDialog from "@/components/dashboard/ChildFormDialog";
 import DeleteChildDialog from "@/components/dashboard/DeleteChildDialog";
+import AssessmentReportModal, { type DBAssessmentFull } from "@/components/dashboard/AssessmentReportModal";
 
 interface UserProfile {
   _id: string;
@@ -35,25 +37,13 @@ interface UserProfile {
   createdAt: string;
 }
 
-interface DBAssessment {
-  _id: string;
-  type: string;
-  formData: {
-    childName: string;
-    ageBand: string;
-  };
-  results: {
-    overall: number;
-    level: string;
-    sublabel: string;
-  };
-  createdAt: string;
-}
+// Re-export the full shape so the page's server component can pass it typed
+type DBAssessment = DBAssessmentFull;
 
 interface ProfilePageClientProps {
   user: UserProfile;
   childProfiles: ChildData[];
-  dbAssessments?: DBAssessment[];
+  dbAssessments?: DBAssessmentFull[];
 }
 
 function getInitials(name: string) {
@@ -92,6 +82,9 @@ export default function ProfilePageClient({
   const [editChild, setEditChild] = useState<ChildData | null>(null);
   const [deleteChild, setDeleteChild] = useState<ChildData | null>(null);
 
+  // Assessment report modal
+  const [viewingAssessment, setViewingAssessment] = useState<DBAssessmentFull | null>(null);
+
   // Sync tab selection from search parameter
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -106,6 +99,16 @@ export default function ProfilePageClient({
     }
   }, [searchParams]);
 
+  // Open add child dialog if add=true is in search parameters
+  useEffect(() => {
+    if (searchParams.get("add") === "true" && activeTab === "children") {
+      const t = setTimeout(() => {
+        setAddOpen(true);
+      }, 0);
+      return () => clearTimeout(t);
+    }
+  }, [searchParams, activeTab]);
+
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
     // Push new query parameter to update URL without page refresh
@@ -116,37 +119,52 @@ export default function ProfilePageClient({
 
   const initials = getInitials(profile.name);
 
-  const allAssessments = (dbAssessments || []).map((db) => ({
-    id: db._id,
-    title:
-      db.type === "attention-span"
-        ? "Attention Span Assessment"
-        : "Talent Assessment",
-    childName: db.formData.childName,
-    completedDate: new Date(db.createdAt).toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-    }),
-    status: "Report Ready",
-    result: `${db.results.level} Level: ${db.results.sublabel} (Overall Score: ${db.results.overall}/100)`,
-    color:
-      db.results.level === "High"
-        ? "#2BBCB0"
-        : db.results.level === "Moderate"
-          ? "#F5C518"
-          : "#F4845F",
-    bg:
-      db.results.level === "High"
-        ? "#F0FAFA"
-        : db.results.level === "Moderate"
-          ? "#FFF9E6"
-          : "#FEF0EB",
-  }));
+  const PROFILE_COLOURS: Record<string, string> = {
+    deep_diver: "#3B82F6",
+    spark_seeker: "#F5C518",
+    steady_pacer: "#16a34a",
+    effortful_focuser: "#F4845F",
+    wanderer: "#E24B4A",
+  };
+  const PROFILE_BG: Record<string, string> = {
+    deep_diver: "#EFF6FF",
+    spark_seeker: "#FFF9E6",
+    steady_pacer: "#F0FDF4",
+    effortful_focuser: "#FEF0EB",
+    wanderer: "#FEF2F2",
+  };
+
+  const allAssessments = (dbAssessments || []).map((db) => {
+    const profileKey = db.results?.profile?.key ?? "";
+    const profileName = db.results?.profile?.name ?? "Unknown Profile";
+    const profileEmoji = db.results?.profile?.emoji ?? "🧠";
+    return {
+      id: db._id,
+      raw: db,
+      title:
+        db.type === "attention-span"
+          ? "Attention Span Assessment"
+          : "Talent Assessment",
+      childName: db.formData.childName,
+      completedDate: new Date(db.createdAt).toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+      }),
+      status: "Report Ready",
+      result: `${profileEmoji} ${profileName}`,
+      color: PROFILE_COLOURS[profileKey] ?? "#2BBCB0",
+      bg: PROFILE_BG[profileKey] ?? "#F0FAFA",
+    };
+  });
 
   // Handlers for child CRUD
   const handleAdded = (newChild: ChildData) => {
     setChildrenList((prev) => [newChild, ...prev]);
+    const callbackUrl = searchParams.get("callbackUrl");
+    if (callbackUrl) {
+      router.push(callbackUrl);
+    }
   };
 
   const handleEdited = (updated: ChildData) => {
@@ -185,13 +203,13 @@ export default function ProfilePageClient({
       </div>
 
       {/* ── Tabs Navigation ── */}
-      <div 
+      <div
         className="hidden md:flex border-b border-[#E5E7EB] scrollbar-none gap-2 w-full flex-row flex-nowrap"
-        style={{ 
-          overflowX: "auto", 
-          overflowY: "hidden", 
+        style={{
+          overflowX: "auto",
+          overflowY: "hidden",
           WebkitOverflowScrolling: "touch",
-          paddingBottom: "2px"
+          paddingBottom: "2px",
         }}
       >
         {tabs.map((tab) => {
@@ -224,7 +242,7 @@ export default function ProfilePageClient({
       </div>
 
       {/* ── Tab Content ── */}
-      <div className="mt-4 pb-20 md:pb-0">
+      <div className="mt-4 pb-4 md:pb-0">
         <AnimatePresence mode="wait">
           {/* TAB 1: Profile */}
           {activeTab === "profile" && (
@@ -656,20 +674,35 @@ export default function ProfilePageClient({
                         </div>
 
                         {/* Action CTA */}
-                        <div className="shrink-0 flex items-center">
+                        <div className="shrink-0 flex items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
                           {isReady ? (
-                            <button
-                              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:shadow-md cursor-pointer border-none"
-                              style={{
-                                background: "#F5C518",
-                                color: "#1A1A1A",
-                                fontFamily: "var(--font-nunito)",
-                                boxShadow: "0 4px 12px rgba(245,197,24,0.3)",
-                              }}
-                            >
-                              <Download size={13} />
-                              Download Report
-                            </button>
+                            <>
+                              <button
+                                onClick={() => setViewingAssessment(a.raw)}
+                                className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:shadow-md cursor-pointer border-none whitespace-nowrap"
+                                style={{
+                                  background: "#1A1A1A",
+                                  color: "#FFFFFF",
+                                  fontFamily: "var(--font-nunito)",
+                                }}
+                              >
+                                <Eye size={13} />
+                                View Report
+                              </button>
+                              <button
+                                disabled
+                                title="PDF download coming soon"
+                                className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold opacity-50 cursor-not-allowed border-none whitespace-nowrap"
+                                style={{
+                                  background: "#F5C518",
+                                  color: "#1A1A1A",
+                                  fontFamily: "var(--font-nunito)",
+                                }}
+                              >
+                                <Download size={13} />
+                                Download
+                              </button>
+                            </>
                           ) : (
                             <span className="flex items-center gap-1.5 text-xs text-[#9CA3AF] font-bold">
                               <Clock size={13} />
@@ -700,16 +733,19 @@ export default function ProfilePageClient({
               style={{ color: isActive ? "#F5C518" : "#9CA3AF" }}
             >
               <Icon size={20} />
-              <span style={{
-                fontSize: 9,
-                fontWeight: 700,
-                fontFamily: "var(--font-nunito)",
-                color: isActive ? "#1A1A1A" : "#9CA3AF"
-              }}>
-                {tab.label.split(" ")[1]} {/* "My", "Registered", etc — first word only */}
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 700,
+                  fontFamily: "var(--font-nunito)",
+                  color: isActive ? "#1A1A1A" : "#9CA3AF",
+                }}
+              >
+                {tab.label.split(" ")[1]}{" "}
+                {/* "My", "Registered", etc — first word only */}
               </span>
               {tab.id === "children" && childrenList.length > 0 && (
-                <span className="absolute top-2 right-[32%] px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-[#FFF9E6] text-primary-dark border border-[#F5C518]/30">
+                <span className="absolute top-2 right-[32%] px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-[#FFF9E6] text-primary-dark border border-primary/30">
                   {childrenList.length}
                 </span>
               )}
@@ -743,6 +779,12 @@ export default function ProfilePageClient({
         }}
         child={deleteChild}
         onSuccess={handleDeleted}
+      />
+
+      {/* ── Assessment Report Modal ── */}
+      <AssessmentReportModal
+        assessment={viewingAssessment}
+        onClose={() => setViewingAssessment(null)}
       />
     </div>
   );

@@ -92,7 +92,7 @@ export const attentionSpanModalContent: AssessmentModalContent = {
   partCards: [
     {
       label: "Part A: Digital Shape Task",
-      desc: "Child alone. Shapes appear one at a time — tap only the target. Includes a mid-task star burst challenge. 6-8 minutes.",
+      desc: "Child alone. Shapes appear one at a time; tap only the target. Includes a mid-task star burst challenge. 6-8 minutes.",
       color: "#F4845F",
       bg: "#FFF9F7",
       who: "Child",

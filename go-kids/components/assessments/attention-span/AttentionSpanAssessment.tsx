@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Band } from "./utils/bandConfig";
-import { CptRawData, AllScores, computeAllScores, buildCptRaw } from "./utils/scoring";
+import {
+  CptRawData,
+  AllScores,
+  computeAllScores,
+  buildCptRaw,
+} from "./utils/scoring";
 import { determineProfile, ProfileResult } from "./utils/profiles";
 import { WelcomeScreen } from "./screens/WelcomeScreen";
 import { CptInstructionsScreen } from "./screens/CptInstructionsScreen";
@@ -110,6 +115,8 @@ export default function AttentionSpanAssessment({
 }: AttentionSpanAssessmentProps) {
   const [screen, setScreen] = useState<Screen>("welcome");
   const [state, setState] = useState<AssessmentState>(initialState);
+  const [assessmentId, setAssessmentId] = useState<string | null>(null);
+  const autoSaveTriggered = useRef(false);
 
   const handleBegin = (childId: string, childName: string, band: Band) => {
     setState((prev) => ({ ...prev, childId, childName, band }));
@@ -185,7 +192,13 @@ export default function AttentionSpanAssessment({
       if (!band || !cptRaw || !partCAnswers) return prev;
 
       const partBAnswers = prev.partBAnswers || [];
-      const scores = computeAllScores(cptRaw, partBAnswers, partCAnswers, answers, band);
+      const scores = computeAllScores(
+        cptRaw,
+        partBAnswers,
+        partCAnswers,
+        answers,
+        band,
+      );
       const profile = determineProfile(scores);
 
       return {
@@ -198,15 +211,21 @@ export default function AttentionSpanAssessment({
     setScreen("results");
   };
 
-  const handleSave = useCallback(async () => {
-    if (!state.band || !state.childId || !state.cptRaw || !state.partCAnswers || !state.partDAnswers || !state.scores || !state.profile) {
-      throw new Error("Missing assessment data to save");
-    }
+  const buildSavePayload = useCallback(
+    (savedToDashboard: boolean) => {
+      if (
+        !state.band ||
+        !state.childId ||
+        !state.cptRaw ||
+        !state.partCAnswers ||
+        !state.partDAnswers ||
+        !state.scores ||
+        !state.profile
+      ) {
+        return null;
+      }
 
-    const res = await fetch("/api/assessments/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+      return {
         type: "attention-span",
         childId: state.childId,
         childName: state.childName,
@@ -232,19 +251,81 @@ export default function AttentionSpanAssessment({
           name: state.profile.name,
           emoji: state.profile.emoji,
         },
-        reportUrl: null,
-      }),
+        savedToDashboard,
+      };
+    },
+    [state],
+  );
+
+  // Persist results to MongoDB as soon as the assessment completes
+  useEffect(() => {
+    if (screen !== "results" || autoSaveTriggered.current) return;
+
+    const payload = buildSavePayload(false);
+    if (!payload) return;
+
+    autoSaveTriggered.current = true;
+
+    (async () => {
+      try {
+        const res = await fetch("/api/assessments/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          setAssessmentId(data.data.assessmentId);
+        }
+      } catch (err) {
+        console.error("Auto-save assessment failed:", err);
+        autoSaveTriggered.current = false;
+      }
+    })();
+  }, [screen, buildSavePayload]);
+
+  const handleSave = useCallback(async () => {
+    if (assessmentId) {
+      const res = await fetch("/api/assessments/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assessmentId,
+          savedToDashboard: true,
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || "Save failed");
+      }
+      return;
+    }
+
+    const payload = buildSavePayload(true);
+    if (!payload) {
+      throw new Error("Missing assessment data to save");
+    }
+
+    const res = await fetch("/api/assessments/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
     const data = await res.json();
     if (!data.success) {
       throw new Error(data.error || "Save failed");
     }
-  }, [state]);
 
-  const partADoneNextLabel = state.band === "A"
-    ? "Hand the device to a parent — Part 3 starts next"
-    : `Hand the device back to ${state.childName} — Part 2 is next`;
+    setAssessmentId(data.data.assessmentId);
+  }, [assessmentId, buildSavePayload]);
+
+  const partADoneNextLabel =
+    state.band === "A"
+      ? "Hand the device to a parent. Part 3 starts next"
+      : `Hand the device back to ${state.childName}. Part 2 is next`;
 
   return (
     <div className="w-full max-w-xl mx-auto bg-white rounded-4xl border-[1.5px] border-gray-200/85 shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8">
@@ -412,7 +493,9 @@ export default function AttentionSpanAssessment({
             exit="exit"
             transition={{ duration: 0.3 }}
           >
-            <ParentObservationQuestionsScreen onComplete={handlePartCComplete} />
+            <ParentObservationQuestionsScreen
+              onComplete={handlePartCComplete}
+            />
           </motion.div>
         )}
 
@@ -442,25 +525,29 @@ export default function AttentionSpanAssessment({
           </motion.div>
         )}
 
-        {screen === "results" && state.profile && state.scores && state.cptRaw && state.band && (
-          <motion.div
-            key="results"
-            variants={variants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ duration: 0.3 }}
-          >
-            <ResultsScreen
-              profile={state.profile}
-              scores={state.scores}
-              cptRaw={state.cptRaw}
-              childName={state.childName}
-              band={state.band}
-              onSave={handleSave}
-            />
-          </motion.div>
-        )}
+        {screen === "results" &&
+          state.profile &&
+          state.scores &&
+          state.cptRaw &&
+          state.band && (
+            <motion.div
+              key="results"
+              variants={variants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.3 }}
+            >
+              <ResultsScreen
+                profile={state.profile}
+                scores={state.scores}
+                cptRaw={state.cptRaw}
+                childName={state.childName}
+                band={state.band}
+                onSave={handleSave}
+              />
+            </motion.div>
+          )}
       </AnimatePresence>
     </div>
   );

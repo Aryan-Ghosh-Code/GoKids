@@ -8,16 +8,24 @@ interface Props {
   onComplete: (answers: number[]) => void;
 }
 
-const RATING_LABELS = ["Strongly\nDisagree", "Disagree", "Neutral", "Agree", "Strongly\nAgree"];
+const RATING_LABELS = [
+  "Strongly\nDisagree",
+  "Disagree",
+  "Neutral",
+  "Agree",
+  "Strongly\nAgree",
+];
 
 export function SelfReportQuestionsScreen({ onComplete }: Props) {
   const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState<(number | null)[]>(Array(PART_B_QUESTIONS.length).fill(null));
+  const [answers, setAnswers] = useState<(number | null)[]>(
+    Array(PART_B_QUESTIONS.length).fill(null),
+  );
   const [pulse, setPulse] = useState(false);
 
   const question = PART_B_QUESTIONS[current];
   const selected = answers[current];
-  const progress = ((current) / PART_B_QUESTIONS.length) * 100;
+  const progress = (current / PART_B_QUESTIONS.length) * 100;
   void PART_B_LABELS;
 
   function handleRating(val: number) {
@@ -43,7 +51,10 @@ export function SelfReportQuestionsScreen({ onComplete }: Props) {
     <div className="space-y-5 py-2">
       {/* Part badge */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-[#FEF0EB] text-[#F4845F]" style={{ fontFamily: "var(--font-heading)" }}>
+        <span
+          className="text-xs font-extrabold px-3 py-1 rounded-full bg-[#FEF0EB] text-coral"
+          style={{ fontFamily: "var(--font-heading)" }}
+        >
           Part 2 — For Child
         </span>
         <span className="text-xs font-semibold text-gray-400">
@@ -52,7 +63,10 @@ export function SelfReportQuestionsScreen({ onComplete }: Props) {
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 rounded-full overflow-hidden" style={{ background: "#F3F4F6" }}>
+      <div
+        className="h-2 rounded-full overflow-hidden"
+        style={{ background: "#F3F4F6" }}
+      >
         <motion.div
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.4 }}
@@ -71,8 +85,11 @@ export function SelfReportQuestionsScreen({ onComplete }: Props) {
           transition={{ duration: 0.25 }}
           className="space-y-5"
         >
-          <div className="rounded-2xl p-5 min-h-[100px] flex items-center" style={{ background: "#FAFAF8", border: "1.5px solid #F3F4F6" }}>
-            <p className="text-base font-semibold text-[#1A1A1A] leading-relaxed">
+          <div
+            className="rounded-2xl p-5 min-h-25 flex items-center"
+            style={{ background: "#FAFAF8", border: "1.5px solid #F3F4F6" }}
+          >
+            <p className="text-base font-semibold text-brand-black leading-relaxed">
               {question.text}
             </p>
           </div>
@@ -100,7 +117,9 @@ export function SelfReportQuestionsScreen({ onComplete }: Props) {
                   }}
                 >
                   <span className="text-base font-extrabold">{val}</span>
-                  <span className="text-[9px] font-semibold text-center leading-tight mt-1 whitespace-pre-line text-gray-500">{label}</span>
+                  <span className="text-[9px] font-semibold text-center leading-tight mt-1 whitespace-pre-line text-gray-500">
+                    {label}
+                  </span>
                 </motion.button>
               );
             })}
@@ -117,7 +136,8 @@ export function SelfReportQuestionsScreen({ onComplete }: Props) {
           background: selected !== null ? "#F5C518" : "#F3F4F6",
           color: selected !== null ? "#1A1A1A" : "#9CA3AF",
           fontFamily: "var(--font-heading)",
-          boxShadow: selected !== null ? "0 4px 16px rgba(245,197,24,0.35)" : "none",
+          boxShadow:
+            selected !== null ? "0 4px 16px rgba(245,197,24,0.35)" : "none",
         }}
       >
         {current < PART_B_QUESTIONS.length - 1 ? "Next →" : "Done →"}

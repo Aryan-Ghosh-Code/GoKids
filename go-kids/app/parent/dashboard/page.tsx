@@ -36,8 +36,11 @@ export default async function ProfilePage() {
     .sort({ createdAt: -1 })
     .lean();
 
-  // Fetch actual completed assessments from database for the parent
-  const assessmentDocs = await Assessment.find({ parentId: userId })
+  // Fetch assessments the parent has explicitly saved to their dashboard
+  const assessmentDocs = await Assessment.find({
+    parentId: userId,
+    savedToDashboard: { $ne: false },
+  })
     .sort({ createdAt: -1 })
     .lean();
 

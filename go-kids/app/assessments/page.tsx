@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Navbar from "@/components/shared/Navbar";
@@ -54,9 +55,16 @@ const ASSESSMENTS = [
 
 export default function AssessmentsPage() {
   const router = useRouter();
+  const { status } = useSession();
   // DemoModal ("See Demo Questions")
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeAssessment, setActiveAssessment] = useState<"attention" | "writing" | null>(null);
+  const [activeAssessment, setActiveAssessment] = useState<
+    "attention" | "writing" | null
+  >(null);
+  // Track selected assessment for the info modal dynamically
+  const [selectedAssessmentId, setSelectedAssessmentId] = useState<
+    string | null
+  >(null);
   // AssessmentInfoModal ("Start Assessment" → info + consent gate)
   const [infoModalOpen, setInfoModalOpen] = useState(false);
 
@@ -220,7 +228,16 @@ export default function AssessmentsPage() {
                       {a.available && a.href ? (
                         <button
                           type="button"
-                          onClick={() => setInfoModalOpen(true)}
+                          onClick={() => {
+                            if (status === "unauthenticated") {
+                              router.push(
+                                `/login?callbackUrl=${encodeURIComponent(a.href || "")}`,
+                              );
+                            } else {
+                              setSelectedAssessmentId(a.id);
+                              setInfoModalOpen(true);
+                            }
+                          }}
                           className="block w-full text-center py-4 rounded-2xl font-extrabold text-sm transition-all bg-primary text-brand-black hover:bg-primary-dark shadow-xs border-none cursor-pointer"
                           style={{
                             fontFamily: "var(--font-heading)",
@@ -363,7 +380,7 @@ export default function AssessmentsPage() {
         </section>
 
         {/* ── Bottom CTA ───────────────────────────────────────────────── */}
-        <section className="pb-20 text-center relative overflow-hidden z-10 max-w-4xl mx-auto px-4 sm:px-6">
+        <section className="pb-10 text-center relative overflow-hidden z-10 max-w-4xl mx-auto px-4 sm:px-6">
           <div
             className="rounded-[28px] sm:rounded-[36px] p-7 sm:p-10 lg:p-14 relative z-10"
             style={{
@@ -378,7 +395,7 @@ export default function AssessmentsPage() {
               Ready to understand your child&apos;s potential?
             </h2>
             <p className="text-base mb-8 text-gray-600 max-w-lg mx-auto font-medium">
-              Start with our Attention Span Assessment today — it is free and
+              Start with our Attention Span Assessment today. It is free and
               takes only 20 minutes.
             </p>
             <motion.div
@@ -417,9 +434,18 @@ export default function AssessmentsPage() {
         onClose={() => setInfoModalOpen(false)}
         onProceed={() => {
           setInfoModalOpen(false);
-          router.push("/parent/assessments/attention-span");
+          const targetHref = ASSESSMENTS.find(
+            (a) => a.id === selectedAssessmentId,
+          )?.href;
+          if (targetHref) {
+            router.push(targetHref);
+          }
         }}
-        content={attentionSpanModalContent}
+        content={
+          selectedAssessmentId === "attention-span"
+            ? attentionSpanModalContent
+            : attentionSpanModalContent // default fallback, can expand for other assessments
+        }
       />
     </div>
   );

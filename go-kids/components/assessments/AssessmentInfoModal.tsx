@@ -72,7 +72,6 @@ export default function AssessmentInfoModal({
 
         {/* ── Scrollable content ──────────────────────────────────────────── */}
         <div className="p-6 space-y-8 overflow-y-auto flex-1">
-
           {/* About */}
           <section className="space-y-4">
             <h3
@@ -82,7 +81,10 @@ export default function AssessmentInfoModal({
               About this assessment
             </h3>
             {content.aboutParagraphs.map((para, i) => (
-              <p key={i} className="text-sm text-gray-600 leading-relaxed font-semibold">
+              <p
+                key={i}
+                className="text-sm text-gray-600 leading-relaxed font-semibold"
+              >
                 {para}
               </p>
             ))}
@@ -119,11 +121,17 @@ export default function AssessmentInfoModal({
                 <div
                   key={card.label}
                   className="p-4 rounded-2xl border"
-                  style={{ background: card.bg, borderColor: `${card.color}25` }}
+                  style={{
+                    background: card.bg,
+                    borderColor: `${card.color}25`,
+                  }}
                 >
                   <span
                     className="text-[10px] font-extrabold uppercase tracking-wider mb-1 block"
-                    style={{ color: card.color, fontFamily: "var(--font-heading)" }}
+                    style={{
+                      color: card.color,
+                      fontFamily: "var(--font-heading)",
+                    }}
                   >
                     {card.who}
                   </span>
@@ -144,7 +152,7 @@ export default function AssessmentInfoModal({
             <div className="flex items-center gap-2 mt-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
               <Clock size={15} className="text-gray-400 shrink-0" />
               <span className="text-xs text-gray-600 font-semibold">
-                <strong className="text-[#1A1A1A]">Total time:</strong>{" "}
+                <strong className="text-brand-black">Total time:</strong>{" "}
                 {content.totalTime}
               </span>
             </div>
@@ -156,7 +164,7 @@ export default function AssessmentInfoModal({
               className="text-base font-extrabold text-brand-black flex items-center gap-1.5"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              <HelpCircle size={18} className="text-[#2BBCB0]" />
+              <HelpCircle size={18} className="text-teal" />
               Frequently Asked Questions
             </h3>
 
@@ -174,9 +182,15 @@ export default function AssessmentInfoModal({
                     >
                       <span>{faq.q}</span>
                       {expanded ? (
-                        <ChevronUp size={16} className="text-gray-400 shrink-0" />
+                        <ChevronUp
+                          size={16}
+                          className="text-gray-400 shrink-0"
+                        />
                       ) : (
-                        <ChevronDown size={16} className="text-gray-400 shrink-0" />
+                        <ChevronDown
+                          size={16}
+                          className="text-gray-400 shrink-0"
+                        />
                       )}
                     </button>
 
@@ -227,7 +241,12 @@ export default function AssessmentInfoModal({
                   background: declared ? "#F5C518" : "transparent",
                 }}
               >
-                {declared && <ShieldCheck size={14} className="stroke-[3] text-[#1A1A1A]" />}
+                {declared && (
+                  <ShieldCheck
+                    size={14}
+                    className="stroke-3 text-brand-black"
+                  />
+                )}
               </div>
               <span className="text-xs text-gray-600 font-semibold leading-relaxed">
                 {content.consentLabel}

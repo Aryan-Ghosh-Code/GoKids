@@ -78,7 +78,7 @@ export default async function AttentionSpanAssessmentPage() {
               track their results accurately.
             </p>
             <Link
-              href="/parent/dashboard?tab=children"
+              href="/parent/dashboard?tab=children&add=true&callbackUrl=/parent/assessments/attention-span"
               className="block w-full text-center py-4 rounded-2xl font-extrabold text-sm transition-all bg-primary text-brand-black hover:bg-primary-dark shadow-xs"
               style={{
                 fontFamily: "var(--font-heading)",
