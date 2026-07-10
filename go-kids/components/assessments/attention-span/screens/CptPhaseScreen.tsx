@@ -114,7 +114,7 @@ export function CptPhaseScreen({ band, phase, onPhaseEnd }: Props) {
   return (
     <div className="space-y-5 py-2">
       {/* Target reminder (sticky) */}
-      <div className="sticky top-0 z-20">
+      <div className="top-0 z-20">
         <div
           className="rounded-2xl border-2 px-4 py-3 shadow-sm"
           style={{ borderColor: "#F5C518", background: "#FFF8DB" }}

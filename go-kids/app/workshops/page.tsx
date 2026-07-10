@@ -38,16 +38,6 @@ function WorkshopsHero() {
       />
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 py-20 min-h-85">
-        <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5"
-          style={{
-            background: "rgba(245,197,24,0.18)",
-            color: "#F5C518",
-            border: "1px solid rgba(245,197,24,0.4)",
-          }}
-        >
-          ✦ All workshops are completely free
-        </div>
 
         <h1
           className="text-4xl sm:text-5xl font-extrabold text-white mb-4 leading-tight"
