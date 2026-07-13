@@ -9,8 +9,6 @@ import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { HelpCircle } from "lucide-react";
 import { DemoModal } from "@/components/shared/DemoModal";
-import AssessmentInfoModal from "@/components/assessments/AssessmentInfoModal";
-import { attentionSpanModalContent } from "@/components/assessments/attention-span/constants/modalContent";
 import {
   StaggerContainer,
   StaggerItem,
@@ -61,12 +59,6 @@ export default function AssessmentsPage() {
   const [activeAssessment, setActiveAssessment] = useState<
     "attention" | "writing" | null
   >(null);
-  // Track selected assessment for the info modal dynamically
-  const [selectedAssessmentId, setSelectedAssessmentId] = useState<
-    string | null
-  >(null);
-  // AssessmentInfoModal ("Start Assessment" → info + consent gate)
-  const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   return (
     <div
@@ -231,11 +223,10 @@ export default function AssessmentsPage() {
                           onClick={() => {
                             if (status === "unauthenticated") {
                               router.push(
-                                `/login?callbackUrl=${encodeURIComponent(a.href || "")}`,
+                                `/login?callbackUrl=${encodeURIComponent(`/assessments/${a.id}`)}`,
                               );
                             } else {
-                              setSelectedAssessmentId(a.id);
-                              setInfoModalOpen(true);
+                              router.push(`/assessments/${a.id}`);
                             }
                           }}
                           className="block w-full text-center py-4 rounded-2xl font-extrabold text-sm transition-all bg-primary text-brand-black hover:bg-primary-dark shadow-xs border-none cursor-pointer"
@@ -426,26 +417,6 @@ export default function AssessmentsPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         assessmentType={activeAssessment}
-      />
-
-      {/* Info + Consent Modal — "Start Assessment" */}
-      <AssessmentInfoModal
-        isOpen={infoModalOpen}
-        onClose={() => setInfoModalOpen(false)}
-        onProceed={() => {
-          setInfoModalOpen(false);
-          const targetHref = ASSESSMENTS.find(
-            (a) => a.id === selectedAssessmentId,
-          )?.href;
-          if (targetHref) {
-            router.push(targetHref);
-          }
-        }}
-        content={
-          selectedAssessmentId === "attention-span"
-            ? attentionSpanModalContent
-            : attentionSpanModalContent // default fallback, can expand for other assessments
-        }
       />
     </div>
   );
