@@ -148,7 +148,7 @@ export default async function WorkshopsPage() {
   // Calculate stats dynamically from MongoDB data
   const totalWorkshops = workshops.length;
   const totalEnrolled = workshops.reduce((sum, w) => sum + (w.enrolledCount || 0), 0);
-  const skillsCount = new Set(workshops.map((w) => w.skill)).size;
+  const skillsCount = new Set(workshops.flatMap((w) => w.skills)).size;
   const avgRating = workshops.length
     ? parseFloat(
         (workshops.reduce((sum, w) => sum + (w.rating || 0), 0) / workshops.length).toFixed(1)
