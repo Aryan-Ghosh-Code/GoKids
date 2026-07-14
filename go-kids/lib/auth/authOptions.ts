@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
+import { sendWelcomeEmail } from "@/lib/auth/mailer";
 
 export const authOptions: NextAuthConfig = {
   providers: [
@@ -65,7 +66,7 @@ export const authOptions: NextAuthConfig = {
 
           if (!existingUser) {
             // First Google sign-in → create account
-            await User.create({
+            const newUser = await User.create({
               name: user.name ?? "Go Kids User",
               email: user.email!.toLowerCase(),
               passwordHash: "",
@@ -74,13 +75,30 @@ export const authOptions: NextAuthConfig = {
               isEmailVerified: true,
               isSuspended: false,
             });
+
+            // Send welcome email to new Google user
+            try {
+              if (process.env.NODE_ENV !== "production") {
+                console.log(`[Google signup] Sending welcome email to ${newUser.email}…`);
+              }
+              await sendWelcomeEmail(newUser.email, newUser.name);
+              if (process.env.NODE_ENV !== "production") {
+                console.log(`[Google signup] Welcome email sent successfully to ${newUser.email}`);
+              }
+            } catch (emailErr) {
+              if (process.env.NODE_ENV !== "production") {
+                console.error("[Google signup] Welcome email failed:", emailErr);
+              }
+            }
           } else if (existingUser.isSuspended) {
             return false; // Deny suspended users
           }
           // Existing user → allow sign in (email already verified via Google)
           return true;
         } catch (err) {
-          console.error("Google signIn callback error:", err);
+          if (process.env.NODE_ENV !== "production") {
+            console.error("Google signIn callback error:", err);
+          }
           return false;
         }
       }
@@ -137,7 +155,9 @@ export const authOptions: NextAuthConfig = {
             return null as unknown as typeof token;
           }
         } catch (err) {
-          console.error("Failed to fetch user role/id for token:", err);
+          if (process.env.NODE_ENV !== "production") {
+            console.error("Failed to fetch user role/id for token:", err);
+          }
         }
       }
 
@@ -164,7 +184,9 @@ export const authOptions: NextAuthConfig = {
             session.user.image = token.picture as string;
           }
         } catch (err) {
-          console.error("Session verification database error:", err);
+          if (process.env.NODE_ENV !== "production") {
+            console.error("Session verification database error:", err);
+          }
           // Fallback to token information if database is temporarily unavailable
           session.user.id = (token.id || token.sub) as string;
           (session.user as { role?: string }).role = token.role as string;

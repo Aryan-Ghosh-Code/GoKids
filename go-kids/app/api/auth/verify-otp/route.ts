@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 import { OtpToken } from "@/lib/db/models/OtpToken";
+import { sendWelcomeEmail } from "@/lib/auth/mailer";
 
 export async function POST(req: NextRequest) {
   try {
@@ -77,12 +78,30 @@ export async function POST(req: NextRequest) {
     // Delete used OTP tokens
     await OtpToken.deleteMany({ userId: user._id });
 
+    // Fire welcome email — awaited so the serverless process doesn't exit before sending.
+    // A failure here is logged but never surfaced to the user.
+    try {
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`[verify-otp] Sending welcome email to ${user.email}…`);
+      }
+      await sendWelcomeEmail(user.email, user.name);
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`[verify-otp] Welcome email sent successfully to ${user.email}`);
+      }
+    } catch (emailErr) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[verify-otp] Welcome email failed:", emailErr);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: { message: "Email verified successfully. You can now log in." },
     });
   } catch (error) {
-    console.error("Verify OTP error:", error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Verify OTP error:", error);
+    }
     return NextResponse.json(
       { success: false, error: "Something went wrong. Please try again." },
       { status: 500 }
