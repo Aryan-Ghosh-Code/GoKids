@@ -266,7 +266,7 @@ export default function ChildFormDialog({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className="fixed inset-x-4 top-[3%] sm:top-[5%] z-50 mx-auto max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl"
+                  className="fixed inset-x-4 top-[3%] sm:top-[5%] z-50 mx-auto max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl Z-100"
                   style={{ border: "1px solid #F3F4F6" }}
                 >
                   <form
