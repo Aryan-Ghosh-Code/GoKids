@@ -5,6 +5,9 @@ import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 import { Child } from "@/lib/db/models/Child";
 import { Assessment } from "@/lib/db/models/Assessment";
+import EnrollmentModel from "@/lib/db/models/Enrollment";
+// Make sure Workshop is registered in Mongoose models
+import "@/lib/db/models/Workshop";
 import ProfilePageClient from "@/components/dashboard/ProfilePageClient";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
@@ -44,10 +47,17 @@ export default async function ProfilePage() {
     .sort({ createdAt: -1 })
     .lean();
 
+  // Fetch all enrollments for the parent
+  const enrollmentDocs = await EnrollmentModel.find({ parentId: userId })
+    .populate("workshopId")
+    .sort({ createdAt: -1 })
+    .lean();
+
   // Serialise Mongoose docs to plain objects
   const user = JSON.parse(JSON.stringify(userDoc));
   const children = JSON.parse(JSON.stringify(childrenDocs));
   const dbAssessments = JSON.parse(JSON.stringify(assessmentDocs));
+  const enrollments = JSON.parse(JSON.stringify(enrollmentDocs));
 
   return (
     <Suspense
@@ -61,6 +71,7 @@ export default async function ProfilePage() {
         user={user}
         childProfiles={children}
         dbAssessments={dbAssessments}
+        enrollments={enrollments}
       />
     </Suspense>
   );
