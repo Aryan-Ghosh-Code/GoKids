@@ -271,7 +271,7 @@ export default function ChildFormDialog({
                 >
                   <form
                     onSubmit={handleSubmit(onSubmit)}
-                    className="flex flex-col max-h-[94vh] sm:max-h-[90vh]"
+                    className="flex flex-col max-h-[94dvh] sm:max-h-[90dvh]"
                   >
                     <div className="flex items-center justify-between px-6 py-5 bg-white border-b border-brand-grey rounded-t-3xl shrink-0">
                       <div>
