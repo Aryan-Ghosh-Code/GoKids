@@ -5,7 +5,7 @@
  * Used for all workshops (free, paid, online, and offline).
  */
 
-import nodemailer from "nodemailer";
+import { sendEmail } from "./mailer";
 
 export interface EnrollmentEmailWorkshop {
   title: string;
@@ -34,16 +34,6 @@ export interface EnrollmentEmailData {
   amountPaid?: number;
   txnId?: string;
 }
-
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: Number(process.env.EMAIL_PORT) || 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
 /** Map a Workshop document (lean) to the email payload shape. */
 export function workshopDocToEmailData(workshop: {
@@ -84,7 +74,10 @@ export function workshopDocToEmailData(workshop: {
   };
 }
 
-function buildSubject(parentName: string, workshop: EnrollmentEmailWorkshop): string {
+function buildSubject(
+  parentName: string,
+  workshop: EnrollmentEmailWorkshop,
+): string {
   const parts = [
     "You're Booked!",
     parentName,
@@ -99,15 +92,12 @@ function buildSubject(parentName: string, workshop: EnrollmentEmailWorkshop): st
   return parts.join(" | ");
 }
 
-function listItems(
-  items: string[],
-  bulletColor = "#374151",
-): string {
+function listItems(items: string[], bulletColor = "#374151"): string {
   if (!items.length) return "";
   return items
     .map(
       (item) =>
-        `<li style="padding:6px 0;font-size:14px;color:${bulletColor};line-height:1.65;">
+        `<li style="padding:6px 0;font-size:14px;color:${bulletColor};line-height:1.65;font-family:'Plus Jakarta Sans', sans-serif;">
            ${item}
          </li>`,
     )
@@ -138,7 +128,9 @@ export async function sendEnrollmentConfirmation({
         ? workshop.curriculum.map((mod) => mod.title)
         : workshop.shortDescription
           ? [workshop.shortDescription]
-          : ["Your workshop sessions and joining details will be shared closer to the start date."];
+          : [
+              "Your workshop sessions and joining details will be shared closer to the start date.",
+            ];
 
   const whatToExpectHtml = listItems(expectItems);
 
@@ -147,7 +139,7 @@ export async function sendEnrollmentConfirmation({
     workshop.requirements && workshop.requirements.length > 0
       ? `<!-- REQUIREMENTS -->
          <div style="margin-bottom:28px;">
-           <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
+           <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;font-family:'Plus Jakarta Sans', sans-serif;">
              What You'll Need
            </div>
            <ul style="margin:0;padding-left:20px;">
@@ -159,20 +151,20 @@ export async function sendEnrollmentConfirmation({
   // ── Payment rows ─────────────────────────────────────────────────────────
   const paymentRows = workshop.isFree
     ? `<tr style="border-top:1px solid #F3F4F6;">
-         <td style="padding:10px 0;color:#6B7280;font-size:14px;width:40%;">Amount Paid</td>
-         <td style="padding:10px 0;font-weight:700;color:#16a34a;font-size:14px;">Free ✓</td>
+         <td style="padding:12px 0;color:#6B7280;font-size:14px;width:40%;font-family:'Plus Jakarta Sans', sans-serif;">Amount Paid</td>
+         <td style="padding:12px 0;font-weight:700;color:#16a34a;font-size:14px;font-family:'Plus Jakarta Sans', sans-serif;">Free ✓</td>
        </tr>`
     : `<tr style="border-top:1px solid #F3F4F6;">
-         <td style="padding:10px 0;color:#6B7280;font-size:14px;width:40%;">Amount Paid</td>
-         <td style="padding:10px 0;font-weight:700;color:#1A1A1A;font-size:14px;">
+         <td style="padding:12px 0;color:#6B7280;font-size:14px;width:40%;font-family:'Plus Jakarta Sans', sans-serif;">Amount Paid</td>
+         <td style="padding:12px 0;font-weight:700;color:#1A1A1A;font-size:14px;font-family:'Plus Jakarta Sans', sans-serif;">
            ₹${paidAmount.toLocaleString("en-IN")}
          </td>
        </tr>
        ${
          txnId
            ? `<tr style="border-top:1px solid #F3F4F6;">
-                <td style="padding:10px 0;color:#6B7280;font-size:14px;">Transaction ID</td>
-                <td style="padding:10px 0;font-weight:600;color:#1A1A1A;font-size:13px;font-family:monospace;">
+                <td style="padding:12px 0;color:#6B7280;font-size:14px;font-family:'Plus Jakarta Sans', sans-serif;">Transaction ID</td>
+                <td style="padding:12px 0;font-weight:600;color:#1A1A1A;font-size:13px;font-family:monospace;">
                   ${txnId}
                 </td>
               </tr>`
@@ -183,13 +175,13 @@ export async function sendEnrollmentConfirmation({
   const venueRow =
     workshop.isOffline && workshop.venue
       ? `<tr style="border-top:1px solid #F3F4F6;">
-           <td style="padding:10px 0;color:#6B7280;font-size:14px;vertical-align:top;">Venue</td>
-           <td style="padding:10px 0;font-weight:600;color:#1A1A1A;font-size:14px;line-height:1.6;">
+           <td style="padding:12px 0;color:#6B7280;font-size:14px;vertical-align:top;font-family:'Plus Jakarta Sans', sans-serif;">Venue</td>
+           <td style="padding:12px 0;font-weight:600;color:#1A1A1A;font-size:14px;line-height:1.6;font-family:'Plus Jakarta Sans', sans-serif;">
              ${workshop.venue}
              ${
                workshop.googleMapsUrl
                  ? `<br/><a href="${workshop.googleMapsUrl}" target="_blank" rel="noopener noreferrer"
-                       style="color:#2BBCB0;font-size:13px;font-weight:700;text-decoration:underline;margin-top:4px;display:inline-block;">
+                       style="color:#2BBCB0;font-size:13px;font-weight:700;text-decoration:underline;margin-top:4px;display:inline-block;font-family:'Plus Jakarta Sans', sans-serif;">
                        📍 View on Google Maps
                      </a>`
                  : ""
@@ -201,17 +193,17 @@ export async function sendEnrollmentConfirmation({
   // ── Important notes (offline only) ─────────────────────────────────────
   const importantNotes = workshop.isOffline
     ? `<!-- IMPORTANT NOTES -->
-       <div style="background:#FFFBEA;border:1px solid #FDE68A;border-radius:12px;padding:18px 20px;margin-bottom:28px;">
-         <div style="font-size:11px;font-weight:800;color:#92650A;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">
+       <div style="background:#FFFBEA;border:1px solid #FDE68A;border-radius:16px;padding:18px 20px;margin-bottom:28px;">
+         <div style="font-size:11px;font-weight:800;color:#92650A;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;font-family:'Plus Jakarta Sans', sans-serif;">
            Important Notes
          </div>
          <ul style="margin:0;padding-left:20px;">
-           <li style="padding:5px 0;font-size:14px;color:#78350F;line-height:1.65;">
+           <li style="padding:5px 0;font-size:14px;color:#78350F;line-height:1.65;font-family:'Plus Jakarta Sans', sans-serif;">
              Please arrive <strong>15 minutes early</strong> for registration and seating.
            </li>
            ${
              !workshop.isFree
-               ? `<li style="padding:5px 0;font-size:14px;color:#78350F;line-height:1.65;">
+               ? `<li style="padding:5px 0;font-size:14px;color:#78350F;line-height:1.65;font-family:'Plus Jakarta Sans', sans-serif;">
                     This is a paid workshop — please carry a copy of this email
                     (digital or printed) for entry.
                   </li>`
@@ -227,24 +219,27 @@ export async function sendEnrollmentConfirmation({
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>You're Booked — Go Kids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
 </head>
-<body style="margin:0;padding:0;background:#FAFAF8;font-family:'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAFAF8;padding:40px 16px;">
+<body style="margin:0;padding:0;background:#FAFAF9;font-family:'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;-webkit-font-smoothing:antialiased;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAFAF9;padding:40px 16px;width:100%;">
     <tr><td align="center">
       <table width="580" cellpadding="0" cellspacing="0"
-             style="max-width:580px;width:100%;background:#FFFFFF;border-radius:20px;
-                    overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.05);border:1px solid #E5E7EB;">
+             style="max-width:580px;width:100%;background:#FFFFFF;border-radius:24px;
+                    overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.03);border:1px solid #ECECEC;">
 
-        <!-- Brand gradient bar -->
+        <!-- Top Branded Header Strip (Thick Brand Yellow Banner) -->
         <tr>
-          <td height="6" style="height:6px;background:linear-gradient(90deg,#F5C518 0%,#2BBCB0 50%,#F4845F 100%);padding:0;margin:0;line-height:1px;font-size:1px;"></td>
+          <td height="28" style="height:28px;background-color:#F5C518;padding:0;margin:0;line-height:1px;font-size:1px;border-top-left-radius:24px;border-top-right-radius:24px;"></td>
         </tr>
 
         <!-- Logo header -->
         <tr>
-          <td style="padding:28px 40px 12px;text-align:center;">
-            <img src="${logoUrl}" alt="Go Kids India" height="44"
-                 style="display:inline-block;height:44px;border:none;outline:none;" />
+          <td style="padding:32px 40px 12px;text-align:center;">
+            <img src="${logoUrl}" alt="Go Kids India" height="42"
+                 style="display:inline-block;height:42px;border:none;outline:none;" />
             <div style="font-size:12px;font-weight:600;color:#9CA3AF;margin-top:8px;letter-spacing:0.02em;">
               India's Future Readiness Platform
             </div>
@@ -255,10 +250,10 @@ export async function sendEnrollmentConfirmation({
         <tr>
           <td style="background:#F0FDF4;padding:24px 40px;text-align:center;border-bottom:1px solid #DCFCE7;">
             <div style="font-size:32px;margin-bottom:8px;">🎉</div>
-            <div style="font-size:22px;font-weight:800;color:#15803D;font-family:'Segoe UI',Arial,sans-serif;">
+            <div style="font-size:22px;font-weight:800;color:#15803D;font-family:'Nunito','Plus Jakarta Sans',sans-serif;">
               You're Booked!
             </div>
-            <div style="font-size:14px;color:#16a34a;margin-top:6px;font-weight:600;line-height:1.5;">
+            <div style="font-size:14px;color:#16a34a;margin-top:6px;font-weight:600;line-height:1.5;font-family:'Plus Jakarta Sans',sans-serif;">
               ${workshop.title}
             </div>
           </td>
@@ -268,36 +263,36 @@ export async function sendEnrollmentConfirmation({
         <tr>
           <td style="padding:36px 40px;">
 
-            <p style="font-size:16px;color:#1A1A1A;margin:0 0 6px 0;font-family:'Segoe UI',Arial,sans-serif;">
+            <p style="font-size:16px;color:#1A1A1A;margin:0 0 8px 0;font-family:'Plus Jakarta Sans',sans-serif;">
               Hi <strong>${firstName}</strong>,
             </p>
-            <p style="font-size:15px;color:#4B5563;line-height:1.75;margin:0 0 28px 0;">
+            <p style="font-size:15px;color:#4B5563;line-height:1.75;margin:0 0 28px 0;font-family:'Plus Jakarta Sans',sans-serif;">
               Thank you for enrolling in
               <strong style="color:#1A1A1A;">${workshop.title}</strong>.
-              Your seat is confirmed — we're delighted to have you with us!
+              Your seat is confirmed &mdash; we're delighted to have you with us!
             </p>
 
             <!-- Booking confirmation -->
-            <div style="background:#FAFAFA;border:1px solid #F3F4F6;border-radius:14px;padding:24px;margin-bottom:24px;">
-              <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">
+            <div style="background:#FAFAFA;border:1px solid #ECECEC;border-radius:16px;padding:24px;margin-bottom:24px;">
+              <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;font-family:'Plus Jakarta Sans',sans-serif;">
                 Booking Confirmation
               </div>
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                 <tr>
-                  <td style="padding:10px 0;color:#6B7280;font-size:14px;width:40%;">Workshop</td>
-                  <td style="padding:10px 0;font-weight:700;color:#1A1A1A;font-size:14px;">
+                  <td style="padding:12px 0;color:#6B7280;font-size:14px;width:40%;font-family:'Plus Jakarta Sans',sans-serif;">Workshop</td>
+                  <td style="padding:12px 0;font-weight:700;color:#1A1A1A;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">
                     ${workshop.title}
                   </td>
                 </tr>
                 <tr style="border-top:1px solid #F3F4F6;">
-                  <td style="padding:10px 0;color:#6B7280;font-size:14px;">Parent Name</td>
-                  <td style="padding:10px 0;font-weight:700;color:#1A1A1A;font-size:14px;">
+                  <td style="padding:12px 0;color:#6B7280;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">Parent Name</td>
+                  <td style="padding:12px 0;font-weight:700;color:#1A1A1A;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">
                     ${parentName}
                   </td>
                 </tr>
                 <tr style="border-top:1px solid #F3F4F6;">
-                  <td style="padding:10px 0;color:#6B7280;font-size:14px;">Booking ID</td>
-                  <td style="padding:10px 0;font-weight:600;color:#1A1A1A;font-size:13px;font-family:monospace;">
+                  <td style="padding:12px 0;color:#6B7280;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">Booking ID</td>
+                  <td style="padding:12px 0;font-weight:600;color:#1A1A1A;font-size:13px;font-family:monospace;">
                     ${bookingId}
                   </td>
                 </tr>
@@ -306,39 +301,39 @@ export async function sendEnrollmentConfirmation({
             </div>
 
             <!-- Workshop details -->
-            <div style="background:#FAFAFA;border:1px solid #F3F4F6;border-radius:14px;padding:24px;margin-bottom:28px;">
-              <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">
+            <div style="background:#FAFAFA;border:1px solid #ECECEC;border-radius:16px;padding:24px;margin-bottom:28px;">
+              <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;font-family:'Plus Jakarta Sans',sans-serif;">
                 Workshop Details
               </div>
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                 <tr>
-                  <td style="padding:10px 0;color:#6B7280;font-size:14px;width:40%;">Date</td>
-                  <td style="padding:10px 0;font-weight:700;color:#1A1A1A;font-size:14px;">
+                  <td style="padding:12px 0;color:#6B7280;font-size:14px;width:40%;font-family:'Plus Jakarta Sans',sans-serif;">Date</td>
+                  <td style="padding:12px 0;font-weight:700;color:#1A1A1A;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">
                     ${workshop.date}
                   </td>
                 </tr>
                 <tr style="border-top:1px solid #F3F4F6;">
-                  <td style="padding:10px 0;color:#6B7280;font-size:14px;">Time</td>
-                  <td style="padding:10px 0;font-weight:700;color:#1A1A1A;font-size:14px;">
+                  <td style="padding:12px 0;color:#6B7280;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">Time</td>
+                  <td style="padding:12px 0;font-weight:700;color:#1A1A1A;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">
                     ${workshop.time}
                   </td>
                 </tr>
                 <tr style="border-top:1px solid #F3F4F6;">
-                  <td style="padding:10px 0;color:#6B7280;font-size:14px;">Format</td>
-                  <td style="padding:10px 0;font-weight:700;font-size:14px;color:${workshop.isOffline ? "#F4845F" : "#2BBCB0"};">
-                    ${workshop.isOffline ? "In-Person (Offline)" : "Online — Live"}
+                  <td style="padding:12px 0;color:#6B7280;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">Format</td>
+                  <td style="padding:12px 0;font-weight:700;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:${workshop.isOffline ? "#F4845F" : "#2BBCB0"};">
+                    ${workshop.isOffline ? "In-Person (Offline)" : "Online &mdash; Live"}
                   </td>
                 </tr>
                 ${venueRow}
                 <tr style="border-top:1px solid #F3F4F6;">
-                  <td style="padding:10px 0;color:#6B7280;font-size:14px;">Duration</td>
-                  <td style="padding:10px 0;font-weight:600;color:#1A1A1A;font-size:14px;">
+                  <td style="padding:12px 0;color:#6B7280;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">Duration</td>
+                  <td style="padding:12px 0;font-weight:600;color:#1A1A1A;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">
                     ${workshop.duration}
                   </td>
                 </tr>
                 <tr style="border-top:1px solid #F3F4F6;">
-                  <td style="padding:10px 0;color:#6B7280;font-size:14px;">Age Group</td>
-                  <td style="padding:10px 0;font-weight:600;color:#1A1A1A;font-size:14px;">
+                  <td style="padding:12px 0;color:#6B7280;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">Age Group</td>
+                  <td style="padding:12px 0;font-weight:600;color:#1A1A1A;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;">
                     ${workshop.ageGroup}
                   </td>
                 </tr>
@@ -347,7 +342,7 @@ export async function sendEnrollmentConfirmation({
 
             <!-- What to expect -->
             <div style="margin-bottom:28px;">
-              <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
+              <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;font-family:'Plus Jakarta Sans', sans-serif;">
                 What to Expect
               </div>
               <ul style="margin:0;padding-left:20px;">
@@ -359,17 +354,17 @@ export async function sendEnrollmentConfirmation({
             ${importantNotes}
 
             <!-- Contact -->
-            <div style="background:#F8F9FA;border-radius:12px;padding:18px 20px;margin-bottom:28px;">
-              <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">
+            <div style="background:#F8F9FA;border-radius:16px;padding:18px 20px;margin-bottom:28px;">
+              <div style="font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;font-family:'Plus Jakarta Sans', sans-serif;">
                 Need Help?
               </div>
-              <p style="font-size:14px;color:#4B5563;margin:0;line-height:1.7;">
+              <p style="font-size:14px;color:#4B5563;margin:0;line-height:1.7;font-family:'Plus Jakarta Sans', sans-serif;">
                 For any queries regarding your booking, venue, or rescheduling, please contact:
               </p>
-              <p style="font-size:15px;color:#1A1A1A;font-weight:700;margin:10px 0 4px 0;">
+              <p style="font-size:15px;color:#1A1A1A;font-weight:700;margin:10px 0 4px 0;font-family:'Plus Jakarta Sans', sans-serif;">
                 Pallavi Modi
               </p>
-              <p style="font-size:14px;color:#2BBCB0;font-weight:600;margin:0;">
+              <p style="font-size:14px;color:#2BBCB0;font-weight:600;margin:0;font-family:'Plus Jakarta Sans', sans-serif;">
                 <a href="tel:+919876524155" style="color:#2BBCB0;text-decoration:none;">
                   +91-9876524155
                 </a>
@@ -379,21 +374,21 @@ export async function sendEnrollmentConfirmation({
             <!-- CTA -->
             <div style="text-align:center;margin-bottom:8px;">
               <a href="${workshopUrl}"
-                 style="display:inline-block;background:linear-gradient(135deg,#F5C518 0%,#FFD740 100%);
-                        color:#1A1A1A;font-weight:800;font-size:15px;padding:14px 36px;
+                 style="display:inline-block;background-color:#F5C518;
+                        color:#1A1A1A;font-weight:800;font-size:14px;padding:14px 36px;
                         border-radius:12px;text-decoration:none;
-                        box-shadow:0 4px 16px rgba(245,197,24,0.35);
-                        font-family:'Segoe UI',Arial,sans-serif;">
-                View Workshop Details →
+                        box-shadow:0 6px 18px rgba(245,197,24,0.25);
+                        font-family:'Plus Jakarta Sans', sans-serif;letter-spacing:0.01em;">
+                View Workshop Details &rarr;
               </a>
             </div>
 
             <!-- Sign-off -->
-            <p style="font-size:14px;color:#6B7280;line-height:1.75;margin:28px 0 0 0;text-align:center;">
+            <p style="font-size:14px;color:#6B7280;line-height:1.75;margin:28px 0 0 0;text-align:center;font-family:'Plus Jakarta Sans', sans-serif;">
               We can't wait to see you there and help you raise a more confident,
-              future-ready child!
+              future-ready learner!
             </p>
-            <p style="font-size:14px;color:#6B7280;margin:14px 0 0 0;text-align:center;line-height:1.6;">
+            <p style="font-size:14px;color:#6B7280;margin:14px 0 0 0;text-align:center;line-height:1.6;font-family:'Plus Jakarta Sans', sans-serif;">
               Warm regards,<br/>
               <strong style="color:#1A1A1A;">Team Go Kids</strong>
             </p>
@@ -403,18 +398,18 @@ export async function sendEnrollmentConfirmation({
 
         <!-- Footer -->
         <tr>
-          <td style="background:#FAFAF8;padding:24px 40px;text-align:center;border-top:1px solid #E5E7EB;">
+          <td style="background:#FAFAF8;padding:32px 40px;text-align:center;border-top:1px solid #ECECEC;">
             <img src="${logoUrl}" alt="Go Kids" height="28"
                  style="display:inline-block;height:28px;border:none;outline:none;margin-bottom:12px;opacity:0.85;" />
-            <p style="font-size:12px;color:#6B7280;margin:0 0 4px 0;font-weight:600;">
+            <p style="font-size:12px;color:#6B7280;margin:0 0 4px 0;font-weight:600;font-family:'Plus Jakarta Sans', sans-serif;">
               Assessments &nbsp;·&nbsp; Workshops &nbsp;·&nbsp; Mentorship &nbsp;·&nbsp; Expert Talks
             </p>
-            <p style="font-size:12px;color:#9CA3AF;margin:0;">
+            <p style="font-size:12px;color:#9CA3AF;margin:0;font-family:'Plus Jakarta Sans', sans-serif;">
               © ${new Date().getFullYear()} Go Kids India &nbsp;·&nbsp;
               <a href="https://gokids.co.in" style="color:#2BBCB0;text-decoration:none;">gokids.co.in</a>
               &nbsp;|&nbsp; +91-9876524155
             </p>
-            <p style="font-size:11px;color:#D1D5DB;margin:8px 0 0 0;">
+            <p style="font-size:11px;color:#D1D5DB;margin:8px 0 0 0;font-family:'Plus Jakarta Sans', sans-serif;">
               You received this because you enrolled in a Go Kids workshop.
             </p>
           </td>
@@ -426,8 +421,7 @@ export async function sendEnrollmentConfirmation({
 </body>
 </html>`;
 
-  await transporter.sendMail({
-    from: `"Go Kids India" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+  await sendEmail({
     to: parentEmail,
     subject: buildSubject(parentName, workshop),
     html,
