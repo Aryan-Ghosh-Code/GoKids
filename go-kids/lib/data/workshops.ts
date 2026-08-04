@@ -46,6 +46,7 @@ export interface Workshop {
   thumbnail: string;
   ageGroup: string; // e.g. "9–11"
   level: "Beginner" | "Intermediate" | "Advanced" | "Parents";
+  audienceType: "children" | "parents"; // who the workshop is for
   skills: string[]; // e.g. ["Coding", "Mathematics"]
   category: string; // used for filter grouping
   duration: string; // e.g. "4 Weeks"
@@ -75,6 +76,7 @@ export type WorkshopFilters = {
   skill?: string[];
   query?: string;
   sort?: "popular" | "newest" | "rating";
+  audienceType?: "children" | "parents";
 };
 
 // ─── Transform helper ─────────────────────────────────────────────────────────
@@ -122,6 +124,7 @@ export async function getWorkshops(
   if (filters?.level?.length) query.level = { $in: filters.level };
   if (filters?.ageGroup?.length) query.ageGroup = { $in: filters.ageGroup };
   if (filters?.skill?.length) query.skills = { $in: filters.skill };
+  if (filters?.audienceType) query.audienceType = filters.audienceType;
 
   if (filters?.query) {
     const re = new RegExp(filters.query, "i");

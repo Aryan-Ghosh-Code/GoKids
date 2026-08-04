@@ -56,6 +56,7 @@ export interface IWorkshop extends Document {
   thumbnail: string;
   ageGroup: string; // e.g. "9–11"
   level: "Beginner" | "Intermediate" | "Advanced" | "Parents";
+  audienceType: "children" | "parents"; // who the workshop is for
   skills: string[]; // e.g. ["Coding"]
   category: string; // e.g. "Technology"
   duration: string; // e.g. "4 Weeks"
@@ -97,6 +98,11 @@ const WorkshopSchema = new Schema<IWorkshop>(
       type: String,
       required: true,
       enum: ["Beginner", "Intermediate", "Advanced", "Parents"],
+    },
+    audienceType: {
+      type: String,
+      enum: ["children", "parents"],
+      default: "children",
     },
     skills: { type: [String], default: [] },
     category: { type: String, required: true },
