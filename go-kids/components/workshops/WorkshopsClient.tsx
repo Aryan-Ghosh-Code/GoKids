@@ -10,7 +10,6 @@ import FilterSidebar, { type FilterState } from "./FilterSidebar";
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest" },
   { value: "popular", label: "Most Popular" },
-  { value: "rating", label: "Top Rated" },
 ] as const;
 
 const EMPTY_FILTERS: FilterState = { level: [], ageGroup: [], skill: [] };
@@ -114,7 +113,7 @@ export default function WorkshopsClient({
 }: WorkshopsClientProps) {
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
-  const [sort, setSort] = useState<"newest" | "popular" | "rating">("newest");
+  const [sort, setSort] = useState<"newest" | "popular">("newest");
   const [page, setPage] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
@@ -168,7 +167,7 @@ export default function WorkshopsClient({
         (w.skills || []).some((s) => filters.skill.includes(s)),
       );
 
-    if (sort === "rating") result.sort((a, b) => b.rating - a.rating);
+    // sort === "popular" handled above; "newest" is default (server sort)
     if (sort === "popular")
       result.sort((a, b) => b.enrolledCount - a.enrolledCount);
     // "newest" = insertion order (as received from server, already sorted by createdAt desc)

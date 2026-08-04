@@ -6,20 +6,21 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ChevronDown,
-  // Star,
   ArrowLeft,
   Clock,
   Users,
-  // BarChart2,
   Calendar,
   CheckCircle2,
   BookOpen,
   Award,
   Play,
   ChevronRight,
-  // MessageSquare,
   Zap,
   MapPin,
+  HelpCircle,
+  ThumbsUp,
+  ThumbsDown,
+  Package,
 } from "lucide-react";
 
 import type { Workshop } from "@/lib/data/workshops";
@@ -138,7 +139,7 @@ function AccordionSection({
             className="text-xs font-semibold hidden sm:inline"
             style={{ color: "#9CA3AF" }}
           >
-            {lessons.length} lessons · {duration}
+            {lessons.length} {lessons.length === 1 ? "lesson" : "lessons"} · {duration}
           </span>
           <motion.div
             animate={{ rotate: open ? 180 : 0 }}
@@ -161,30 +162,106 @@ function AccordionSection({
               {lessons.map((lesson, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-[#FAFAFA]"
+                  className="flex items-start gap-3 px-5 py-3.5 transition-colors hover:bg-[#FAFAFA]"
                   style={{
                     borderBottom:
                       i < lessons.length - 1 ? "1px solid #F3F4F6" : "none",
                   }}
                 >
                   <span
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
                     style={{ background: "#F3F4F6", color: "#6B7280" }}
                   >
                     {i + 1}
                   </span>
-                  <span
-                    className="flex-1 text-sm"
-                    style={{
-                      color: "#374151",
-                      fontFamily: "var(--font-inter)",
-                    }}
-                  >
-                    {lesson.title}
-                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className="text-sm font-semibold leading-snug mb-0.5"
+                      style={{
+                        color: "#1A1A1A",
+                        fontFamily: "var(--font-nunito)",
+                      }}
+                    >
+                      {lesson.title}
+                    </p>
+                    {lesson.description && (
+                      <p
+                        className="text-xs leading-relaxed"
+                        style={{
+                          color: "#6B7280",
+                          fontFamily: "var(--font-inter)",
+                        }}
+                      >
+                        {lesson.description}
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── FAQ Accordion ────────────────────────────────────────────────────────────
+function FaqItem({
+  question,
+  answer,
+  index,
+}: {
+  question: string;
+  answer: string;
+  index: number;
+}) {
+  const [open, setOpen] = useState(index === 0);
+  return (
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{
+        border: "1px solid #E5E7EB",
+        boxShadow: open ? "0 4px 16px rgba(245,197,24,0.08)" : "none",
+      }}
+    >
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors"
+        style={{ background: open ? "#FFFDF0" : "white" }}
+      >
+        <span
+          className="font-bold text-sm pr-4"
+          style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+        >
+          {question}
+        </span>
+        <motion.div
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.22 }}
+          className="shrink-0"
+        >
+          <ChevronDown size={16} color="#6B7280" />
+        </motion.div>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            style={{ overflow: "hidden" }}
+          >
+            <p
+              className="px-5 py-4 text-sm leading-relaxed"
+              style={{
+                borderTop: "1px solid #F3F4F6",
+                color: "#6B7280",
+                fontFamily: "var(--font-inter)",
+              }}
+            >
+              {answer}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -797,16 +874,6 @@ export default function WorkshopDetailClient({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.18 }}
           >
-            {/* <div className="flex items-center gap-1.5">
-              <Star size={15} fill="#F5C518" stroke="#F5C518" strokeWidth={1} />
-              <span className="font-extrabold text-white">
-                {workshop.rating}
-              </span>
-              <span style={{ color: "rgba(255,255,255,0.5)" }}>
-                ({workshop.reviews.length} reviews)
-              </span>
-            </div>
-            <span style={{ color: "rgba(255,255,255,0.25)" }}>|</span> */}
             <div className="flex items-center gap-1.5">
               <Users size={13} style={{ color: "#2BBCB0" }} />
               <span style={{ color: "rgba(255,255,255,0.85)" }}>
@@ -1057,7 +1124,7 @@ export default function WorkshopDetailClient({
               >
                 {[
                   {
-                    label: "Sections",
+                    label: "Modules",
                     value: workshop.curriculum.length.toString(),
                   },
                   { label: "Lessons", value: totalLessons.toString() },
@@ -1095,7 +1162,204 @@ export default function WorkshopDetailClient({
 
             <SectionDivider />
 
-            {/* ════ 3. INSTRUCTOR ════ */}
+            {/* ════ 3. WHO IS THIS FOR / NOT FOR ════ */}
+            {(workshop.whoIsItFor?.length || workshop.whoIsItNotFor?.length) && (
+              <motion.section
+                id="who-for"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.5 }}
+              >
+                <SectionHeading
+                  icon={<ThumbsUp size={18} />}
+                  title="Is This Workshop For You?"
+                  accent="#2BBCB0"
+                />
+                <div className={`grid gap-5 ${
+                  workshop.whoIsItFor?.length && workshop.whoIsItNotFor?.length
+                    ? "grid-cols-1 sm:grid-cols-2"
+                    : "grid-cols-1"
+                }`}>
+                  {/* Who it IS for */}
+                  {workshop.whoIsItFor?.length ? (
+                    <div
+                      className="rounded-2xl p-5"
+                      style={{
+                        background: "white",
+                        border: "1px solid #D1FAF6",
+                        boxShadow: "0 2px 8px rgba(43,188,176,0.06)",
+                      }}
+                    >
+                      <div className="flex items-center gap-2 mb-4">
+                        <span
+                          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                          style={{ background: "rgba(43,188,176,0.12)", color: "#2BBCB0" }}
+                        >
+                          <ThumbsUp size={14} />
+                        </span>
+                        <h3
+                          className="text-sm font-extrabold"
+                          style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+                        >
+                          This is for you if…
+                        </h3>
+                      </div>
+                      <ul className="space-y-3">
+                        {workshop.whoIsItFor.map((point, i) => (
+                          <li key={i} className="flex items-start gap-2.5">
+                            <CheckCircle2
+                              size={16}
+                              color="#2BBCB0"
+                              className="shrink-0 mt-0.5"
+                            />
+                            <span
+                              className="text-sm leading-relaxed"
+                              style={{ color: "#374151", fontFamily: "var(--font-inter)" }}
+                            >
+                              {point}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {/* Who it is NOT for */}
+                  {workshop.whoIsItNotFor?.length ? (
+                    <div
+                      className="rounded-2xl p-5"
+                      style={{
+                        background: "white",
+                        border: "1px solid #FDE8E0",
+                        boxShadow: "0 2px 8px rgba(244,132,95,0.06)",
+                      }}
+                    >
+                      <div className="flex items-center gap-2 mb-4">
+                        <span
+                          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                          style={{ background: "rgba(244,132,95,0.12)", color: "#F4845F" }}
+                        >
+                          <ThumbsDown size={14} />
+                        </span>
+                        <h3
+                          className="text-sm font-extrabold"
+                          style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+                        >
+                          This is NOT for you if…
+                        </h3>
+                      </div>
+                      <ul className="space-y-3">
+                        {workshop.whoIsItNotFor.map((point, i) => (
+                          <li key={i} className="flex items-start gap-2.5">
+                            <span
+                              className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-extrabold"
+                              style={{ background: "rgba(244,132,95,0.15)", color: "#F4845F" }}
+                            >
+                              ✕
+                            </span>
+                            <span
+                              className="text-sm leading-relaxed"
+                              style={{ color: "#374151", fontFamily: "var(--font-inter)" }}
+                            >
+                              {point}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </div>
+              </motion.section>
+            )}
+
+            {(workshop.whoIsItFor?.length || workshop.whoIsItNotFor?.length) && <SectionDivider />}
+
+            {/* ════ 4. TAKEAWAYS ════ */}
+            {workshop.takeaways?.length > 0 && (
+              <>
+                <motion.section
+                  id="takeaways"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <SectionHeading
+                    icon={<Package size={18} />}
+                    title="What You Take Home"
+                    accent="#F5C518"
+                  />
+                  <div
+                    className="rounded-2xl p-5"
+                    style={{
+                      background: "white",
+                      border: "1px solid #F3F4F6",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+                    }}
+                  >
+                    <ul className="space-y-3">
+                      {workshop.takeaways.map((item, i) => (
+                        <motion.li
+                          key={i}
+                          initial={{ opacity: 0, x: -8 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.05 }}
+                          className="flex items-start gap-3"
+                        >
+                          <span
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5"
+                            style={{ background: "rgba(245,197,24,0.18)", color: "#92700A", fontFamily: "var(--font-nunito)" }}
+                          >
+                            {i + 1}
+                          </span>
+                          <span
+                            className="text-sm leading-relaxed"
+                            style={{ color: "#374151", fontFamily: "var(--font-inter)" }}
+                          >
+                            {item}
+                          </span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.section>
+                <SectionDivider />
+              </>
+            )}
+
+            {/* ════ 5. FAQs ════ */}
+            {workshop.faqs?.length > 0 && (
+              <>
+                <motion.section
+                  id="faqs"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <SectionHeading
+                    icon={<HelpCircle size={18} />}
+                    title="Frequently Asked Questions"
+                    accent="#F4845F"
+                  />
+                  <div className="space-y-3">
+                    {workshop.faqs.map((faq, i) => (
+                      <FaqItem
+                        key={i}
+                        index={i}
+                        question={faq.question}
+                        answer={faq.answer}
+                      />
+                    ))}
+                  </div>
+                </motion.section>
+                <SectionDivider />
+              </>
+            )}
+
+            {/* ════ 6. INSTRUCTOR ════ */}
             <motion.section
               id="instructor"
               initial={{ opacity: 0, y: 20 }}

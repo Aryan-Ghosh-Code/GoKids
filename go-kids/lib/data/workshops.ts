@@ -11,21 +11,22 @@ import WorkshopModel from "@/lib/db/models/Workshop";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+/** A single lesson inside a curriculum module. No individual duration. */
 export interface WorkshopLesson {
   title: string;
+  description: string;
 }
 
+/** A curriculum module. Carries the duration; lessons do not. */
 export interface WorkshopSection {
   title: string;
-  duration: string; // e.g. "60 min"
+  duration: string; // e.g. "40 min"
   lessons: WorkshopLesson[];
 }
 
-export interface WorkshopReview {
-  author: string;
-  rating: number; // 1–5
-  comment: string;
-  date: string;
+export interface WorkshopFaq {
+  question: string;
+  answer: string;
 }
 
 export interface WorkshopInstructor {
@@ -60,12 +61,19 @@ export interface Workshop {
   price?: number;
   isEnrollmentOpen: boolean;
   enrolledCount: number;
-  rating: number;
   highlights: string[]; // bullet points for Overview tab
   requirements: string[];
   tags: string[];
+  /** Who should attend this workshop (2-3 points, optional) */
+  whoIsItFor?: string[];
+  /** Who this workshop is NOT suitable for (2-3 points, optional) */
+  whoIsItNotFor?: string[];
+  /** Key concrete takeaways participants leave with */
+  takeaways: string[];
+  /** FAQ entries */
+  faqs: WorkshopFaq[];
+  /** Module → Lesson → Description curriculum */
   curriculum: WorkshopSection[];
-  reviews: WorkshopReview[];
   createdAt: string;
   updatedAt: string;
 }
@@ -75,7 +83,7 @@ export type WorkshopFilters = {
   ageGroup?: string[];
   skill?: string[];
   query?: string;
-  sort?: "popular" | "newest" | "rating";
+  sort?: "popular" | "newest";
   audienceType?: "children" | "parents";
 };
 
@@ -131,10 +139,9 @@ export async function getWorkshops(
     query.$or = [{ title: re }, { shortDescription: re }, { skills: re }];
   }
 
-  // Sort
-  let sortOption: Record<string, 1 | -1> = { createdAt: -1 }; // "newest" default
-  if (filters?.sort === "popular") sortOption = { enrolledCount: -1 };
-  if (filters?.sort === "rating") sortOption = { rating: -1 };
+  // Sort — "rating" removed since that field no longer exists
+  const sortOption: Record<string, 1 | -1> =
+    filters?.sort === "popular" ? { enrolledCount: -1 } : { createdAt: -1 };
 
   const docs = await WorkshopModel.find(query).sort(sortOption).lean();
   return docs.map(toWorkshop);

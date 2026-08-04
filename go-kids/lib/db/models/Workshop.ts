@@ -2,28 +2,30 @@ import mongoose, { Schema, type Document, type Model } from "mongoose";
 
 // ─── Sub-schemas ──────────────────────────────────────────────────────────────
 
+// Lesson: title + description (no individual duration)
 const LessonSchema = new Schema(
   {
     title: { type: String, required: true },
+    description: { type: String, required: true },
   },
   { _id: false },
 );
 
+// Module (section): has a duration, contains many lessons
 const SectionSchema = new Schema(
   {
     title: { type: String, required: true },
-    duration: { type: String, required: true }, // e.g. "60 min"
+    duration: { type: String, required: true }, // e.g. "40 min" — on the MODULE, not each lesson
     lessons: { type: [LessonSchema], default: [] },
   },
   { _id: false },
 );
 
-const ReviewSchema = new Schema(
+// FAQ
+const FaqSchema = new Schema(
   {
-    author: { type: String, required: true },
-    rating: { type: Number, required: true, min: 1, max: 5 },
-    comment: { type: String, required: true },
-    date: { type: String, required: true }, // e.g. "March 2025"
+    question: { type: String, required: true },
+    answer: { type: String, required: true },
   },
   { _id: false },
 );
@@ -70,15 +72,23 @@ export interface IWorkshop extends Document {
   googleMapsUrl?: string;
   isEnrollmentOpen: boolean;
   enrolledCount: number;
-  rating: number;
   highlights: string[];
   requirements: string[];
   tags: string[];
+  /** Who should attend this workshop (2-3 points, optional) */
+  whoIsItFor?: string[];
+  /** Who this workshop is NOT suitable for (2-3 points, optional) */
+  whoIsItNotFor?: string[];
+  /** Key concrete takeaways participants leave with */
+  takeaways: string[];
+  /** FAQ entries */
+  faqs: { question: string; answer: string }[];
+  /** Module → Lesson → Description curriculum */
   curriculum: {
     title: string;
-    lessons: { title: string; duration: string }[];
+    duration: string;
+    lessons: { title: string; description: string }[];
   }[];
-  reviews: { author: string; rating: number; comment: string; date: string }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -117,12 +127,14 @@ const WorkshopSchema = new Schema<IWorkshop>(
     price: { type: Number },
     isEnrollmentOpen: { type: Boolean, required: true, default: true },
     enrolledCount: { type: Number, required: true, default: 0 },
-    rating: { type: Number, required: true, default: 0 },
     highlights: { type: [String], default: [] },
     requirements: { type: [String], default: [] },
     tags: { type: [String], default: [] },
+    whoIsItFor: { type: [String], default: undefined },
+    whoIsItNotFor: { type: [String], default: undefined },
+    takeaways: { type: [String], default: [] },
+    faqs: { type: [FaqSchema], default: [] },
     curriculum: { type: [SectionSchema], default: [] },
-    reviews: { type: [ReviewSchema], default: [] },
   },
   {
     timestamps: true, // adds createdAt + updatedAt
