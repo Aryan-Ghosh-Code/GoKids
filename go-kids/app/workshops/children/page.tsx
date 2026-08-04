@@ -158,11 +158,7 @@ export default async function ChildrenWorkshopsPage() {
   const totalWorkshops = workshops.length;
   const totalEnrolled = workshops.reduce((sum, w) => sum + (w.enrolledCount || 0), 0);
   const skillsCount = new Set(workshops.flatMap((w) => w.skills)).size;
-  const avgRating = workshops.length
-    ? parseFloat(
-        (workshops.reduce((sum, w) => sum + (w.rating || 0), 0) / workshops.length).toFixed(1)
-      )
-    : 4.8;
+  const avgRating = 4.8;
 
   return (
     <main style={{ background: "#FAFAFA", minHeight: "100vh" }}>
