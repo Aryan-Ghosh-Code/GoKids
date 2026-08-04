@@ -12,10 +12,14 @@ interface FilterSidebarProps {
   filters: FilterState;
   onChange: (next: FilterState) => void;
   onClear: () => void;
+  /** Derived level options from database/workshops */
+  levels: string[];
   /** Derived from the workshops fetched server-side */
   ageGroups: string[];
   /** Derived from the workshops fetched server-side */
   skills: string[];
+  /** When true, hides the Skill/Subject filter section */
+  hideSkillFilter?: boolean;
 }
 
 // ─── Checkbox row ─────────────────────────────────────────────────────────────
@@ -88,8 +92,10 @@ export default function FilterSidebar({
   filters,
   onChange,
   onClear,
+  levels,
   ageGroups,
   skills,
+  hideSkillFilter,
 }: FilterSidebarProps) {
   const toggle = (key: keyof FilterState, value: string, checked: boolean) => {
     const prev = filters[key];
@@ -135,16 +141,18 @@ export default function FilterSidebar({
       </div>
 
       {/* Level */}
-      <FilterSection title="Level">
-        {FILTER_LEVELS.map((l) => (
-          <CheckRow
-            key={l}
-            label={l}
-            checked={filters.level.includes(l)}
-            onChange={(v) => toggle("level", l, v)}
-          />
-        ))}
-      </FilterSection>
+      {levels.length > 1 && (
+        <FilterSection title="Level">
+          {levels.map((l) => (
+            <CheckRow
+              key={l}
+              label={l}
+              checked={filters.level.includes(l)}
+              onChange={(v) => toggle("level", l, v)}
+            />
+          ))}
+        </FilterSection>
+      )}
 
       {/* Age Group */}
       {ageGroups.length > 0 && (

@@ -138,7 +138,7 @@ function AccordionSection({
             className="text-xs font-semibold hidden sm:inline"
             style={{ color: "#9CA3AF" }}
           >
-          {lessons.length} lessons · {duration}
+            {lessons.length} lessons · {duration}
           </span>
           <motion.div
             animate={{ rotate: open ? 180 : 0 }}
@@ -570,7 +570,12 @@ function MobileEnrollBar({
             style={{ color: "#6B7280", fontFamily: "var(--font-nunito)" }}
           >
             <div className="truncate">{workshop.date}</div>
-            <div className="truncate text-[9px] font-medium" style={{ color: "#9CA3AF" }}>{workshop.time}</div>
+            <div
+              className="truncate text-[9px] font-medium"
+              style={{ color: "#9CA3AF" }}
+            >
+              {workshop.time}
+            </div>
           </div>
         </div>
         <div className="flex-1">
@@ -680,7 +685,11 @@ export default function WorkshopDetailClient({
             </Link>
             <span>/</span>
             <Link
-              href="/workshops"
+              href={
+                workshop.audienceType === "parents"
+                  ? "/workshops/parents"
+                  : "/workshops/children"
+              }
               className="hover:text-white transition-colors flex items-center gap-1.5"
             >
               <ArrowLeft size={12} />
@@ -1190,16 +1199,16 @@ export default function WorkshopDetailClient({
                 accent="#F5C518"
               /> */}
 
-              {/* Overall rating card */}
-              {/* <div
+            {/* Overall rating card */}
+            {/* <div
                 className="flex flex-row items-stretch gap-0 mb-8 rounded-3xl overflow-hidden"
                 style={{
                   border: "1px solid #F3F4F6",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
                 }}
               > */}
-                {/* Left: big score */}
-                {/* <div
+            {/* Left: big score */}
+            {/* <div
                   className="flex flex-col items-center justify-center px-5 py-6 shrink-0"
                   style={{
                     background:
@@ -1230,8 +1239,8 @@ export default function WorkshopDetailClient({
                   </p>
                 </div> */}
 
-                {/* Right: rating bars */}
-                {/* <div
+            {/* Right: rating bars */}
+            {/* <div
                   className="flex-1 flex flex-col justify-center gap-2 px-4 py-5"
                   style={{ background: "white", minWidth: 0 }}
                 >
@@ -1297,8 +1306,8 @@ export default function WorkshopDetailClient({
                 </div>
               </div> */}
 
-              {/* Review cards */}
-              {/* <div className="space-y-4">
+            {/* Review cards */}
+            {/* <div className="space-y-4">
                 {workshop.reviews.map((r, i) => {
                   const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
                   return (

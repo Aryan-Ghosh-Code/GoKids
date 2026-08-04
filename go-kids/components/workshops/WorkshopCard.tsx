@@ -38,9 +38,14 @@ function Chip({
 // ─── WorkshopCard ─────────────────────────────────────────────────────────────
 interface WorkshopCardProps {
   workshop: Workshop;
+  /** When true, hides the skill/level/ageGroup chip tags (used on parent-audience page) */
+  hideSkillChips?: boolean;
 }
 
-export default function WorkshopCard({ workshop }: WorkshopCardProps) {
+export default function WorkshopCard({
+  workshop,
+  hideSkillChips,
+}: WorkshopCardProps) {
   return (
     <motion.div
       whileHover={{ y: -6, boxShadow: "0 20px 48px rgba(0,0,0,0.13)" }}
@@ -96,16 +101,35 @@ export default function WorkshopCard({ workshop }: WorkshopCardProps) {
 
         {/* Body */}
         <div className="flex flex-col flex-1 p-5 gap-3">
-          {/* Tag chips — top 2 filters only */}
-          <div className="flex flex-wrap gap-1.5">
-            {[
-              <Chip key="age" label={`${workshop.ageGroup} years`} color="teal" />,
-              <Chip key="level" label={workshop.level} color="coral" />,
-              ...(workshop.skills || []).map((s) => (
-                <Chip key={s} label={s} color="sky" />
-              )),
-            ].slice(0, 4)}
-          </div>
+          {/* Tag chips */}
+          {!hideSkillChips ? (
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                <Chip
+                  key="age"
+                  label={`${workshop.ageGroup} years`}
+                  color="teal"
+                />,
+                <Chip key="level" label={workshop.level} color="coral" />,
+                ...(workshop.skills || []).map((s) => (
+                  <Chip key={s} label={s} color="sky" />
+                )),
+              ].slice(0, 4)}
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                <Chip
+                  key="age"
+                  label={`${workshop.ageGroup}`}
+                  color="teal"
+                />,
+                ...(workshop.skills || []).map((s) => (
+                  <Chip key={s} label={s} color="sky" />
+                )),
+              ].slice(0, 4)}
+            </div>
+          )}
 
           {/* Title */}
           <h3
@@ -133,7 +157,10 @@ export default function WorkshopCard({ workshop }: WorkshopCardProps) {
                 if (list.length === 1) return list[0].name;
                 if (list.length === 2)
                   return `${list[0].name} & ${list[1].name}`;
-                return `${list.slice(0, -1).map((i) => i.name).join(", ")} & ${list[list.length - 1].name}`;
+                return `${list
+                  .slice(0, -1)
+                  .map((i) => i.name)
+                  .join(", ")} & ${list[list.length - 1].name}`;
               })()}
             </span>
 

@@ -8,9 +8,9 @@ import WorkshopCard from "./WorkshopCard";
 import FilterSidebar, { type FilterState } from "./FilterSidebar";
 
 const SORT_OPTIONS = [
-  { value: "newest",  label: "Newest" },
+  { value: "newest", label: "Newest" },
   { value: "popular", label: "Most Popular" },
-  { value: "rating",  label: "Top Rated" },
+  { value: "rating", label: "Top Rated" },
 ] as const;
 
 const EMPTY_FILTERS: FilterState = { level: [], ageGroup: [], skill: [] };
@@ -23,16 +23,20 @@ function FilterDrawer({
   filters,
   onChange,
   onClear,
+  levels,
   ageGroups,
   skills,
+  hideSkillFilter,
 }: {
   open: boolean;
   onClose: () => void;
   filters: FilterState;
   onChange: (f: FilterState) => void;
   onClear: () => void;
+  levels: string[];
   ageGroups: string[];
   skills: string[];
+  hideSkillFilter?: boolean;
 }) {
   return (
     <AnimatePresence>
@@ -80,8 +84,10 @@ function FilterDrawer({
                 filters={filters}
                 onChange={onChange}
                 onClear={onClear}
+                levels={levels}
                 ageGroups={ageGroups}
                 skills={skills}
+                hideSkillFilter={hideSkillFilter}
               />
             </div>
           </motion.div>
@@ -95,25 +101,37 @@ function FilterDrawer({
 interface WorkshopsClientProps {
   /** All workshops fetched server-side from MongoDB */
   workshops: Workshop[];
+  /** When true, hides skill/level/ageGroup chips on cards (used on parent-audience page) */
+  hideSkillChips?: boolean;
+  /** When true, hides the Skill/Subject filter panel in the sidebar */
+  hideSkillFilter?: boolean;
 }
 
-export default function WorkshopsClient({ workshops }: WorkshopsClientProps) {
-  const [query, setQuery]   = useState("");
+export default function WorkshopsClient({
+  workshops,
+  hideSkillChips,
+  hideSkillFilter,
+}: WorkshopsClientProps) {
+  const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
-  const [sort, setSort]     = useState<"newest" | "popular" | "rating">("newest");
-  const [page, setPage]     = useState(1);
+  const [sort, setSort] = useState<"newest" | "popular" | "rating">("newest");
+  const [page, setPage] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [sortOpen, setSortOpen]     = useState(false);
-  const [activeRef, setActiveRef]   = useState<HTMLDivElement | null>(null);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [activeRef, setActiveRef] = useState<HTMLDivElement | null>(null);
 
   // ── Derive filter options from the workshops passed in ───────────────────────
+  const levels = useMemo(
+    () => [...new Set(workshops.map((w) => w.level))].sort(),
+    [workshops],
+  );
   const ageGroups = useMemo(
     () => [...new Set(workshops.map((w) => w.ageGroup))].sort(),
-    [workshops]
+    [workshops],
   );
   const skills = useMemo(
     () => [...new Set(workshops.flatMap((w) => w.skills || []))].sort(),
-    [workshops]
+    [workshops],
   );
 
   // ── Click-outside for sort dropdown ─────────────────────────────────────────
@@ -138,22 +156,28 @@ export default function WorkshopsClient({ workshops }: WorkshopsClientProps) {
         (w) =>
           w.title.toLowerCase().includes(q) ||
           w.shortDescription.toLowerCase().includes(q) ||
-          (w.skills || []).some((s) => s.toLowerCase().includes(q))
+          (w.skills || []).some((s) => s.toLowerCase().includes(q)),
       );
     }
-    if (filters.level.length)    result = result.filter((w) => filters.level.includes(w.level));
-    if (filters.ageGroup.length) result = result.filter((w) => filters.ageGroup.includes(w.ageGroup));
-    if (filters.skill.length)    result = result.filter((w) => (w.skills || []).some((s) => filters.skill.includes(s)));
+    if (filters.level.length)
+      result = result.filter((w) => filters.level.includes(w.level));
+    if (filters.ageGroup.length)
+      result = result.filter((w) => filters.ageGroup.includes(w.ageGroup));
+    if (filters.skill.length)
+      result = result.filter((w) =>
+        (w.skills || []).some((s) => filters.skill.includes(s)),
+      );
 
-    if (sort === "rating")  result.sort((a, b) => b.rating - a.rating);
-    if (sort === "popular") result.sort((a, b) => b.enrolledCount - a.enrolledCount);
+    if (sort === "rating") result.sort((a, b) => b.rating - a.rating);
+    if (sort === "popular")
+      result.sort((a, b) => b.enrolledCount - a.enrolledCount);
     // "newest" = insertion order (as received from server, already sorted by createdAt desc)
 
     return result;
   }, [workshops, query, filters, sort]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleFilterChange = (next: FilterState) => {
     setFilters(next);
@@ -168,7 +192,8 @@ export default function WorkshopsClient({ workshops }: WorkshopsClientProps) {
   const activeFiltersCount =
     filters.level.length + filters.ageGroup.length + filters.skill.length;
 
-  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === sort)?.label || "Sort";
+  const currentSortLabel =
+    SORT_OPTIONS.find((o) => o.value === sort)?.label || "Sort";
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -316,8 +341,10 @@ export default function WorkshopsClient({ workshops }: WorkshopsClientProps) {
               filters={filters}
               onChange={handleFilterChange}
               onClear={handleClear}
+              levels={levels}
               ageGroups={ageGroups}
               skills={skills}
+              hideSkillFilter={hideSkillFilter}
             />
           </div>
         </aside>
@@ -361,7 +388,11 @@ export default function WorkshopsClient({ workshops }: WorkshopsClientProps) {
                 className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
               >
                 {paginated.map((w) => (
-                  <WorkshopCard key={w._id} workshop={w} />
+                  <WorkshopCard
+                    key={w._id}
+                    workshop={w}
+                    hideSkillChips={hideSkillChips}
+                  />
                 ))}
               </motion.div>
 
@@ -411,8 +442,10 @@ export default function WorkshopsClient({ workshops }: WorkshopsClientProps) {
           handleClear();
           setDrawerOpen(false);
         }}
+        levels={levels}
         ageGroups={ageGroups}
         skills={skills}
+        hideSkillFilter={hideSkillFilter}
       />
     </div>
   );
