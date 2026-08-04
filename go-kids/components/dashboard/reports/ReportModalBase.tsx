@@ -48,7 +48,7 @@ export default function ReportModalBase({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[60] bg-black/60"
+            className="fixed inset-0 z-60 bg-black/60"
           />
 
           {/* Modal shell */}
@@ -58,7 +58,7 @@ export default function ReportModalBase({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 48 }}
             transition={{ type: "spring", stiffness: 340, damping: 30 }}
-            className="fixed inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-xl top-[2%] z-[61] flex flex-col max-h-[96vh] sm:max-h-[92vh] overflow-hidden rounded-3xl bg-white shadow-2xl"
+            className="fixed inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-xl top-[2%] z-61 flex flex-col max-h-[96vh] sm:max-h-[92vh] overflow-hidden rounded-3xl bg-white shadow-2xl"
             style={{ border: "1px solid #E5E7EB" }}
           >
             {/* ── Colour hero header ── */}
