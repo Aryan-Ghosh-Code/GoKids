@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import type { Workshop } from "@/lib/data/workshops";
 
 // ─── Chip sub-component ───────────────────────────────────────────────────────
@@ -164,15 +164,8 @@ export default function WorkshopCard({
               })()}
             </span>
 
-            {/* Rating + enrolled */}
+             {/* Enrolled count */}
             <div className="flex items-center gap-2 shrink-0">
-              <span
-                className="flex items-center gap-0.5 text-xs font-bold"
-                style={{ color: "#F5C518" }}
-              >
-                <Star size={12} fill="#F5C518" strokeWidth={0} />
-                {workshop.rating.toFixed(1)}
-              </span>
               <span
                 className="flex items-center gap-0.5 text-xs"
                 style={{ color: "#9CA3AF" }}
