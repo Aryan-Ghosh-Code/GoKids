@@ -744,8 +744,6 @@ export default function WorkshopDetailClient({
         paddingBottom: "80px",
       }}
     >
-
-
       <Script
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="lazyOnload"
@@ -1207,7 +1205,8 @@ export default function WorkshopDetailClient({
             <SectionDivider />
 
             {/* ════ 3. WHO IS THIS FOR / NOT FOR ════ */}
-            {(workshop.whoIsItFor?.length || workshop.whoIsItNotFor?.length) && (
+            {(workshop.whoIsItFor?.length ||
+              workshop.whoIsItNotFor?.length) && (
               <motion.section
                 id="who-for"
                 initial={{ opacity: 0, y: 20 }}
@@ -1220,11 +1219,14 @@ export default function WorkshopDetailClient({
                   title="Is This Workshop For You?"
                   accent="#2BBCB0"
                 />
-                <div className={`grid gap-5 ${
-                  workshop.whoIsItFor?.length && workshop.whoIsItNotFor?.length
-                    ? "grid-cols-1 sm:grid-cols-2"
-                    : "grid-cols-1"
-                }`}>
+                <div
+                  className={`grid gap-5 ${
+                    workshop.whoIsItFor?.length &&
+                    workshop.whoIsItNotFor?.length
+                      ? "grid-cols-1 sm:grid-cols-2"
+                      : "grid-cols-1"
+                  }`}
+                >
                   {/* Who it IS for */}
                   {workshop.whoIsItFor?.length ? (
                     <div
@@ -1238,13 +1240,19 @@ export default function WorkshopDetailClient({
                       <div className="flex items-center gap-2 mb-4">
                         <span
                           className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                          style={{ background: "rgba(43,188,176,0.12)", color: "#2BBCB0" }}
+                          style={{
+                            background: "rgba(43,188,176,0.12)",
+                            color: "#2BBCB0",
+                          }}
                         >
                           <ThumbsUp size={14} />
                         </span>
                         <h3
                           className="text-sm font-extrabold"
-                          style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+                          style={{
+                            fontFamily: "var(--font-nunito)",
+                            color: "#1A1A1A",
+                          }}
                         >
                           This is for you if…
                         </h3>
@@ -1259,7 +1267,10 @@ export default function WorkshopDetailClient({
                             />
                             <span
                               className="text-sm leading-relaxed"
-                              style={{ color: "#374151", fontFamily: "var(--font-inter)" }}
+                              style={{
+                                color: "#374151",
+                                fontFamily: "var(--font-inter)",
+                              }}
                             >
                               {point}
                             </span>
@@ -1282,13 +1293,19 @@ export default function WorkshopDetailClient({
                       <div className="flex items-center gap-2 mb-4">
                         <span
                           className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                          style={{ background: "rgba(244,132,95,0.12)", color: "#F4845F" }}
+                          style={{
+                            background: "rgba(244,132,95,0.12)",
+                            color: "#F4845F",
+                          }}
                         >
                           <ThumbsDown size={14} />
                         </span>
                         <h3
                           className="text-sm font-extrabold"
-                          style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+                          style={{
+                            fontFamily: "var(--font-nunito)",
+                            color: "#1A1A1A",
+                          }}
                         >
                           This is NOT for you if…
                         </h3>
@@ -1298,13 +1315,19 @@ export default function WorkshopDetailClient({
                           <li key={i} className="flex items-start gap-2.5">
                             <span
                               className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-extrabold"
-                              style={{ background: "rgba(244,132,95,0.15)", color: "#F4845F" }}
+                              style={{
+                                background: "rgba(244,132,95,0.15)",
+                                color: "#F4845F",
+                              }}
                             >
                               ✕
                             </span>
                             <span
                               className="text-sm leading-relaxed"
-                              style={{ color: "#374151", fontFamily: "var(--font-inter)" }}
+                              style={{
+                                color: "#374151",
+                                fontFamily: "var(--font-inter)",
+                              }}
                             >
                               {point}
                             </span>
@@ -1317,7 +1340,8 @@ export default function WorkshopDetailClient({
               </motion.section>
             )}
 
-            {(workshop.whoIsItFor?.length || workshop.whoIsItNotFor?.length) && <SectionDivider />}
+            {(workshop.whoIsItFor?.length ||
+              workshop.whoIsItNotFor?.length) && <SectionDivider />}
 
             {/* ════ 4. TAKEAWAYS ════ */}
             {workshop.takeaways?.length > 0 && (
@@ -1354,13 +1378,20 @@ export default function WorkshopDetailClient({
                         >
                           <span
                             className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5"
-                            style={{ background: "rgba(245,197,24,0.18)", color: "#92700A", fontFamily: "var(--font-nunito)" }}
+                            style={{
+                              background: "rgba(245,197,24,0.18)",
+                              color: "#92700A",
+                              fontFamily: "var(--font-nunito)",
+                            }}
                           >
                             {i + 1}
                           </span>
                           <span
                             className="text-sm leading-relaxed"
-                            style={{ color: "#374151", fontFamily: "var(--font-inter)" }}
+                            style={{
+                              color: "#374151",
+                              fontFamily: "var(--font-inter)",
+                            }}
                           >
                             {item}
                           </span>
@@ -1732,7 +1763,15 @@ export default function WorkshopDetailClient({
                     style={{ color: "rgba(255,255,255,0.75)" }}
                   >
                     <span>💡</span>
-                    <span>For any issues, please reach out to <a href="tel:+919876524155" className="underline font-bold text-[#F5C518] hover:text-[#d4aa12] transition-colors">+91-9876524155</a></span>
+                    <span>
+                      For any issues, please reach out to{" "}
+                      <a
+                        href="tel:+919876524155"
+                        className="underline font-bold text-primary hover:text-[#d4aa12] transition-colors"
+                      >
+                        +91-9876524155
+                      </a>
+                    </span>
                   </p>
                 </div>
                 <div className="shrink-0 w-full sm:w-auto min-w-50">
@@ -1760,8 +1799,6 @@ export default function WorkshopDetailClient({
           </div>
         </div>
       </div>
-
-
 
       {/* Mobile sticky bottom enroll bar */}
       <MobileEnrollBar
