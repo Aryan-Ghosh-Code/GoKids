@@ -58,7 +58,9 @@ export interface Workshop {
   venue?: string;
   googleMapsUrl?: string;
   isFree: boolean;
-  price?: number;
+  price?: number;        // active selling price (charged to user)
+  /** Crossed-out original / MRP price shown to convey discount (optional) */
+  oldPrice?: number;
   isEnrollmentOpen: boolean;
   enrolledCount: number;
   highlights: string[]; // bullet points for Overview tab

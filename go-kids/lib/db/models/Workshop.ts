@@ -64,7 +64,9 @@ export interface IWorkshop extends Document {
   duration: string; // e.g. "4 Weeks"
   sessions: number;
   isFree: boolean;
-  price?: number;
+  price?: number;       // active selling price (charged to user)
+  /** Crossed-out original / MRP price (optional) */
+  oldPrice?: number;
   isOffline: boolean;
   date: string;
   time: string;
@@ -125,6 +127,7 @@ const WorkshopSchema = new Schema<IWorkshop>(
     googleMapsUrl: { type: String },
     isFree: { type: Boolean, required: true, default: true },
     price: { type: Number },
+    oldPrice: { type: Number }, // MRP / crossed-out price — optional
     isEnrollmentOpen: { type: Boolean, required: true, default: true },
     enrolledCount: { type: Number, required: true, default: 0 },
     highlights: { type: [String], default: [] },
