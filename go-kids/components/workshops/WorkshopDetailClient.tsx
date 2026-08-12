@@ -379,22 +379,47 @@ function EnrollSidebar({
 
       <div className="p-6" style={{ background: "white" }}>
         {/* Price / Free badge */}
-        <div className="flex items-center gap-3 mb-5">
-          <span
-            className="text-3xl font-extrabold"
-            style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
-          >
-            {workshop.isFree
-              ? "FREE"
-              : `₹${workshop.price?.toLocaleString("en-IN")}`}
-          </span>
-          {workshop.isFree && (
-            <span
-              className="px-3 py-1 rounded-full text-xs font-bold"
-              style={{ background: "rgba(245,197,24,0.18)", color: "#92700A" }}
-            >
-              ✦ Always free
-            </span>
+        <div className="flex flex-col gap-1.5 mb-5">
+          {workshop.isFree ? (
+            <div className="flex items-center gap-3">
+              <span
+                className="text-3xl font-extrabold"
+                style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+              >
+                FREE
+              </span>
+              <span
+                className="px-3 py-1 rounded-full text-xs font-bold"
+                style={{ background: "rgba(245,197,24,0.18)", color: "#92700A" }}
+              >
+                ✦ Always free
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-baseline gap-2.5">
+              <span
+                className="text-3xl font-extrabold"
+                style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+              >
+                ₹{workshop.price?.toLocaleString("en-IN")}
+              </span>
+              {workshop.oldPrice && (
+                <>
+                  <span
+                    className="text-base font-semibold line-through"
+                    style={{ color: "#9CA3AF", fontFamily: "var(--font-nunito)" }}
+                  >
+                    ₹{workshop.oldPrice.toLocaleString("en-IN")}
+                  </span>
+                  <span
+                    className="px-2 py-0.5 rounded-full text-xs font-extrabold"
+                    style={{ background: "rgba(43,188,176,0.15)", color: "#1A7A72" }}
+                  >
+                    {Math.round(((workshop.oldPrice - (workshop.price ?? 0)) / workshop.oldPrice) * 100)}% off
+                  </span>
+                </>
+              )}
+            </div>
           )}
         </div>
 
@@ -634,14 +659,31 @@ function MobileEnrollBar({
     >
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex flex-col gap-0.5">
-          <p
-            className="text-base font-extrabold leading-none"
-            style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
-          >
-            {workshop.isFree
-              ? "FREE"
-              : `₹${workshop.price?.toLocaleString("en-IN")}`}
-          </p>
+          {workshop.isFree ? (
+            <p
+              className="text-base font-extrabold leading-none"
+              style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+            >
+              FREE
+            </p>
+          ) : (
+            <div className="flex items-baseline gap-1.5">
+              <p
+                className="text-base font-extrabold leading-none"
+                style={{ fontFamily: "var(--font-nunito)", color: "#1A1A1A" }}
+              >
+                ₹{workshop.price?.toLocaleString("en-IN")}
+              </p>
+              {workshop.oldPrice && (
+                <span
+                  className="text-xs font-semibold line-through"
+                  style={{ color: "#9CA3AF", fontFamily: "var(--font-nunito)" }}
+                >
+                  ₹{workshop.oldPrice.toLocaleString("en-IN")}
+                </span>
+              )}
+            </div>
+          )}
           <div
             className="text-[10px] font-bold leading-tight"
             style={{ color: "#6B7280", fontFamily: "var(--font-nunito)" }}
@@ -702,6 +744,8 @@ export default function WorkshopDetailClient({
         paddingBottom: "80px",
       }}
     >
+
+
       <Script
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="lazyOnload"
@@ -1677,11 +1721,18 @@ export default function WorkshopDetailClient({
                     Ready to enroll your child?
                   </h3>
                   <p
-                    className="text-sm"
+                    className="text-sm mb-3"
                     style={{ color: "rgba(255,255,255,0.5)" }}
                   >
                     Join {workshop.enrolledCount.toLocaleString()}+ learners
                     already enrolled
+                  </p>
+                  <p
+                    className="text-xs font-semibold flex items-center gap-1"
+                    style={{ color: "rgba(255,255,255,0.75)" }}
+                  >
+                    <span>💡</span>
+                    <span>For any issues, please reach out to <a href="tel:+919876524155" className="underline font-bold text-[#F5C518] hover:text-[#d4aa12] transition-colors">+91-9876524155</a></span>
                   </p>
                 </div>
                 <div className="shrink-0 w-full sm:w-auto min-w-50">
@@ -1709,6 +1760,8 @@ export default function WorkshopDetailClient({
           </div>
         </div>
       </div>
+
+
 
       {/* Mobile sticky bottom enroll bar */}
       <MobileEnrollBar

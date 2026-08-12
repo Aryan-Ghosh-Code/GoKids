@@ -164,8 +164,34 @@ export default function WorkshopCard({
               })()}
             </span>
 
-             {/* Enrolled count */}
+             {/* Price + enrolled */}
             <div className="flex items-center gap-2 shrink-0">
+              {!workshop.isFree && workshop.price && (
+                <div className="flex items-baseline gap-1">
+                  <span
+                    className="text-sm font-extrabold"
+                    style={{ color: "#1A1A1A", fontFamily: "var(--font-nunito)" }}
+                  >
+                    ₹{workshop.price?.toLocaleString("en-IN")}
+                  </span>
+                  {workshop.oldPrice && (
+                    <span
+                      className="text-xs font-semibold line-through"
+                      style={{ color: "#9CA3AF", fontFamily: "var(--font-nunito)" }}
+                    >
+                      ₹{workshop.oldPrice.toLocaleString("en-IN")}
+                    </span>
+                  )}
+                </div>
+              )}
+              {workshop.isFree && (
+                <span
+                  className="text-sm font-extrabold"
+                  style={{ color: "#2BBCB0", fontFamily: "var(--font-nunito)" }}
+                >
+                  FREE
+                </span>
+              )}
               <span
                 className="flex items-center gap-0.5 text-xs"
                 style={{ color: "#9CA3AF" }}
