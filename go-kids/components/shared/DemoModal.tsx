@@ -5,7 +5,7 @@ import { X, CheckCircle2 } from "lucide-react";
 interface DemoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  assessmentType: "attention" | "writing" | null;
+  assessmentType: "attention" | "writing" | "play-profile" | null;
 }
 
 const attentionQuestions = [

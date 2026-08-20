@@ -50,9 +50,10 @@ export function WelcomeScreen({ childrenList, onBegin }: Props) {
   const activeChild =
     childrenList.find((c) => c._id === selectedChildId) ?? null;
   const childAge = calcAge(activeChild?.dob);
-  const autoBand = bandFromAge(childAge);
+  const isTooYoung = childAge !== null && childAge < 8;
+  const autoBand = isTooYoung ? null : bandFromAge(childAge);
   const effectiveBand = autoBand ?? manualBand ?? selectedBand;
-  const canBegin = !!activeChild && !!effectiveBand;
+  const canBegin = !!activeChild && !!effectiveBand && !isTooYoung;
 
   function handleChildSelect(id: string) {
     setSelectedChildId(id);
@@ -61,14 +62,14 @@ export function WelcomeScreen({ childrenList, onBegin }: Props) {
   }
 
   function handleBandSelect(band: Band) {
-    if (!autoBand) {
+    if (!autoBand && !isTooYoung) {
       setManualBand(band);
     }
     setSelectedBand(band);
   }
 
   function handleBegin() {
-    if (!activeChild || !effectiveBand) return;
+    if (!activeChild || !effectiveBand || isTooYoung) return;
     onBegin(activeChild._id, activeChild.name, effectiveBand);
   }
 
@@ -148,7 +149,21 @@ export function WelcomeScreen({ childrenList, onBegin }: Props) {
       {/* Age band — auto-detected or manual */}
       {activeChild && (
         <div className="space-y-2">
-          {autoBand ? (
+          {isTooYoung ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl p-4 space-y-1"
+              style={{ background: "#FEF2F2", border: "1.5px solid #FCA5A5" }}
+            >
+              <p className="text-xs font-extrabold text-red-800 uppercase tracking-wider">
+                ⚠️ Age Limit Restriction
+              </p>
+              <p className="text-xs text-red-700 font-semibold leading-relaxed">
+                {activeChild.name} is {childAge} years old. The Attention Span Assessment is designed specifically for children aged <strong>8 to 16 years</strong>. Children under 8 years cannot take this assessment.
+              </p>
+            </motion.div>
+          ) : autoBand ? (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
