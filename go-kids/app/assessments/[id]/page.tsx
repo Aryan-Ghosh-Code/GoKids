@@ -18,6 +18,7 @@ import {
   attentionSpanModalContent,
   type AssessmentModalContent,
 } from "@/components/assessments/attention-span/constants/modalContent";
+import { playProfileModalContent } from "@/components/assessments/play-profile/constants/modalContent";
 
 // ─── Content Registry ─────────────────────────────────────────────────────────
 // Maps assessment slug → { content, assessmentHref }
@@ -29,6 +30,10 @@ const ASSESSMENT_REGISTRY: Record<
   "attention-span": {
     content: attentionSpanModalContent,
     assessmentHref: "/parent/assessments/attention-span",
+  },
+  "play-profile": {
+    content: playProfileModalContent,
+    assessmentHref: "/parent/assessments/play-profile",
   },
 };
 

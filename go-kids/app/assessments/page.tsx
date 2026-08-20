@@ -9,6 +9,7 @@ import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { HelpCircle } from "lucide-react";
 import { DemoModal } from "@/components/shared/DemoModal";
+import SurveyEntryCard from "@/components/survey/SurveyEntryCard";
 import {
   StaggerContainer,
   StaggerItem,
@@ -31,23 +32,43 @@ const ASSESSMENTS = [
     available: true,
     accent: "#F4845F",
     type: "attention" as const,
+    showDemoBtn: false,
+  },
+  {
+    id: "play-profile",
+    emoji: "🧩",
+    iconBg: "#E8F8F7",
+    iconColor: "#2BBCB0",
+    title: "Child Play Profile Survey",
+    description:
+      "Discover your child's natural play archetype — Builder, Explorer, Storyteller, and more — with a 5-minute parent-completed survey. Includes tailored toy and activity recommendations.",
+    tags: ["~5 min", "Ages 0-5", "Parent Only"],
+    tagBg: "#E8F8F7",
+    tagColor: "#0D7A73",
+    cta: "Start Survey",
+    href: "/parent/assessments/play-profile",
+    available: true,
+    accent: "#2BBCB0",
+    type: "play-profile" as const,
+    showDemoBtn: false,
   },
   {
     id: "writing-ability",
     emoji: "✏️",
-    iconBg: "#E8F8F7",
-    iconColor: "#2BBCB0",
+    iconBg: "#F5F3FF",
+    iconColor: "#8B5CF6",
     title: "Writing Ability Assessment",
     description:
       "Assess vocabulary range, sentence structure, creative expression, and age-appropriate writing skills through guided written tasks.",
     tags: ["~25 min", "Ages 8-16", "Parent Report"],
-    tagBg: "#E8F8F7",
-    tagColor: "#0D7A73",
+    tagBg: "#F3EEFF",
+    tagColor: "#6D28D9",
     cta: "Coming Soon",
     href: null,
     available: false,
-    accent: "#2BBCB0",
+    accent: "#8B5CF6",
     type: "writing" as const,
+    showDemoBtn: false,
   },
 ];
 
@@ -57,7 +78,7 @@ export default function AssessmentsPage() {
   // DemoModal ("See Demo Questions")
   const [modalOpen, setModalOpen] = useState(false);
   const [activeAssessment, setActiveAssessment] = useState<
-    "attention" | "writing" | null
+    "attention" | "writing" | "play-profile" | null
   >(null);
 
   return (
@@ -130,6 +151,11 @@ export default function AssessmentsPage() {
           </div>
         </section>
 
+        {/* ── Survey Section ────────────────────────────────────────────── */}
+        <section className="pb-10 px-4 sm:px-6 max-w-4xl mx-auto">
+          <SurveyEntryCard />
+        </section>
+
         {/* ── Assessment Cards ─────────────────────────────────────────── */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10">
           <div className="text-center">
@@ -199,20 +225,27 @@ export default function AssessmentsPage() {
                       {/* Accent divider line */}
                       <div className="w-full h-1px bg-gray-150" />
 
-                      {/* Trigger to see demo questions in modal */}
-                      <div className="pt-1">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveAssessment(a.type);
-                            setModalOpen(true);
-                          }}
-                          className="inline-flex items-center gap-1.5 text-xs font-extrabold text-brand-black hover:text-teal transition-colors cursor-pointer bg-transparent border-none p-0 outline-none"
-                        >
-                          <HelpCircle size={15} />
-                          See Demo Questions
-                        </button>
-                      </div>
+                      {/* Demo questions button — only for assessments that have demo content */}
+                      {a.showDemoBtn && (
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveAssessment(
+                                a.type as
+                                  | "attention"
+                                  | "writing"
+                                  | "play-profile",
+                              );
+                              setModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-brand-black hover:text-teal transition-colors cursor-pointer bg-transparent border-none p-0 outline-none"
+                          >
+                            <HelpCircle size={15} />
+                            See Demo Questions
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     {/* CTA Button */}
