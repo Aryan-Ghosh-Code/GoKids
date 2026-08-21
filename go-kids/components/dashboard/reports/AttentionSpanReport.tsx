@@ -127,7 +127,13 @@ interface Props {
 export default function AttentionSpanReport({ assessment, onClose }: Props) {
   if (!assessment) return null;
 
-  const { formData, results, createdAt } = assessment;
+  const { formData, createdAt } = assessment;
+  // Cast to the attention-span-specific results shape
+  const results = assessment.results as {
+    cptRaw: NonNullable<typeof assessment.results.cptRaw>;
+    scores: NonNullable<typeof assessment.results.scores>;
+    profile: NonNullable<typeof assessment.results.profile>;
+  };
   const { scores, profile: prof, cptRaw } = results;
   const meta = PROFILE_META[prof.key] ?? {
     colour: "#6B7280",

@@ -1,6 +1,9 @@
 "use client";
 
 import AttentionSpanReport from "./reports/AttentionSpanReport";
+import PlayProfileReport, {
+  type DBPlayProfileAssessment,
+} from "./reports/PlayProfileReport";
 
 // ── Canonical DB shape ─────────────────────────────────────────────────────────
 // This is the single source-of-truth type used across all report components.
@@ -8,28 +11,29 @@ export interface DBAssessmentFull {
   _id: string;
   type: string;
   formData: {
-    band: string;
+    band?: string;
     childName: string;
-    partBAnswers: number[] | null;
-    partCAnswers: number[] | null;
-    partDAnswers: number[] | null;
+    partBAnswers?: number[] | null;
+    partCAnswers?: number[] | null;
+    partDAnswers?: number[] | null;
+    answers?: number[];
+    [key: string]: unknown;
   };
+  // results is typed loosely here because different assessment types store
+  // different shapes. Individual report components receive narrower types.
   results: {
-    cptRaw: {
-      // Phase 1
+    // attention-span fields
+    cptRaw?: {
       phase1Targets: number;
       phase1Hits: number;
       phase1Misses: number;
       phase1FalseAlarms: number;
-      // Burst
       burstStarsTotal: number;
       burstStarsTapped: number;
-      // Phase 3
       phase3Targets: number;
       phase3Hits: number;
       phase3Misses: number;
       phase3FalseAlarms: number;
-      // Aggregated
       totalTargets: number;
       totalHits: number;
       totalFalseAlarms: number;
@@ -39,7 +43,7 @@ export interface DBAssessmentFull {
       fatigueIndex: number;
       burstTapRatePct: number;
     };
-    scores: {
+    scores?: {
       cptBaseScore: number;
       recoveryScore: number;
       fatigueIndex: number;
@@ -51,11 +55,19 @@ export interface DBAssessmentFull {
       gapFlag: boolean;
       gapDirection: string | null;
     };
-    profile: {
+    profile?: {
       key: string;
       name: string;
       emoji: string;
     };
+    // play-profile fields
+    archetype?: {
+      key: string;
+      name: string;
+      emoji: string;
+    };
+    // catch-all for any future assessment type
+    [key: string]: unknown;
   };
   createdAt: string;
 }
@@ -75,6 +87,14 @@ export default function AssessmentReportModal({ assessment, onClose }: Props) {
   switch (assessment.type) {
     case "attention-span":
       return <AttentionSpanReport assessment={assessment} onClose={onClose} />;
+
+    case "play-profile":
+      return (
+        <PlayProfileReport
+          assessment={assessment as unknown as DBPlayProfileAssessment}
+          onClose={onClose}
+        />
+      );
 
     // Future: case "talent": return <TalentReport assessment={assessment} onClose={onClose} />;
 
